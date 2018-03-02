@@ -1,0 +1,8 @@
+include LICENSE
+include build.py
+include build.sh
+
+recursive-include torch_spline_conv/src *
+recursive-include torch_spline_conv/kernel *
+
+recursive-exclude torch_spline_conv/_ext *

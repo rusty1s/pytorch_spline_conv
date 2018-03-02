@@ -4,6 +4,5 @@ build/
 dist/
 .cache/
 .eggs/
-.coverage
 *.egg-info/
-*.so
+.coverage

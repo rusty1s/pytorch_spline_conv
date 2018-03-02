@@ -1,19 +1,27 @@
 from os import path as osp
+
 from setuptools import setup, find_packages
 
-import build  # noqa
+__version__ = '0.1.0'
+url = 'https://github.com/rusty1s/pytorch_spline_conv'
 
-install_requires = ['cffi']
+install_requires = ['cffi', 'torch-unique']
 setup_requires = ['pytest-runner', 'cffi']
 tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_spline_conv',
-    version='0.1.0',
-    description='PyTorch extension for spline-based convolutions',
-    url='https://github.com/rusty1s/pytorch_spline_conv',
+    version=__version__,
+    description='PyTorch Implementation of the Spline-Based Convolution'
+    'Operator of SplineCNN',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
+    url=url,
+    download_url='{}/archive/{}.tar.gz'.format(url, __version__),
+    keywords=[
+        'pytorch', 'cnn', 'spline_cnn', 'geometric-deep-learning', 'graph',
+        'mesh'
+    ],
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
