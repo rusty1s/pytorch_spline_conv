@@ -19,7 +19,7 @@ setup(
     url=url,
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=[
-        'pytorch', 'cnn', 'spline_cnn', 'geometric-deep-learning', 'graph',
+        'pytorch', 'cnn', 'spline-cnn', 'geometric-deep-learning', 'graph',
         'mesh'
     ],
     install_requires=install_requires,
