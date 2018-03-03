@@ -24,8 +24,5 @@ def test_spline_basis_cpu(tensor, i):
     expected_index = torch.ByteTensor(data[i]['expected_index'])
 
     basis, index = spline_basis(degree, pseudo, kernel_size, is_open_spline, K)
-    print('basis', basis)
-    print('weight_index', index)
-    return
     assert basis.tolist() == expected_basis.tolist()
     assert index.tolist() == expected_index.tolist()
