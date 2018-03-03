@@ -3,7 +3,7 @@ from torch.autograd import Function
 
 from .._ext import ffi
 
-degrees = {1: 'linear', 2: 'quadric', 3: 'cubic'}
+implemented_degrees = {1: 'linear', 2: 'quadric', 3: 'cubic'}
 
 
 def get_func(name, tensor):
@@ -19,7 +19,7 @@ def spline_basis(degree, pseudo, kernel_size, is_open_spline, K):
     basis = pseudo.new(pseudo.size(0), s)
     weight_index = kernel_size.new(pseudo.size(0), s)
 
-    degree = degrees.get(degree)
+    degree = implemented_degrees.get(degree)
     if degree is None:
         raise NotImplementedError('Basis computation not implemented for '
                                   'specified B-spline degree')
