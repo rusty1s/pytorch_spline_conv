@@ -1,12 +1,11 @@
-import sys
-import os
+import os.path as osp
 import shutil
 import subprocess
 
 import torch
 from torch.utils.ffi import create_extension
 
-if os.path.exists('build'):
+if osp.exists('build'):
     shutil.rmtree('build')
 
 headers = ['torch_spline_conv/src/cpu.h']
@@ -17,7 +16,7 @@ extra_objects = []
 with_cuda = False
 
 if torch.cuda.is_available():
-    subprocess.call('./build.sh {}'.format(sys.executable))
+    subprocess.call('./build.sh {}'.format(osp.dirname(torch.__file__)))
 
     headers += ['torch_spline_conv/src/cuda.h']
     sources += ['torch_spline_conv/src/cuda.c']
