@@ -14,16 +14,17 @@ def get_func(name, tensor):
 
 
 def spline_basis(degree, pseudo, kernel_size, is_open_spline, K):
+    s = (degree + 1)**kernel_size.size(0)
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
+    basis = pseudo.new(pseudo.size(0), s)
+    weight_index = kernel_size.new(pseudo.size(0), s)
+
     degree = degrees.get(degree)
     if degree is None:
         raise NotImplementedError('Basis computation not implemented for '
                                   'specified B-spline degree')
 
-    s = (degree + 1)**kernel_size.size(0)
-    basis = pseudo.new(pseudo.size(0), s)
-    weight_index = kernel_size.new(pseudo.size(0), s)
-
-    func = get_func('basis_{}', degree, pseudo)
+    func = get_func('basis_{}'.format(degree), pseudo)
     func(basis, weight_index, pseudo, kernel_size, is_open_spline, K)
     return basis, weight_index
 

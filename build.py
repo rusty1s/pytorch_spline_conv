@@ -1,7 +1,12 @@
+import os
+import shutil
 import subprocess
 
 import torch
 from torch.utils.ffi import create_extension
+
+if os.path.exists('build'):
+    shutil.rmtree('build')
 
 headers = ['torch_spline_conv/src/cpu.h']
 sources = ['torch_spline_conv/src/cpu.c']
