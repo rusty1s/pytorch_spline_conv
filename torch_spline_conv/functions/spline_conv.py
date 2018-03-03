@@ -2,7 +2,7 @@ import torch
 # from torch.autograd import Variable as Var
 
 from .degree import node_degree
-from .utils import spline_bases, spline_weighting
+from .utils import spline_basis, spline_weighting
 
 
 def spline_conv(x,
@@ -21,8 +21,8 @@ def spline_conv(x,
     output = x[index[1]]
 
     # Get B-spline basis products and weight indices for each edge.
-    basis, weight_index = spline_bases(pseudo, kernel_size, is_open_spline,
-                                       degree)
+    basis, weight_index = spline_basis(degree, pseudo, kernel_size,
+                                       is_open_spline, weight.size(0))
 
     # Weight gathered features based on B-spline basis and trainable weights.
     output = spline_weighting(output, weight, basis, weight_index)

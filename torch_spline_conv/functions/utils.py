@@ -3,6 +3,8 @@ from torch.autograd import Function
 
 from .._ext import ffi
 
+degrees = {1: 'linear', 2: 'quadric', 3: 'cubic'}
+
 
 def get_func(name, tensor):
     typename = type(tensor).__name__.replace('Tensor', '')
@@ -11,9 +13,19 @@ def get_func(name, tensor):
     return func
 
 
-def spline_bases(pseudo, kernel_size, is_open_spline, degree):
-    # raise NotImplementedError for degree > 3
-    pass
+def spline_basis(degree, pseudo, kernel_size, is_open_spline, K):
+    degree = degrees.get(degree)
+    if degree is None:
+        raise NotImplementedError('Basis computation not implemented for '
+                                  'specified B-spline degree')
+
+    s = (degree + 1)**kernel_size.size(0)
+    basis = pseudo.new(pseudo.size(0), s)
+    weight_index = kernel_size.new(pseudo.size(0), s)
+
+    func = get_func('basis_{}', degree, pseudo)
+    func(basis, weight_index, pseudo, kernel_size, is_open_spline, K)
+    return basis, weight_index
 
 
 def spline_weighting_forward(x, weight, basis, weight_index):
