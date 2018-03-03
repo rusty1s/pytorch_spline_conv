@@ -1,3 +1,4 @@
+import sys
 import os
 import shutil
 import subprocess
@@ -16,7 +17,7 @@ extra_objects = []
 with_cuda = False
 
 if torch.cuda.is_available():
-    subprocess.call('./build.sh')
+    subprocess.call('./build.sh {}'.format(sys.executable))
 
     headers += ['torch_spline_conv/src/cuda.h']
     sources += ['torch_spline_conv/src/cuda.c']

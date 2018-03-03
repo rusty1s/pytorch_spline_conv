@@ -2,7 +2,8 @@
 
 echo "Compiling kernel..."
 
-TORCH=$(python -c "import os; import torch; print(os.path.dirname(torch.__file__))")
+PYTHON=${1:-python}
+TORCH=$($PYTHON -c "import os; import torch; print(os.path.dirname(torch.__file__))")
 SRC_DIR=torch_spline_conv/kernel
 BUILD_DIR=torch_spline_conv/build
 
