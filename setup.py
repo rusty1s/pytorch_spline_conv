@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 __version__ = '0.1.0'
 url = 'https://github.com/rusty1s/pytorch_spline_conv'
 
-install_requires = ['cffi', 'torch-unique']
+install_requires = ['cffi']
 setup_requires = ['pytest-runner', 'cffi']
 tests_require = ['pytest', 'pytest-cov']
 
@@ -20,7 +20,7 @@ setup(
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=[
         'pytorch', 'cnn', 'spline-cnn', 'geometric-deep-learning', 'graph',
-        'mesh'
+        'mesh', 'neural-networks'
     ],
     install_requires=install_requires,
     setup_requires=setup_requires,
