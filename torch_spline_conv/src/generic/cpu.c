@@ -50,10 +50,10 @@ void spline_(basis_cubic)(THTensor *basis, THLongTensor *weight_index, THTensor 
   )
 }
 
-void spline_(edgewise_forward)(THTensor *output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
+void spline_(weighting_fw)(THTensor *output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
 }
 
-void spline_(edgewise_backward)(THTensor *grad_input, THTensor *grad_weight, THTensor *grad_output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
+void spline_(weighting_bw)(THTensor *grad_input, THTensor *grad_weight, THTensor *grad_output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
 }
 
 #endif
