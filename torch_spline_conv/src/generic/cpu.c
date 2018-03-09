@@ -29,7 +29,7 @@
 
 void spline_(basis_linear)(THTensor *basis, THLongTensor *weight_index, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline, int K) {
   SPLINE_BASIS(1, basis, weight_index, pseudo, kernel_size, is_open_spline, K,
-    value = (1 - k_mod) * value + k_mod * (1 - value);
+    value = (1 - k_mod) * (1 - value) + k_mod * value;
   )
 }
 
