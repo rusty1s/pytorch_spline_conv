@@ -1,5 +1,7 @@
 #include <TH/TH.h>
 
+#include "THTensorDimApply4.h"
+
 #define spline_(NAME) TH_CONCAT_4(spline_, NAME, _, Real)
 
 #include "generic/cpu.c"
