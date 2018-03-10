@@ -35,7 +35,8 @@ def spline_conv(x,
     output = zero.scatter_add_(0, row, output)
 
     # Normalize output by node degree.
-    output /= node_degree(edge_index, n, out=x.new()).clamp_(min=1)
+    degree = node_degree(edge_index, n, out=x.new())
+    output /= degree.unsqueeze(-1).clamp_(min=1)
 
     # Weight root node separately (if wished).
     if root_weight is not None:

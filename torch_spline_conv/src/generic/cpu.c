@@ -64,7 +64,7 @@ void spline_(weighting_fw)(THTensor *output, THTensor *input, THTensor *weight, 
         b = *(basis_data + s * basis_stride);
         i = *(weight_index_data + s * weight_index_stride);
         for (m_in = 0; m_in < M_in; m_in++) {
-          value += b * *(weight_data + i * M_in * M_out + m_in * M_in + m_out) * *(input_data + m_in * input_stride);
+          value += b * *(weight_data + i * M_in * M_out + m_in * M_out + m_out) * *(input_data + m_in * input_stride);
         }
       }
       output_data[m_out * output_stride] = value;
