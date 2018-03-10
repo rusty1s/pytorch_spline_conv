@@ -36,8 +36,8 @@ def spline_weighting_forward(x, weight, basis, weight_index):
 
 
 def spline_weighting_backward(grad_output, x, weight, basis, weight_index):
-    grad_input = x.new(x.size(0), weight.size(1))
-    grad_weight = x.new(weight)
+    grad_input = x.new(x.size(0), weight.size(1)).fill_(0)
+    grad_weight = x.new(weight).fill_(0)
     func = get_func('weighting_backward', x)
     func(grad_input, grad_weight, grad_output, x, weight, basis, weight_index)
     return grad_input, grad_weight
