@@ -20,9 +20,8 @@ def spline_basis(degree, pseudo, kernel_size, is_open_spline, K):
     weight_index = kernel_size.new(pseudo.size(0), s)
 
     degree = implemented_degrees.get(degree)
-    if degree is None:
-        raise NotImplementedError('Basis computation not implemented for '
-                                  'specified B-spline degree')
+    assert degree is not None, (
+        'Basis computation not implemented for specified B-spline degree')
 
     func = get_func('basis_{}'.format(degree), pseudo)
     func(basis, weight_index, pseudo, kernel_size, is_open_spline, K)
@@ -31,7 +30,7 @@ def spline_basis(degree, pseudo, kernel_size, is_open_spline, K):
 
 def spline_weighting_fw(x, weight, basis, weight_index):
     output = x.new(x.size(0), weight.size(2))
-    func = get_func('spline_weighting_fw', x)
+    func = get_func('weighting_fw', x)
     func(output, x, weight, basis, weight_index)
     return output
 
@@ -39,7 +38,7 @@ def spline_weighting_fw(x, weight, basis, weight_index):
 def spline_weighting_bw(grad_output, x, weight, basis, weight_index):
     grad_input = x.new(x.size(0), weight.size(1))
     grad_weight = x.new(weight)
-    func = get_func('spline_weighting_bw', x)
+    func = get_func('weighting_bw', x)
     func(grad_input, grad_weight, grad_output, x, weight, basis, weight_index)
     return grad_input, grad_weight
 
