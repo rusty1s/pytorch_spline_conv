@@ -2,7 +2,7 @@ import pytest
 import torch
 from torch.autograd import Variable, gradcheck
 from torch_spline_conv import spline_conv
-from torch_spline_conv.functions.utils import spline_basis, SplineWeighting
+from torch_spline_conv.functions.utils import SplineWeighting
 
 from .utils import tensors, Tensor
 
