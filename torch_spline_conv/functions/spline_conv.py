@@ -32,7 +32,9 @@ def _spline_conv(x,
     row = edge_index[0].unsqueeze(-1).expand(e, m_out)
     row = row if torch.is_tensor(x) else Var(row)
     zero = x.new(n, m_out) if torch.is_tensor(x) else Var(x.data.new(n, m_out))
-    return zero.fill_(0).scatter_add_(0, row, output)
+    output = zero.fill_(0).scatter_add_(0, row, output)
+
+    return output
 
 
 def spline_conv(x,
@@ -46,6 +48,8 @@ def spline_conv(x,
                 bias=None):
 
     n = x.size(0)
+
+    # Convolve over each node.
     output = _spline_conv(x, edge_index, pseudo, weight, kernel_size,
                           is_open_spline, degree)
 
