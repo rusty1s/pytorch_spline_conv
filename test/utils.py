@@ -1,6 +1,6 @@
 import torch
 
-tensors = ['FloatTensor']
+tensors = ['FloatTensor', 'DoubleTensor']
 
 
 def Tensor(str, x):
