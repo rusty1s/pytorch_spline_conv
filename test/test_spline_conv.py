@@ -39,7 +39,7 @@ def test_spline_conv_cpu(tensor):
 
     assert output.tolist() == expected_output
 
-    x, weight = Variable(x), Variable(weight)
+    x, weight, pseudo = Variable(x), Variable(weight), Variable(pseudo)
     root_weight, bias = Variable(root_weight), Variable(bias)
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
@@ -48,16 +48,16 @@ def test_spline_conv_cpu(tensor):
 
 
 def test_spline_weighting_backward_cpu():
-    pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
-    pseudo = torch.DoubleTensor(pseudo)
     kernel_size = torch.LongTensor([5, 5])
     is_open_spline = torch.ByteTensor([1, 1])
-    basis, index = spline_basis(1, pseudo, kernel_size, is_open_spline, 25)
+    op = SplineWeighting(kernel_size, is_open_spline, 1)
 
-    op = SplineWeighting(basis, index)
     x = torch.DoubleTensor([[1, 2], [3, 4], [5, 6], [7, 8]])
     x = Variable(x, requires_grad=True)
+    pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
+    # pseudo = Variable(torch.DoubleTensor(pseudo), requires_grad=True)
+    pseudo = Variable(torch.DoubleTensor(pseudo))
     weight = torch.DoubleTensor(25, 2, 4).uniform_(-1, 1)
     weight = Variable(weight, requires_grad=True)
 
-    assert gradcheck(op, (x, weight), eps=1e-6, atol=1e-4) is True
+    assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True

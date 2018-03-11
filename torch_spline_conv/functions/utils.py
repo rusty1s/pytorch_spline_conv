@@ -37,34 +37,41 @@ def spline_weighting_forward(x, weight, basis, weight_index):
 
 def spline_weighting_backward(grad_output, x, weight, basis,
                               weight_index):  # pragma: no cover
-    grad_input = x.new(x.size(0), weight.size(1))
     # grad_weight computation via `atomic_add` => Initialize with zeros.
     grad_weight = x.new(weight.size()).fill_(0)
+    grad_input = x.new(x.size(0), weight.size(1))
     func = get_func('weighting_backward', x)
     func(grad_input, grad_weight, grad_output, x, weight, basis, weight_index)
     return grad_input, grad_weight
 
 
 class SplineWeighting(Function):
-    def __init__(self, basis, weight_index):
+    def __init__(self, kernel_size, is_open_spline, degree):
         super(SplineWeighting, self).__init__()
-        self.basis = basis
-        self.weight_index = weight_index
+        self.kernel_size = kernel_size
+        self.is_open_spline = is_open_spline
+        self.degree = degree
 
-    def forward(self, x, weight):
+    def forward(self, x, pseudo, weight):
         self.save_for_backward(x, weight)
-        basis, weight_index = self.basis, self.weight_index
+        K = weight.size(0)
+        basis, weight_index = spline_basis(
+            self.degree, pseudo, self.kernel_size, self.is_open_spline, K)
+        self.basis, self.weight_index = basis, weight_index
         return spline_weighting_forward(x, weight, basis, weight_index)
 
     def backward(self, grad_output):  # pragma: no cover
         x, weight = self.saved_tensors
-        basis, weight_index = self.basis, self.weight_index
-        return spline_weighting_backward(grad_output, x, weight, basis,
-                                         weight_index)
+        grad_input, grad_weight = spline_weighting_backward(
+            grad_output, x, weight, self.basis, self.weight_index)
+        return grad_input, None, grad_weight
 
 
-def spline_weighting(x, weight, basis, weight_index):
+def spline_weighting(x, pseudo, weight, kernel_size, is_open_spline, degree):
     if torch.is_tensor(x):
+        basis, weight_index = spline_basis(degree, pseudo, kernel_size,
+                                           is_open_spline, weight.size(0))
         return spline_weighting_forward(x, weight, basis, weight_index)
     else:
-        return SplineWeighting(basis, weight_index)(x, weight)
+        op = SplineWeighting(kernel_size, is_open_spline, degree)
+        return op(x, pseudo, weight)
