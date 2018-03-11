@@ -15,9 +15,9 @@
       for (d = 0; d < D; d++) { \
         offset /= kernel_size_data[d]; \
         k_mod = k % (M + 1); \
-        k /= (M + 1); \
+        k /= M + 1; \
         value = *(pseudo_data + d * pseudo_stride) * (kernel_size_data[d] - M * is_open_spline_data[d]); \
-        i += ((((int64_t) value) + k_mod) % kernel_size_data[d]) * offset; \
+        i += (((int64_t) value + k_mod) % kernel_size_data[d]) * offset; \
         value -= floor(value); \
         CODE \
         b *= value; \
