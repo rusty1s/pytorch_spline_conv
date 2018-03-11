@@ -17,7 +17,6 @@ def spline_conv(x,
 
     print('TODO: Degree of 0')
     print('TODO: Kernel size of 1')
-    print('swap M_in and M_out in backward implementation')
 
     n, e = x.size(0), edge_index.size(1)
     K, m_in, m_out = weight.size()
