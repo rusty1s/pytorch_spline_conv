@@ -75,7 +75,7 @@ void spline_(weighting_forward)(THTensor *output, THTensor *input, THTensor *wei
 void spline_(weighting_backward)(THTensor *grad_input, THTensor *grad_weight, THTensor *grad_output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
   real *weight_data = weight->storage->data + weight->storageOffset;
   real *grad_weight_data = grad_weight->storage->data + grad_weight->storageOffset;
-  int64_t M_out = THTensor_(size)(grad_input, 1);
+  int64_t M_out = THTensor_(size)(grad_output, 1);
   int64_t M_in = THTensor_(size)(input, 1);
   int64_t S = THLongTensor_size(weight_index, 1);
   int64_t m_out, m_in, s, i, w_idx; real g, b;
@@ -90,7 +90,6 @@ void spline_(weighting_backward)(THTensor *grad_input, THTensor *grad_weight, TH
           w_idx = i * M_in * M_out + m_in * M_out + m_out;
           grad_input_data[m_in] += b * g * *(weight_data + w_idx);
           grad_weight_data[w_idx] += b * g * *(input_data + m_in * input_stride);
-
         }
       }
     }
