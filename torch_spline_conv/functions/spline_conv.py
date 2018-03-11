@@ -15,9 +15,6 @@ def spline_conv(x,
                 degree=1,
                 bias=None):
 
-    # TODO: degree of 0
-    # TODO: kernel size of 1
-
     n, e = x.size(0), edge_index.size(1)
     K, m_in, m_out = weight.size()
 

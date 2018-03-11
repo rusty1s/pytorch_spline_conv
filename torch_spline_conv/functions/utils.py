@@ -35,7 +35,8 @@ def spline_weighting_forward(x, weight, basis, weight_index):
     return output
 
 
-def spline_weighting_backward(grad_output, x, weight, basis, weight_index):
+def spline_weighting_backward(grad_output, x, weight, basis,
+                              weight_index):  # pragma: no cover
     grad_input = x.new(x.size(0), weight.size(1))
     # grad_weight computation via `atomic_add` => Initialize with zeros.
     grad_weight = x.new(weight.size()).fill_(0)
@@ -55,7 +56,7 @@ class SplineWeighting(Function):
         basis, weight_index = self.basis, self.weight_index
         return spline_weighting_forward(x, weight, basis, weight_index)
 
-    def backward(self, grad_output):
+    def backward(self, grad_output):  # pragma: no cover
         x, weight = self.saved_tensors
         basis, weight_index = self.basis, self.weight_index
         return spline_weighting_backward(grad_output, x, weight, basis,

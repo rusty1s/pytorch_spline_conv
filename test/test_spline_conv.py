@@ -17,9 +17,10 @@ def test_spline_conv_cpu(tensor):
     kernel_size = torch.LongTensor([3, 4])
     is_open_spline = torch.ByteTensor([1, 0])
     root_weight = torch.arange(12.5, 13.5, step=0.5, out=x.new()).view(2, 1)
+    bias = Tensor(tensor, [1])
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, root_weight)
+                         is_open_spline, root_weight, 1, bias)
 
     edgewise_output = [
         1 * 0.25 * (0.5 + 1.5 + 4.5 + 5.5) + 2 * 0.25 * (1 + 2 + 5 + 6),
@@ -29,21 +30,20 @@ def test_spline_conv_cpu(tensor):
     ]
 
     expected_output = [
-        [12.5 * 9 + 13 * 10 + sum(edgewise_output) / 4],
-        [12.5 * 1 + 13 * 2],
-        [12.5 * 3 + 13 * 4],
-        [12.5 * 5 + 13 * 6],
-        [12.5 * 7 + 13 * 8],
+        [1 + 12.5 * 9 + 13 * 10 + sum(edgewise_output) / 4],
+        [1 + 12.5 * 1 + 13 * 2],
+        [1 + 12.5 * 3 + 13 * 4],
+        [1 + 12.5 * 5 + 13 * 6],
+        [1 + 12.5 * 7 + 13 * 8],
     ]
 
     assert output.tolist() == expected_output
 
-    x = Variable(x, requires_grad=True)
-    weight = Variable(weight, requires_grad=True)
-    root_weight = Variable(root_weight, requires_grad=True)
+    x, weight = Variable(x), Variable(weight)
+    root_weight, bias = Variable(root_weight), Variable(bias)
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, root_weight)
+                         is_open_spline, root_weight, 1, bias)
     assert output.data.tolist() == expected_output
 
 
