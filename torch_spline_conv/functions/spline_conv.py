@@ -2,7 +2,7 @@ import torch
 from torch.autograd import Variable as Var
 
 from .degree import node_degree
-from .utils import spline_weighting
+from .spline_weighting import spline_weighting
 
 
 def spline_conv(x,
@@ -15,15 +15,14 @@ def spline_conv(x,
                 degree=1,
                 bias=None):
 
-    n = x.size(0)
-
     # Convolve over each node.
-    output = _spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                          is_open_spline, degree)
+    output = basic_spline_conv(x, edge_index, pseudo, weight, kernel_size,
+                               is_open_spline, degree)
 
     # Normalize output by node degree.
     degree = x.new() if torch.is_tensor(x) else x.data.new()
-    degree = node_degree(edge_index, n, out=degree).unsqueeze(-1).clamp_(min=1)
+    degree = node_degree(edge_index, x.size(0), out=degree)
+    degree = degree.unsqueeze(-1).clamp_(min=1)
     output /= degree if torch.is_tensor(x) else Var(degree)
 
     # Weight root node separately (if wished).
@@ -37,8 +36,8 @@ def spline_conv(x,
     return output
 
 
-def _spline_conv(x, edge_index, pseudo, weight, kernel_size, is_open_spline,
-                 degree):
+def basic_spline_conv(x, edge_index, pseudo, weight, kernel_size,
+                      is_open_spline, degree):
 
     n, e, m_out = x.size(0), edge_index.size(1), weight.size(2)
 

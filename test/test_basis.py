@@ -4,7 +4,7 @@ from itertools import product
 import pytest
 import json
 import torch
-from torch_spline_conv.functions.utils import spline_basis
+from torch_spline_conv.functions.ffi import spline_basis_forward
 
 from .utils import tensors, Tensor
 
@@ -23,7 +23,8 @@ def test_spline_basis_cpu(tensor, i):
     expected_basis = Tensor(tensor, data[i]['expected_basis'])
     expected_index = torch.ByteTensor(data[i]['expected_index'])
 
-    basis, index = spline_basis(degree, pseudo, kernel_size, is_open_spline, K)
+    basis, index = spline_basis_forward(degree, pseudo, kernel_size,
+                                        is_open_spline, K)
     basis = [pytest.approx(x, 0.01) for x in basis.view(-1).tolist()]
 
     assert basis == expected_basis.view(-1).tolist()
