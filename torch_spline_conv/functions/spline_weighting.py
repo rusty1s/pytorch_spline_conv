@@ -3,8 +3,8 @@ from torch.autograd import Function
 
 from .ffi import (spline_basis_forward, spline_weighting_forward,
                   spline_weighting_backward_input,
-                  spline_weighting_backward_weight,
-                  spline_weighting_backward_basis)
+                  spline_weighting_backward_basis,
+                  spline_weighting_backward_weight)
 
 
 class SplineWeighting(Function):
@@ -20,17 +20,31 @@ class SplineWeighting(Function):
             self.degree, pseudo, self.kernel_size, self.is_open_spline, K)
         output = spline_weighting_forward(x, weight, basis, weight_index)
 
-        # self.save_for_backward(x, weight)
-        # self.basis, self.weight_index = basis, weight_index
+        self.save_for_backward(x, weight)
+        self.basis, self.weight_index = basis, weight_index
 
         return output
 
     def backward(self, grad_output):  # pragma: no cover
-        pass
-        # x, weight = self.saved_tensors
-        # grad_input, grad_weight = spline_weighting_backward(
-        #     grad_output, x, weight, self.basis, self.weight_index)
-        # return grad_input, None, grad_weight
+        x, weight = self.saved_tensors
+        basis, weight_index = self.basis, self.weight_index
+        grad_input, grad_pseudo, grad_weight = None, None, None
+
+        if self.needs_input_grad[0]:
+            grad_input = spline_weighting_backward_input(
+                grad_output, weight, basis, weight_index)
+
+        if self.needs_input_grad[1]:
+            grad_basis = spline_weighting_backward_basis(
+                grad_output, x, weight, weight_index)
+            print('pseudo needs grad')
+
+        if self.needs_input_grad[2]:
+            K = weight.size(0)
+            grad_weight = spline_weighting_backward_weight(
+                grad_output, x, basis, weight_index, K)
+
+        return grad_input, grad_pseudo, grad_weight
 
 
 def spline_weighting(x, pseudo, weight, kernel_size, is_open_spline, degree):

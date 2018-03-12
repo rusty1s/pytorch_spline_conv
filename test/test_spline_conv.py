@@ -48,7 +48,6 @@ def test_spline_conv_cpu(tensor):
 
 
 def test_spline_weighting_backward_cpu():
-    return
     kernel_size = torch.LongTensor([5, 5])
     is_open_spline = torch.ByteTensor([1, 1])
     op = SplineWeighting(kernel_size, is_open_spline, 1)

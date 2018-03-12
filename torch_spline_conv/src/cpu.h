@@ -13,8 +13,9 @@ void spline_weighting_forward_Double(THDoubleTensor *output, THDoubleTensor *inp
 void spline_weighting_backward_input_Float(THFloatTensor *grad_input, THFloatTensor *grad_output, THFloatTensor *weight, THFloatTensor *basis, THLongTensor *weight_index);
 void spline_weighting_backward_input_Double(THDoubleTensor *grad_input, THDoubleTensor *grad_output, THDoubleTensor *weight, THDoubleTensor *basis, THLongTensor *weight_index);
 
+void spline_weighting_backward_basis_Float(THFloatTensor *grad_basis, THFloatTensor *grad_output, THFloatTensor *input, THFloatTensor *weight, THLongTensor *weight_index);
+void spline_weighting_backward_basis_Double(THDoubleTensor *grad_basis, THDoubleTensor *grad_output, THDoubleTensor *input, THDoubleTensor *weight, THLongTensor *weight_index);
+
 void spline_weighting_backward_weight_Float(THFloatTensor *grad_weight, THFloatTensor *grad_output, THFloatTensor *input, THFloatTensor *basis, THLongTensor *weight_index);
 void spline_weighting_backward_weight_Double(THDoubleTensor *grad_weight, THDoubleTensor *grad_output, THDoubleTensor *input, THDoubleTensor *basis, THLongTensor *weight_index);
 
-void spline_weighting_backward_basis_Float(THFloatTensor *grad_basis, THFloatTensor *grad_output, THFloatTensor *input, THFloatTensor *weight, THLongTensor *weight_index);
-void spline_weighting_backward_basis_Double(THDoubleTensor *grad_basis, THDoubleTensor *grad_output, THDoubleTensor *input, THDoubleTensor *weight, THLongTensor *weight_index);
