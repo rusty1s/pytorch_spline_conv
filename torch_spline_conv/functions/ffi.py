@@ -3,6 +3,13 @@ from .._ext import ffi as ext
 implemented_degrees = {1: 'linear', 2: 'quadratic', 3: 'cubic'}
 
 
+def get_degree_str(degree):
+    degree = implemented_degrees.get(degree)
+    assert degree is not None, (
+        'No implementation found for specified B-spline degree')
+    return degree
+
+
 def get_func(name, tensor):
     typename = type(tensor).__name__.replace('Tensor', '')
     cuda = 'cuda_' if tensor.is_cuda else ''
@@ -12,17 +19,20 @@ def get_func(name, tensor):
 
 def spline_basis_forward(degree, pseudo, kernel_size, is_open_spline, K):
     s = (degree + 1)**kernel_size.size(0)
-    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
     basis = pseudo.new(pseudo.size(0), s)
     weight_index = kernel_size.new(pseudo.size(0), s)
-
-    degree = implemented_degrees.get(degree)
-    assert degree is not None, (
-        'Basis computation not implemented for specified B-spline degree')
-
-    func = get_func('{}_basis_forward'.format(degree), pseudo)
+    func = get_func('{}_basis_forward'.format(get_degree_str(degree)), pseudo)
     func(basis, weight_index, pseudo, kernel_size, is_open_spline, K)
     return basis, weight_index
+
+
+# pragma: no cover
+def spline_basis_backward(degree, grad_basis, pseudo, kernel_size,
+                          is_open_spline):
+    grad_pseudo = pseudo.new(pseudo.size())
+    func = get_func('{}_basis_backward'.format(get_degree_str(degree)), pseudo)
+    func(grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline)
+    return grad_pseudo
 
 
 def spline_weighting_forward(x, weight, basis, weight_index):

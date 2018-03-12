@@ -42,6 +42,7 @@ def basic_spline_conv(x, edge_index, pseudo, weight, kernel_size,
     n, e, m_out = x.size(0), edge_index.size(1), weight.size(2)
 
     x = x.unsqueeze(-1) if x.dim() == 1 else x
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
     # Weight gathered features based on B-spline bases and trainable weights.
     output = spline_weighting(x[edge_index[1]], pseudo, weight, kernel_size,

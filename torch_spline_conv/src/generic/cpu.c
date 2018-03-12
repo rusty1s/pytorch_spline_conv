@@ -25,6 +25,15 @@ void spline_(cubic_basis_forward)(THTensor *basis, THLongTensor *weight_index, T
   )
 }
 
+void spline_(linear_basis_backward)(THTensor *grad_pseudo, THLongTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
+}
+
+void spline_(quadratic_basis_backward)(THTensor *grad_pseudo, THLongTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
+}
+
+void spline_(cubic_basis_backward)(THTensor *grad_pseudo, THLongTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
+}
+
 void spline_(weighting_forward)(THTensor *output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
   real *weight_data = weight->storage->data + weight->storageOffset;
   int64_t M_out = THTensor_(size)(output, 1);

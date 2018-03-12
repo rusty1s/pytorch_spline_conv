@@ -17,6 +17,7 @@ f.close()
 def test_spline_basis_cpu(tensor, i):
     degree = data[i].get('degree')
     pseudo = Tensor(tensor, data[i]['pseudo'])
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
     kernel_size = torch.LongTensor(data[i]['kernel_size'])
     is_open_spline = torch.ByteTensor(data[i]['is_open_spline'])
     K = kernel_size.prod()
