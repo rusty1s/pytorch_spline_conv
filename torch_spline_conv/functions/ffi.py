@@ -26,9 +26,8 @@ def spline_basis_forward(degree, pseudo, kernel_size, is_open_spline, K):
     return basis, weight_index
 
 
-# pragma: no cover
 def spline_basis_backward(degree, grad_basis, pseudo, kernel_size,
-                          is_open_spline):
+                          is_open_spline):  # pragma: no cover
     grad_pseudo = pseudo.new(pseudo.size())
     func = get_func('{}_basis_backward'.format(get_degree_str(degree)), pseudo)
     func(grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline)
@@ -42,24 +41,24 @@ def spline_weighting_forward(x, weight, basis, weight_index):
     return output
 
 
-# pragma: no cover
-def spline_weighting_backward_input(grad_output, weight, basis, weight_index):
+def spline_weighting_backward_input(grad_output, weight, basis,
+                                    weight_index):  # pragma: no cover
     grad_input = grad_output.new(grad_output.size(0), weight.size(1))
     func = get_func('weighting_backward_input', grad_output)
     func(grad_input, grad_output, weight, basis, weight_index)
     return grad_input
 
 
-# pragma: no cover
-def spline_weighting_backward_basis(grad_output, x, weight, weight_index):
+def spline_weighting_backward_basis(grad_output, x, weight,
+                                    weight_index):  # pragma: no cover
     grad_basis = x.new(weight_index.size())
     func = get_func('weighting_backward_basis', x)
     func(grad_basis, grad_output, x, weight, weight_index)
     return grad_basis
 
 
-# pragma: no cover
-def spline_weighting_backward_weight(grad_output, x, basis, weight_index, K):
+def spline_weighting_backward_weight(grad_output, x, basis, weight_index,
+                                     K):  # pragma: no cover
     grad_weight = x.new(K, x.size(1), grad_output.size(1)).fill_(0)
     func = get_func('weighting_backward_weight', x)
     func(grad_weight, grad_output, x, basis, weight_index)
