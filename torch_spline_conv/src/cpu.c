@@ -42,6 +42,8 @@
       quotient = pow(M + 1, d); \
       for (s = 0; s < S; s++) { \
         k_mod = (s / quotient) % (M + 1); \
+        value = *(pseudo_data + d * pseudo_stride) * (kernel_size_data[d] - M * is_open_spline_data[d]); \
+        value -= floor(value); \
         GRAD_CODE \
         g = value; \
 \

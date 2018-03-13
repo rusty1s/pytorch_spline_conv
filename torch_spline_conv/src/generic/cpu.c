@@ -4,7 +4,7 @@
 
 void spline_(linear_basis_forward)(THTensor *basis, THLongTensor *weight_index, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline, int K) {
   SPLINE_BASIS_FORWARD(1, basis, weight_index, pseudo, kernel_size, is_open_spline, K,
-    value = (1 - k_mod) * (1 - value) + k_mod * value;
+    value = 1 - value - k_mod + 2 * value * k_mod;
   )
 }
 
@@ -18,16 +18,16 @@ void spline_(quadratic_basis_forward)(THTensor *basis, THLongTensor *weight_inde
 
 void spline_(cubic_basis_forward)(THTensor *basis, THLongTensor *weight_index, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline, int K) {
   SPLINE_BASIS_FORWARD(3, basis, weight_index, pseudo, kernel_size, is_open_spline, K,
-    if (k_mod == 0) value = (1 - value) * (1 - value) * (1 - value) / 6.0;
-    else if (k_mod == 1) value = (3 * value * value * value - 6 * value * value + 4) / 6.0;
-    else if (k_mod == 2) value = (-3 * value * value * value + 3 * value * value + 3 * value + 1) / 6.0;
-    else value = value * value * value / 6.0;
+    if (k_mod == 0) { value = (1 - value); value = value * value * value / 6.0; }
+    else if (k_mod == 1) value = (3 * value * value * value - 6 * value * value + 4) / 6;
+    else if (k_mod == 2) value = (-3 * value * value * value + 3 * value * value + 3 * value + 1) / 6;
+    else value = value * value * value / 6;
   )
 }
 
 void spline_(linear_basis_backward)(THTensor *grad_pseudo, THTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
   SPLINE_BASIS_BACKWARD(1, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline,
-    value = (1 - k_mod) * (1 - value) + k_mod * value;
+    value = 1 - value - k_mod + 2 * value * k_mod;
     ,
     value = -1 + k_mod + k_mod;
   )
@@ -39,7 +39,7 @@ void spline_(quadratic_basis_backward)(THTensor *grad_pseudo, THTensor *grad_bas
     else if (k_mod == 1) value = -value * value + value + 0.5;
     else value = 0.5 * value * value;
     ,
-    if (k_mod == 0) value = 2 * value - 1;
+    if (k_mod == 0) value = value - 1;
     else if (k_mod == 1) value = -2 * value + 1;
     else value = value;
   )
@@ -47,9 +47,15 @@ void spline_(quadratic_basis_backward)(THTensor *grad_pseudo, THTensor *grad_bas
 
 void spline_(cubic_basis_backward)(THTensor *grad_pseudo, THTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
   SPLINE_BASIS_BACKWARD(3, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline,
-    value = (1 - k_mod) * (1 - value) + k_mod * value;
+    if (k_mod == 0) { value = (1 - value); value = value * value * value / 6.0; }
+    else if (k_mod == 1) value = (3 * value * value * value - 6 * value * value + 4) / 6;
+    else if (k_mod == 2) value = (-3 * value * value * value + 3 * value * value + 3 * value + 1) / 6;
+    else value = value * value * value / 6;
     ,
-    value = -(1 - k_mod) + k_mod;
+    if (k_mod == 0) value = (-value * value + 2 * value - 1) / 2;
+    else if (k_mod == 1) value = (3 * value * value - 4 * value) / 2;
+    else if (k_mod == 2) value = (-3 * value * value + 2 * value + 1) / 2;
+    else value = value * value / 2;
   )
 }
 
