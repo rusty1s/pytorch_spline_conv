@@ -51,7 +51,7 @@ def spline_weighting_backward_input(grad_output, weight, basis,
 
 def spline_weighting_backward_basis(grad_output, x, weight,
                                     weight_index):  # pragma: no cover
-    grad_basis = x.new(weight_index.size())
+    grad_basis = x.new(weight_index.size()).fill_(0)
     func = get_func('weighting_backward_basis', x)
     func(grad_basis, grad_output, x, weight, weight_index)
     return grad_basis

@@ -3,6 +3,7 @@ import torch
 from torch.autograd import Variable, gradcheck
 from torch_spline_conv import spline_conv
 from torch_spline_conv.functions.spline_weighting import SplineWeighting
+from torch_spline_conv.functions.ffi import implemented_degrees
 
 from .utils import tensors, Tensor
 
@@ -48,15 +49,16 @@ def test_spline_conv_cpu(tensor):
 
 
 def test_spline_weighting_backward_cpu():
+    # for degree in implemented_degrees.keys():
+    degree = list(implemented_degrees.keys())[0]
     kernel_size = torch.LongTensor([5, 5])
     is_open_spline = torch.ByteTensor([1, 1])
-    op = SplineWeighting(kernel_size, is_open_spline, 1)
+    op = SplineWeighting(kernel_size, is_open_spline, degree)
 
-    x = torch.DoubleTensor([[1, 2], [3, 4], [5, 6], [7, 8]])
+    x = torch.DoubleTensor(4, 2).uniform_(-1, 1)
     x = Variable(x, requires_grad=True)
-    pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
-    # pseudo = Variable(torch.DoubleTensor(pseudo), requires_grad=True)
-    pseudo = Variable(torch.DoubleTensor(pseudo))
+    pseudo = torch.DoubleTensor(4, 2).uniform_(0, 1)
+    pseudo = Variable(torch.DoubleTensor(pseudo), requires_grad=True)
     weight = torch.DoubleTensor(25, 2, 4).uniform_(-1, 1)
     weight = Variable(weight, requires_grad=True)
 

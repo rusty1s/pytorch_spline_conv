@@ -4,7 +4,7 @@
 
 #define spline_(NAME) TH_CONCAT_4(spline_, NAME, _, Real)
 
-#define SPLINE_BASIS(M, basis, weight_index, pseudo, kernel_size, is_open_spline, K, CODE) { \
+#define SPLINE_BASIS_FORWARD(M, basis, weight_index, pseudo, kernel_size, is_open_spline, K, CODE) { \
   int64_t *kernel_size_data = kernel_size->storage->data + kernel_size->storageOffset; \
   uint8_t *is_open_spline_data = is_open_spline->storage->data + is_open_spline->storageOffset; \
   int64_t D = THTensor_(size)(pseudo, 1); \
@@ -29,7 +29,7 @@
     }) \
 }
 
-#define SPLINE_WEIGHTING_BACKWARD(TENSOR1, TENSOR2, TENSOR3, weight_index, M_IN, M_OUT, M_S, CODE) { \
+#define SPLINE_WEIGHTING(TENSOR1, TENSOR2, TENSOR3, weight_index, M_IN, M_OUT, M_S, CODE) { \
   int64_t M_in = M_IN; int64_t M_out = M_OUT; int64_t S = M_S; \
   int64_t m_in, m_out, s, w_idx; real value; \
   TH_TENSOR_DIM_APPLY4(real, TENSOR1, real, TENSOR2, real, TENSOR3, int64_t, weight_index, 1, CODE) \
