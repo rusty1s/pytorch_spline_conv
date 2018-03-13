@@ -7,9 +7,9 @@
 #define SPLINE_BASIS_FORWARD(M, basis, weight_index, pseudo, kernel_size, is_open_spline, K, CODE) { \
   int64_t *kernel_size_data = kernel_size->storage->data + kernel_size->storageOffset; \
   uint8_t *is_open_spline_data = is_open_spline->storage->data + is_open_spline->storageOffset; \
-  int64_t D = THTensor_(size)(pseudo, 1); \
   int64_t S = THLongTensor_size(weight_index, 1); \
-  int64_t s, d, k, k_mod, i, offset; real value, b; \
+  int64_t D = THTensor_(size)(pseudo, 1); \
+  int64_t s, d, k, k_mod, i, offset; real b, value; \
 \
   TH_TENSOR_DIM_APPLY3(real, basis, int64_t, weight_index, real, pseudo, 1, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM, \
     for (s = 0; s < S; s++) { \
@@ -27,6 +27,38 @@
       basis_data[s * basis_stride] = b; \
       weight_index_data[s * weight_index_stride] = i; \
     }) \
+}
+
+#define SPLINE_BASIS_BACKWARD(M, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline, EVAL_CODE, GRAD_CODE) { \
+  int64_t *kernel_size_data = kernel_size->storage->data + kernel_size->storageOffset; \
+  uint8_t *is_open_spline_data = is_open_spline->storage->data + is_open_spline->storageOffset; \
+  int64_t D = THTensor_(size)(pseudo, 1); \
+  int64_t S = THTensor_(size)(grad_basis, 1); \
+  int64_t d, s, d_it, quotient, k_mod; real g_out, g, value;\
+\
+  TH_TENSOR_DIM_APPLY3(real, grad_pseudo, real, grad_basis, real, pseudo, 1, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM, \
+    for (d = 0; d < D; d++) { \
+      g_out = 0; \
+      quotient = pow(M + 1, d); \
+      for (s = 0; s < S; s++) { \
+        k_mod = (s / quotient) % (M + 1); \
+        GRAD_CODE \
+        g = value; \
+\
+        for (d_it = 0; d_it < D; d_it++) { \
+          if (d_it != d) { \
+            k_mod = (s / (int64_t) pow(M + 1, d_it)) % (M + 1); \
+            value = *(pseudo_data + d_it * pseudo_stride) * (kernel_size_data[d_it] - M * is_open_spline_data[d_it]); \
+            value -= floor(value); \
+            EVAL_CODE \
+            g *= value; \
+          } \
+        } \
+        g_out += g * *(grad_basis_data + s * grad_basis_stride); \
+      } \
+      grad_pseudo_data[d * grad_pseudo_stride] = g_out * (kernel_size_data[d] - M * is_open_spline_data[d]); \
+    } \
+  ) \
 }
 
 #define SPLINE_WEIGHTING(TENSOR1, TENSOR2, TENSOR3, weight_index, M_IN, M_OUT, M_S, CODE) { \

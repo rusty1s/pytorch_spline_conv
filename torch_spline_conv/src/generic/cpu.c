@@ -10,7 +10,7 @@ void spline_(linear_basis_forward)(THTensor *basis, THLongTensor *weight_index, 
 
 void spline_(quadratic_basis_forward)(THTensor *basis, THLongTensor *weight_index, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline, int K) {
   SPLINE_BASIS_FORWARD(2, basis, weight_index, pseudo, kernel_size, is_open_spline, K,
-    if (k_mod == 0) value = 0.5 * (1 - value) * (1 - value);
+    if (k_mod == 0) value = 0.5 * value * value - value + 0.5;
     else if (k_mod == 1) value = -value * value + value + 0.5;
     else value = 0.5 * value * value;
   )
@@ -26,39 +26,31 @@ void spline_(cubic_basis_forward)(THTensor *basis, THLongTensor *weight_index, T
 }
 
 void spline_(linear_basis_backward)(THTensor *grad_pseudo, THTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
-  int64_t *kernel_size_data = kernel_size->storage->data + kernel_size->storageOffset;
-  uint8_t *is_open_spline_data = is_open_spline->storage->data + is_open_spline->storageOffset;
-  int64_t D = THTensor_(size)(pseudo, 1);
-  int64_t S = THTensor_(size)(grad_basis, 1);
-  int64_t s, d, d_it;
-
-  TH_TENSOR_DIM_APPLY3(real, grad_pseudo, real, grad_basis, real, pseudo, 1, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM,
-    for (d = 0; d < D; d++) {
-      real g_out = 0;
-      int64_t quotient = (int64_t) pow(2, d);
-      for (s = 0; s < S; s++) {
-        int64_t k_mod = (s/quotient) % 2;
-        real a = -(1 - k_mod) + k_mod;
-
-        for (d_it = 0; d_it < D; d_it++) {
-          if (d_it != d) {
-            k_mod = (s/((int64_t) pow(2, d_it))) % 2;
-            real value = *(pseudo_data + d_it * pseudo_stride) * (kernel_size_data[d_it] - is_open_spline_data[d_it]);
-            value -= floor(value);
-            a *= (1 - k_mod) * (1 - value) + k_mod * value;
-          }
-        }
-        g_out += a * *(grad_basis_data + s * grad_basis_stride);
-      }
-      grad_pseudo_data[d * grad_pseudo_stride] = g_out * (kernel_size_data[d] - is_open_spline_data[d]);
-    }
+  SPLINE_BASIS_BACKWARD(1, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline,
+    value = (1 - k_mod) * (1 - value) + k_mod * value;
+    ,
+    value = -1 + k_mod + k_mod;
   )
 }
 
 void spline_(quadratic_basis_backward)(THTensor *grad_pseudo, THTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
+  SPLINE_BASIS_BACKWARD(2, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline,
+    if (k_mod == 0) value = 0.5 * value * value - value + 0.5;
+    else if (k_mod == 1) value = -value * value + value + 0.5;
+    else value = 0.5 * value * value;
+    ,
+    if (k_mod == 0) value = 2 * value - 1;
+    else if (k_mod == 1) value = -2 * value + 1;
+    else value = value;
+  )
 }
 
 void spline_(cubic_basis_backward)(THTensor *grad_pseudo, THTensor *grad_basis, THTensor *pseudo, THLongTensor *kernel_size, THByteTensor *is_open_spline) {
+  SPLINE_BASIS_BACKWARD(3, grad_pseudo, grad_basis, pseudo, kernel_size, is_open_spline,
+    value = (1 - k_mod) * (1 - value) + k_mod * value;
+    ,
+    value = -(1 - k_mod) + k_mod;
+  )
 }
 
 void spline_(weighting_forward)(THTensor *output, THTensor *input, THTensor *weight, THTensor *basis, THLongTensor *weight_index) {
