@@ -1,5 +1,5 @@
 import torch
-from torch.autograd import Function, Variable
+from torch.autograd import Function
 
 from ....utils.cuda import (cuda_num_threads, Stream, load_kernel, kernel_loop,
                             get_blocks)
@@ -98,8 +98,8 @@ const long* index, int num_threads) {
 _edgewise_spline_weighting_backward_kernel_bp2adj = kernel_loop + '''
 extern "C"
 __global__ void edgewise_spline_weighting_backward_kernel(
-const ${Dtype}* grad_output, ${Dtype}* grad_input, ${Dtype}* grad_weight, 
-${Dtype}* grad_amount, const ${Dtype}* input, const ${Dtype}* weight, 
+const ${Dtype}* grad_output, ${Dtype}* grad_input, ${Dtype}* grad_weight,
+${Dtype}* grad_amount, const ${Dtype}* input, const ${Dtype}* weight,
 const ${Dtype}* amount, const long* index, int num_threads) {
 
   CUDA_KERNEL_LOOP(idx, num_threads) {
@@ -165,7 +165,11 @@ def get_weighting_forward_kernel(M_in, M_out, k_max, dtype='float'):
     return f_fw
 
 
-def get_weighting_backward_kernel(M_in, M_out, k_max, K, bp_to_adj=False,
+def get_weighting_backward_kernel(M_in,
+                                  M_out,
+                                  k_max,
+                                  K,
+                                  bp_to_adj=False,
                                   dtype='float'):
     cuda_tensor = torch.FloatTensor([1]).cuda()
     if bp_to_adj:
@@ -212,7 +216,7 @@ const long* kernel_size, const long* is_open_spline, int num_threads) {
       value = input[e_idx * ${dim} + d_idx];
 
       value *= kernel_size[d_idx] - is_open_spline[d_idx];
-        
+
       frac = value - floor(value);
 
       a *= (1 - k_idx_mod) * (1 - frac) + k_idx_mod * frac;
@@ -330,8 +334,8 @@ const long* kernel_size, const long* is_open_spline, int num_threads) {
 _spline_kernel_linear_backward = kernel_loop + '''
 extern "C"
 __global__ void spline_kernel(
-const ${Dtype}* input, const ${Dtype}* grad_amount, ${Dtype}* amount, 
-${Dtype}* grad_adj, const long* kernel_size, const long* is_open_spline, 
+const ${Dtype}* input, const ${Dtype}* grad_amount, ${Dtype}* amount,
+${Dtype}* grad_adj, const long* kernel_size, const long* is_open_spline,
 int num_threads) {
 
   CUDA_KERNEL_LOOP(idx, num_threads) {
@@ -343,22 +347,19 @@ int num_threads) {
     ${Dtype} value;
     ${Dtype} frac;
     ${Dtype} grad_out = 0.0;
-    
+
     int quotient = (int)pow(2.0,(double)d_idx);
-    
+
     value = input[e_idx * ${dim} + d_idx];
     value *= kernel_size[d_idx] - is_open_spline[d_idx];
     frac = value - floor(value);
-    
+
     for (int k_idx = 0; k_idx < ${k_max}; k_idx++) {
-      
       k_idx_mod = (k_idx/quotient) % 2;
       int a_idx = e_idx*${k_max} + k_idx;
 
       ${Dtype} residual = - (1 - k_idx_mod) * (1 - frac) + k_idx_mod * frac;
       grad_out += grad_amount[a_idx]*amount[a_idx]/residual;
-      
-   
     }
     grad_adj[idx] = grad_out*(kernel_size[d_idx] - is_open_spline[d_idx]);
   }
@@ -375,18 +376,18 @@ int num_threads) {
           frac = value - floor(value);
           a *= (1 - k_idx_mod) * (1 - frac) + k_idx_mod * frac;
         }
-      } 
-      grad_out += a*grad_amount[a_idx];     
+      }
+      grad_out += a*grad_amount[a_idx];
 */
 
 '''
 
-# This is the inefficient version with gradient computation without using amount
+# This is the inefficient version with gradient computation without amount.
 _spline_kernel_linear_backward2 = kernel_loop + '''
 extern "C"
 __global__ void spline_kernel(
-const ${Dtype}* input, const ${Dtype}* grad_amount, ${Dtype}* amount, 
-${Dtype}* grad_adj, const long* kernel_size, const long* is_open_spline, 
+const ${Dtype}* input, const ${Dtype}* grad_amount, ${Dtype}* amount,
+${Dtype}* grad_adj, const long* kernel_size, const long* is_open_spline,
 int num_threads) {
 
   CUDA_KERNEL_LOOP(idx, num_threads) {
@@ -399,11 +400,11 @@ int num_threads) {
     ${Dtype} frac;
     ${Dtype} grad_out = 0.0;
     int quotient = (int)pow(2.0,(double)d_idx);
-          
+
     for (int k_idx = 0; k_idx < ${k_max}; k_idx++) {
       k_idx_mod = (k_idx/quotient) % 2;
       int a_idx = e_idx*${k_max} + k_idx;
-      
+
       ${Dtype} a = -(1 - k_idx_mod) + k_idx_mod;
       for (int d_it = 0; d_it < ${dim}; d_it++) {
         if(d_it!=d_idx)
@@ -415,8 +416,8 @@ int num_threads) {
           frac = value - floor(value);
           a *= (1 - k_idx_mod) * (1 - frac) + k_idx_mod * frac;
         }
-      } 
-      grad_out += a*grad_amount[a_idx];    
+      }
+      grad_out += a*grad_amount[a_idx];
 
     }
     grad_adj[idx] = grad_out*(kernel_size[d_idx] - is_open_spline[d_idx]);
@@ -468,10 +469,17 @@ def get_basis_backward_kernel(k_max, K, dim, degree, dtype='float'):
 
 
 class SplineConvGPU(Function):
-    def __init__(self, kernel_size, is_open_spline, K, degree,
-                               basis_kernel, basis_backward_kernel,
-                               weighting_kernel, weighting_backward_kernel,
-                               bp_to_adj=False, adj_values=None):
+    def __init__(self,
+                 kernel_size,
+                 is_open_spline,
+                 K,
+                 degree,
+                 basis_kernel,
+                 basis_backward_kernel,
+                 weighting_kernel,
+                 weighting_backward_kernel,
+                 bp_to_adj=False,
+                 adj_values=None):
         super(SplineConvGPU, self).__init__()
         self.degree = degree
         self.f_weighting_fw = weighting_kernel
@@ -496,12 +504,12 @@ class SplineConvGPU(Function):
 
         if self.bp_to_adj:
             self.save_for_backward(input, weight, adj_values)
-            #adj_values = torch.clamp(adj_values,min=0.0,max=1.0)
+            # adj_values = torch.clamp(adj_values,min=0.0,max=1.0)
         else:
             self.save_for_backward(input, weight)
 
         num_edges, dim = adj_values.size()
-        k_max = (self.degree+1) ** dim
+        k_max = (self.degree + 1)**dim
         amount = adj_values.new(num_edges, k_max)
         index = adj_values.new(num_edges, k_max).long()
         num_threads = amount.numel()
@@ -514,8 +522,7 @@ class SplineConvGPU(Function):
                     amount.data_ptr(),
                     index.data_ptr(),
                     self.kernel_size.data_ptr(),
-                    self.is_open_spline.data_ptr(),
-                    num_threads
+                    self.is_open_spline.data_ptr(), num_threads
                 ],
                 stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
 
@@ -532,8 +539,7 @@ class SplineConvGPU(Function):
                     weight.data_ptr(),
                     output.data_ptr(),
                     amount.data_ptr(),
-                    index.data_ptr(),
-                    num_threads
+                    index.data_ptr(), num_threads
                 ],
                 stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
 
@@ -552,7 +558,7 @@ class SplineConvGPU(Function):
                 print('Backward to u for degree>1 not implemented!')
                 raise NotImplementedError
             input, weight, adj_values = self.saved_tensors
-            #adj_values = torch.clamp(adj_values,min=0.0,max=1.0)
+            # adj_values = torch.clamp(adj_values,min=0.0,max=1.0)
             amount = self.amount
             index = self.index
             grad_amount = grad_output.new(amount.size(0),
@@ -573,8 +579,8 @@ class SplineConvGPU(Function):
                     ],
                     stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
 
-            grad_adj = grad_amount.new(grad_amount.size(0),
-                                       self.kernel_size.size(0)).fill_(0)
+            grad_adj = grad_amount.new(
+                grad_amount.size(0), self.kernel_size.size(0)).fill_(0)
 
             num_threads = grad_adj.numel()
 
@@ -588,15 +594,9 @@ class SplineConvGPU(Function):
                         amount.data_ptr(),
                         grad_adj.data_ptr(),
                         self.kernel_size.data_ptr(),
-                        self.is_open_spline.data_ptr(),
-                        num_threads
+                        self.is_open_spline.data_ptr(), num_threads
                     ],
                     stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
-
-            #print('grad_input:',grad_input.min(), grad_input.max())
-            #print('grad_weight:',grad_weight[:,:,-1].min(), grad_weight[:,:,-1].max())
-            #print('grad_amount:',grad_amount.min(), grad_amount.max())
-            #print('grad_adj:',grad_adj.min(), grad_adj.max())
 
             return grad_input, grad_weight, grad_adj
 
@@ -622,6 +622,5 @@ class SplineConvGPU(Function):
                         index.data_ptr(), num_threads
                     ],
                     stream=Stream(ptr=torch.cuda.current_stream().cuda_stream))
-
 
             return grad_input, grad_weight, None
