@@ -14,4 +14,17 @@ void spline_(cubic_basis_forward)(THCState *state, THCTensor *basis, THCudaLongT
   SPLINE_BASIS_FORWARD(cubicBasisForwardKernel, basis, weight_index, pseudo, kernel_size, is_open_spline, K)
 }
 
+void spline_(weighting_forward)(THCState *state, THCTensor *output, THCTensor *input, THCTensor *weight, THCTensor *basis, THCudaLongTensor *weight_index) {
+  THCAssertSameGPU(THCTensor_(checkGPU)(state, 4, input, weight, basis, weight_index));
+
+  const int n = THCTensor_(nElement)(state, output);
+  TensorInfo<real> outputInfo = thc_(getTensorInfo)(state, output);
+  TensorInfo<real> inputInfo = thc_(getTensorInfo)(state, input);
+  TensorInfo<real> weightInfo = thc_(getTensorInfo)(state, weight);
+  TensorInfo<real> basisInfo = thc_(getTensorInfo)(state, basis);
+  TensorInfo<int64_t> weightIndexInfo = thc_getTensorInfo_Long(state, weight_index);
+
+  KERNEL_RUN(weightingForwardKernel, n, outputInfo, inputInfo, weightInfo, basisInfo, weightIndexInfo)
+}
+
 #endif

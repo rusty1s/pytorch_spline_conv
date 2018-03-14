@@ -24,7 +24,14 @@ struct TensorInfo {
 #define KERNEL_LOOP(I, N) \
   for (int I = blockIdx.x * blockDim.x + threadIdx.x; I < N; i += blockDim.x * gridDim.x)
 
-#define KERNEL_RUN(NAME, D, N, ...) { \
+#define KERNEL_RUN(NAME, N, ...) { \
+  int grid = GET_BLOCKS(N); \
+  cudaStream_t stream = THCState_getCurrentStream(state); \
+  NAME<real><<<grid, NUM_THREADS, 0, stream>>>(__VA_ARGS__, N); \
+  THCudaCheck(cudaGetLastError()); \
+}
+
+#define KERNEL_D_RUN(NAME, D, N, ...) { \
   int grid = GET_BLOCKS(N); \
   cudaStream_t stream = THCState_getCurrentStream(state); \
   switch (D) { \

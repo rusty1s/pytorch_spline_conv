@@ -8,7 +8,7 @@
   int64_t *kernelSizeData = THCudaLongTensor_data(state, kernel_size); \
   uint8_t *isOpenSplineData = THCudaByteTensor_data(state, is_open_spline); \
 \
-  KERNEL_RUN(NAME, pseudoInfo.size[1], n, basisInfo, weightIndexInfo, pseudoInfo, kernelSizeData, isOpenSplineData, K) \
+  KERNEL_D_RUN(NAME, pseudoInfo.size[1], n, basisInfo, weightIndexInfo, pseudoInfo, kernelSizeData, isOpenSplineData, K) \
 }
 
 template<typename Real, int M, int D>
