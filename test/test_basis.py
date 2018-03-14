@@ -30,3 +30,17 @@ def test_spline_basis_cpu(tensor, i):
 
     assert basis == expected_basis.view(-1).tolist()
     assert index.tolist() == expected_index.tolist()
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
+@pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
+def test_spline_basis_gpu(tensor, i):
+    degree = data[i].get('degree')
+    pseudo = Tensor(tensor, data[i]['pseudo']).cuda()
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
+    kernel_size = torch.cuda.LongTensor(data[i]['kernel_size'])
+    is_open_spline = torch.cuda.ByteTensor(data[i]['is_open_spline'])
+    K = kernel_size.prod()
+
+    basis, index = spline_basis_forward(degree, pseudo, kernel_size,
+                                        is_open_spline, K)
