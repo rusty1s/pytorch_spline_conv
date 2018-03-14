@@ -47,14 +47,19 @@
         GRAD_CODE \
         g = value; \
 \
-        for (d_it = 0; d_it < D; d_it++) { \
-          if (d_it != d) { \
-            k_mod = (s / (int64_t) pow(M + 1, d_it)) % (M + 1); \
-            value = *(pseudo_data + d_it * pseudo_stride) * (kernel_size_data[d_it] - M * is_open_spline_data[d_it]); \
-            value -= floor(value); \
-            EVAL_CODE \
-            g *= value; \
-          } \
+        for (d_it = 0; d_it < d; d_it++) { \
+          k_mod = (s / (int64_t) pow(M + 1, d_it)) % (M + 1); \
+          value = *(pseudo_data + d_it * pseudo_stride) * (kernel_size_data[d_it] - M * is_open_spline_data[d_it]); \
+          value -= floor(value); \
+          EVAL_CODE \
+          g *= value; \
+        } \
+        for (d_it = d + 1; d_it < D; d_it++) { \
+          k_mod = (s / (int64_t) pow(M + 1, d_it)) % (M + 1); \
+          value = *(pseudo_data + d_it * pseudo_stride) * (kernel_size_data[d_it] - M * is_open_spline_data[d_it]); \
+          value -= floor(value); \
+          EVAL_CODE \
+          g *= value; \
         } \
         g_out += g * *(grad_basis_data + s * grad_basis_stride); \
       } \
