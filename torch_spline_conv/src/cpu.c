@@ -9,23 +9,23 @@
   uint8_t *is_open_spline_data = is_open_spline->storage->data + is_open_spline->storageOffset; \
   int64_t S = THLongTensor_size(weight_index, 1); \
   int64_t D = THTensor_(size)(pseudo, 1); \
-  int64_t s, d, k, k_mod, i, offset; real b, value; \
+  int64_t s, d, k, k_mod, wi, offset; real b, value; \
 \
   TH_TENSOR_DIM_APPLY3(real, basis, int64_t, weight_index, real, pseudo, 1, TH_TENSOR_DIM_APPLY3_SIZE_EQ_EXCEPT_DIM, \
     for (s = 0; s < S; s++) { \
-      b = 1; i = 0; k = s; offset = K; \
+      b = 1; wi = 0; k = s; offset = K; \
       for (d = 0; d < D; d++) { \
         offset /= kernel_size_data[d]; \
         k_mod = k % (M + 1); \
         k /= M + 1; \
         value = *(pseudo_data + d * pseudo_stride) * (kernel_size_data[d] - M * is_open_spline_data[d]); \
-        i += (((int64_t) value + k_mod) % kernel_size_data[d]) * offset; \
+        wi += (((int64_t) value + k_mod) % kernel_size_data[d]) * offset; \
         value -= floor(value); \
         CODE \
         b *= value; \
       } \
       basis_data[s * basis_stride] = b; \
-      weight_index_data[s * weight_index_stride] = i; \
+      weight_index_data[s * weight_index_stride] = wi; \
     }) \
 }
 
