@@ -2,6 +2,7 @@
 
 echo "Compiling kernel..."
 
+if [ -z "$1" ]; then TORCH=$(python -c "import os; import torch; print(os.path.dirname(torch.__file__))"); else TORCH="$1"; fi
 SRC_DIR=torch_spline_conv/kernel
 BUILD_DIR=torch_spline_conv/build
 
