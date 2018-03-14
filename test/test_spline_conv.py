@@ -55,10 +55,10 @@ def test_spline_weighting_backward_cpu():
         op = SplineWeighting(kernel_size, is_open_spline, degree)
 
         x = torch.DoubleTensor(16, 2).uniform_(-1, 1)
-        x = Variable(x)
+        x = Variable(x, requires_grad=True)
         pseudo = torch.DoubleTensor(16, 3).uniform_(0, 1)
         pseudo = Variable(torch.DoubleTensor(pseudo), requires_grad=True)
         weight = torch.DoubleTensor(25, 2, 4).uniform_(-1, 1)
-        weight = Variable(weight)
+        weight = Variable(weight, requires_grad=True)
 
         assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True
