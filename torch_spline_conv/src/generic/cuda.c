@@ -18,4 +18,12 @@ void spline_(weighting_forward)(THCTensor *output, THCTensor *input, THCTensor *
   spline_kernel_(weighting_forward)(state, output, input, weight, basis, weight_index);
 }
 
+void spline_(weighting_backward_input)(THCTensor *grad_input, THCTensor *grad_output, THCTensor *weight, THCTensor *basis, THCudaLongTensor *weight_index) {
+  spline_kernel_(weighting_backward_input)(state, grad_input, grad_output, weight, basis, weight_index);
+}
+
+void spline_(weighting_backward_weight)(THCTensor *grad_weight, THCTensor *grad_output, THCTensor *input, THCTensor *basis, THCudaLongTensor *weight_index) {
+  spline_kernel_(weighting_backward_weight)(state, grad_weight, grad_output, input, basis, weight_index);
+}
+
 #endif
