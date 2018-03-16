@@ -60,7 +60,7 @@ __global__ void weightingBackwardWeightKernel(TensorInfo<Real> gradWeight, Tenso
       b = basis.data[edgeOffset * S + s];
       weightOffset = weightIndex.data[edgeOffset * S + s] * M_in * M_out + m_out;
       for (m_in = 0; m_in < M_in; m_in++) {
-        gradWeight.data[weightOffset + m_in * M_out] += b * value * input.data[inputOffset + m_in * input.stride[1]];
+        atomicAdd(&gradWeight.data[weightOffset + m_in * M_out], b * value * input.data[inputOffset + m_in * input.stride[1]]);
       }
     }
   }
