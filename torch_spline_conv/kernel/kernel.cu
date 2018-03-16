@@ -17,13 +17,13 @@ __global__ void weightingForwardKernel(TensorInfo<Real> output, TensorInfo<Real>
   KERNEL_LOOP(i, n) {
     int64_t edgeOffset = i / output.size[1], inputOffset = edgeOffset * input.stride[0];
     int64_t s, S = basis.size[1], m_in, M_in = input.size[1], m_out = i % output.size[1], M_out = output.size[1], weightOffset;
-    Real b, value = 0;
+    Real value = 0;
     for (s = 0; s < S; s++) {
-      b = basis.data[edgeOffset * S + s];
       weightOffset = weightIndex.data[edgeOffset * S + s] * M_in * M_out + m_out;
       for (m_in = 0; m_in < M_in; m_in++) {
-        value += b * weight.data[weightOffset + m_in * M_out] * input.data[inputOffset + m_in * input.stride[1]];
+        value += weight.data[weightOffset + m_in * M_out] * input.data[inputOffset + m_in * input.stride[1]];
       }
+      value *= basis.data[edgeOffset * S + s];
     }
     output.data[i] = value;
   }
@@ -32,15 +32,15 @@ __global__ void weightingForwardKernel(TensorInfo<Real> output, TensorInfo<Real>
 template<typename Real>
 __global__ void weightingBackwardInputKernel(TensorInfo<Real> gradInput, TensorInfo<Real> gradOutput, TensorInfo<Real> weight, TensorInfo<Real> basis, TensorInfo<int64_t> weightIndex, int n) {
   KERNEL_LOOP(i, n) {
-    int64_t edgeOffset = i / gradInput.size[1], gradOutputOffset = edgeOffset * M_out;
+    int64_t edgeOffset = i / gradInput.size[1], gradOutputOffset = edgeOffset * gradOutput.stride[0];
     int64_t s, S = basis.size[1], m_in = i % gradInput.size[1], M_in = gradInput.size[1], m_out, M_out = gradOutput.size[1], weightOffset;
-    Real b, value = 0;
+    Real value = 0;
     for (s = 0; s < S; s++) {
-      b = basis.data[edgeOffset * S + s];
-      weightOffset = weightIndex.data[edgeOffset * S + s] * M_in * M_out;
+      weightOffset = weightIndex.data[edgeOffset * S + s] * M_in * M_out + m_in;
       for (m_out = 0; m_out < M_out; m_out++) {
-        value += b * weight.data[weightOffset + m_in * M_out + m_out] * gradOutput.data[gradOutputOffset + m_out];
+        value += weight.data[weightOffset + M_in * m_out] * gradOutput.data[gradOutputOffset + m_out];
       }
+      value *= basis.data[edgeOffset * S + s];
     }
     gradInput.data[i] = value;
   }
@@ -60,7 +60,7 @@ __global__ void weightingBackwardWeightKernel(TensorInfo<Real> gradWeight, Tenso
       b = basis.data[edgeOffset * S + s];
       weightOffset = weightIndex.data[edgeOffset * S + s] * M_in * M_out + m_out;
       for (m_in = 0; m_in < M_in; m_in++) {
-        atomicAdd(&gradWeight.data[weightOffset + m_in * M_out], b * value * input.data[inputOffset + m_in * input.stride[1]]);
+        gradWeight.data[weightOffset + m_in * M_out] += b * value * input.data[inputOffset + m_in * input.stride[1]];
       }
     }
   }
