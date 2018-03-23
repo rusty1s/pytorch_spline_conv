@@ -69,7 +69,7 @@ def test_spline_weighting_backward_cpu():
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor', tensors)
-def test_spline_conv_gpu(tensor):
+def test_spline_conv_gpu(tensor):  # pragma: no cover
     x = Tensor(tensor, [[9, 10], [1, 2], [3, 4], [5, 6], [7, 8]])
     edge_index = torch.LongTensor([[0, 0, 0, 0], [1, 2, 3, 4]])
     pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
@@ -92,9 +92,17 @@ def test_spline_conv_gpu(tensor):
                          is_open_spline, 1, root_weight, bias)
     assert output.cpu().tolist() == expected_output.tolist()
 
+    x, weight, pseudo = Variable(x), Variable(weight), Variable(pseudo)
+    root_weight, bias = Variable(root_weight), Variable(bias)
+
+    output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
+                         is_open_spline, 1, root_weight, bias)
+
+    assert output.data.cpu().tolist() == expected_output.tolist()
+
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
-def test_spline_weighting_backward_gpu():
+def test_spline_weighting_backward_gpu():  # pragma: no cover
     for degree in implemented_degrees.keys():
         kernel_size = torch.cuda.LongTensor([5, 5, 5])
         is_open_spline = torch.cuda.ByteTensor([1, 0, 1])

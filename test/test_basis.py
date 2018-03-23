@@ -34,7 +34,7 @@ def test_spline_basis_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(data))))
-def test_spline_basis_gpu(tensor, i):
+def test_spline_basis_gpu(tensor, i):  # pragma: no cover
     degree = data[i].get('degree')
     pseudo = Tensor(tensor, data[i]['pseudo']).cuda()
     pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
