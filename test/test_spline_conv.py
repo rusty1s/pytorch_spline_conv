@@ -93,6 +93,7 @@ def test_spline_conv_gpu(tensor):
     assert output.cpu().tolist() == expected_output.tolist()
 
 
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 def test_spline_weighting_backward_gpu():
     for degree in implemented_degrees.keys():
         kernel_size = torch.cuda.LongTensor([5, 5, 5])
