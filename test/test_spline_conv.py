@@ -31,21 +31,24 @@ def test_spline_conv_cpu(tensor):
     ]
 
     expected_output = [
-        [1 + 12.5 * 9 + 13 * 10 + sum(edgewise_output) / 4],
-        [1 + 12.5 * 1 + 13 * 2],
-        [1 + 12.5 * 3 + 13 * 4],
-        [1 + 12.5 * 5 + 13 * 6],
-        [1 + 12.5 * 7 + 13 * 8],
+        (1 + 12.5 * 9 + 13 * 10 + sum(edgewise_output)) / 5,
+        1 + 12.5 * 1 + 13 * 2,
+        1 + 12.5 * 3 + 13 * 4,
+        1 + 12.5 * 5 + 13 * 6,
+        1 + 12.5 * 7 + 13 * 8,
     ]
 
-    assert output.tolist() == expected_output
+    output = [pytest.approx(x, 0.01) for x in output.view(-1).tolist()]
+    assert output == expected_output
 
     x, weight, pseudo = Variable(x), Variable(weight), Variable(pseudo)
     root_weight, bias = Variable(root_weight), Variable(bias)
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                          is_open_spline, root_weight, 1, bias)
-    assert output.data.tolist() == expected_output
+
+    output = [pytest.approx(x, 0.01) for x in output.data.view(-1).tolist()]
+    assert output == expected_output
 
 
 def test_spline_weighting_backward_cpu():
@@ -57,7 +60,7 @@ def test_spline_weighting_backward_cpu():
         x = torch.DoubleTensor(16, 2).uniform_(-1, 1)
         x = Variable(x, requires_grad=True)
         pseudo = torch.DoubleTensor(16, 3).uniform_(0, 1)
-        pseudo = Variable(torch.DoubleTensor(pseudo), requires_grad=True)
+        pseudo = Variable(pseudo, requires_grad=True)
         weight = torch.DoubleTensor(25, 2, 4).uniform_(-1, 1)
         weight = Variable(weight, requires_grad=True)
 
@@ -88,3 +91,19 @@ def test_spline_conv_gpu(tensor):
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                          is_open_spline, root_weight, 1, bias)
     assert output.cpu().tolist() == expected_output.tolist()
+
+
+def test_spline_weighting_backward_gpu():
+    for degree in implemented_degrees.keys():
+        kernel_size = torch.cuda.LongTensor([5, 5, 5])
+        is_open_spline = torch.cuda.ByteTensor([1, 0, 1])
+        op = SplineWeighting(kernel_size, is_open_spline, degree)
+
+        x = torch.cuda.DoubleTensor(16, 2).uniform_(-1, 1)
+        x = Variable(x, requires_grad=True)
+        pseudo = torch.cuda.DoubleTensor(16, 3).uniform_(0, 1)
+        pseudo = Variable(pseudo, requires_grad=False)  # TODO
+        weight = torch.cuda.DoubleTensor(25, 2, 4).uniform_(-1, 1)
+        weight = Variable(weight, requires_grad=True)
+
+        assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True

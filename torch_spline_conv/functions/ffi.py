@@ -46,10 +46,9 @@ def spline_weighting_backward_input(grad_output, weight, basis,
     grad_input = grad_output.new(grad_output.size(0), weight.size(1))
     func = get_func('weighting_backward_input', grad_output)
 
-    # Transpose for coalesced memory access.
+    # Transpose for coalesced memory access on GPU.
     weight = weight.transpose(1, 2).contiguous()
     func(grad_input, grad_output, weight, basis, weight_index)
-    weight = weight.transpose(1, 2).contiguous()
 
     return grad_input
 

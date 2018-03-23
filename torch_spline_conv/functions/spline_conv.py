@@ -19,15 +19,18 @@ def spline_conv(x,
     output = basic_spline_conv(x, edge_index, pseudo, weight, kernel_size,
                                is_open_spline, degree)
 
-    # Normalize output by node degree.
+    # Compute degree.
     degree = x.new() if torch.is_tensor(x) else x.data.new()
     degree = node_degree(edge_index, x.size(0), out=degree)
-    degree = degree.unsqueeze(-1).clamp_(min=1)
-    output /= degree if torch.is_tensor(x) else Var(degree)
 
     # Weight root node separately (if wished).
     if root_weight is not None:
         output += torch.mm(x, root_weight)
+        degree += 1
+
+    # Normalize output by node degree.
+    degree = degree.unsqueeze(-1).clamp_(min=1)
+    output /= degree if torch.is_tensor(x) else Var(degree)
 
     # Add bias (if wished).
     if bias is not None:
