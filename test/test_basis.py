@@ -44,10 +44,10 @@ def test_spline_basis_gpu(tensor, i):
     expected_basis = Tensor(tensor, data[i]['expected_basis'])
     expected_index = torch.LongTensor(data[i]['expected_index'])
 
-    if i == 0:
-        basis, index = spline_basis_forward(degree, pseudo, kernel_size,
-                                            is_open_spline, K)
-        basis, index = basis.cpu(), index.cpu()
-        basis = [pytest.approx(x, 0.01) for x in basis.view(-1).tolist()]
-        assert basis == expected_basis.view(-1).tolist()
-        assert index.tolist() == expected_index.tolist()
+    basis, index = spline_basis_forward(degree, pseudo, kernel_size,
+                                        is_open_spline, K)
+    basis, index = basis.cpu(), index.cpu()
+    basis = [pytest.approx(x, 0.01) for x in basis.view(-1).tolist()]
+
+    assert basis == expected_basis.view(-1).tolist()
+    assert index.tolist() == expected_index.tolist()
