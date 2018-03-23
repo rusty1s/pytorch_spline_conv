@@ -26,7 +26,7 @@ def test_spline_basis_cpu(tensor, i):
 
     basis, index = spline_basis_forward(degree, pseudo, kernel_size,
                                         is_open_spline, K)
-    basis = [pytest.approx(x, 0.01) for x in basis.view(-1).tolist()]
+    basis = [pytest.approx(b, 0.01) for b in basis.view(-1).tolist()]
 
     assert basis == expected_basis.view(-1).tolist()
     assert index.tolist() == expected_index.tolist()
@@ -47,7 +47,7 @@ def test_spline_basis_gpu(tensor, i):
     basis, index = spline_basis_forward(degree, pseudo, kernel_size,
                                         is_open_spline, K)
     basis, index = basis.cpu(), index.cpu()
-    basis = [pytest.approx(x, 0.01) for x in basis.view(-1).tolist()]
+    basis = [pytest.approx(b, 0.01) for b in basis.view(-1).tolist()]
 
     assert basis == expected_basis.view(-1).tolist()
     assert index.tolist() == expected_index.tolist()

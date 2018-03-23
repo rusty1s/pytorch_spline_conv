@@ -38,7 +38,7 @@ def test_spline_conv_cpu(tensor):
         1 + 12.5 * 7 + 13 * 8,
     ]
 
-    output = [pytest.approx(x, 0.01) for x in output.view(-1).tolist()]
+    output = [pytest.approx(o, 0.01) for o in output.view(-1).tolist()]
     assert output == expected_output
 
     x, weight, pseudo = Variable(x), Variable(weight), Variable(pseudo)
@@ -47,7 +47,7 @@ def test_spline_conv_cpu(tensor):
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                          is_open_spline, 1, root_weight, bias)
 
-    output = [pytest.approx(x, 0.01) for x in output.data.view(-1).tolist()]
+    output = [pytest.approx(o, 0.01) for o in output.data.view(-1).tolist()]
     assert output == expected_output
 
 
