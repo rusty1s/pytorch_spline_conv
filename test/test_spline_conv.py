@@ -31,15 +31,14 @@ def test_spline_conv_cpu(tensor):
     ]
 
     expected_output = [
-        (1 + 12.5 * 9 + 13 * 10 + sum(edgewise_output)) / 5,
-        1 + 12.5 * 1 + 13 * 2,
-        1 + 12.5 * 3 + 13 * 4,
-        1 + 12.5 * 5 + 13 * 6,
-        1 + 12.5 * 7 + 13 * 8,
+        [1 + 12.5 * 9 + 13 * 10 + sum(edgewise_output) / 4],
+        [1 + 12.5 * 1 + 13 * 2],
+        [1 + 12.5 * 3 + 13 * 4],
+        [1 + 12.5 * 5 + 13 * 6],
+        [1 + 12.5 * 7 + 13 * 8],
     ]
 
-    output = [pytest.approx(o, 0.01) for o in output.view(-1).tolist()]
-    assert output == expected_output
+    assert output.tolist() == expected_output
 
     x, weight, pseudo = Variable(x), Variable(weight), Variable(pseudo)
     root_weight, bias = Variable(root_weight), Variable(bias)
@@ -47,8 +46,7 @@ def test_spline_conv_cpu(tensor):
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                          is_open_spline, 1, root_weight, bias)
 
-    output = [pytest.approx(o, 0.01) for o in output.data.view(-1).tolist()]
-    assert output == expected_output
+    assert output.data.tolist() == expected_output
 
 
 def test_spline_weighting_backward_cpu():
