@@ -11,8 +11,8 @@ def spline_conv(x,
                 weight,
                 kernel_size,
                 is_open_spline,
-                root_weight=None,
                 degree=1,
+                root_weight=None,
                 bias=None):
 
     # Convolve over each node.

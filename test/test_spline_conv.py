@@ -21,7 +21,7 @@ def test_spline_conv_cpu(tensor):
     bias = Tensor(tensor, [1])
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, root_weight, 1, bias)
+                         is_open_spline, 1, root_weight, bias)
 
     edgewise_output = [
         1 * 0.25 * (0.5 + 1.5 + 4.5 + 5.5) + 2 * 0.25 * (1 + 2 + 5 + 6),
@@ -45,7 +45,7 @@ def test_spline_conv_cpu(tensor):
     root_weight, bias = Variable(root_weight), Variable(bias)
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, root_weight, 1, bias)
+                         is_open_spline, 1, root_weight, bias)
 
     output = [pytest.approx(x, 0.01) for x in output.data.view(-1).tolist()]
     assert output == expected_output
@@ -81,7 +81,7 @@ def test_spline_conv_gpu(tensor):
     bias = Tensor(tensor, [1])
 
     expected_output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                                  is_open_spline, root_weight, 1, bias)
+                                  is_open_spline, 1, root_weight, bias)
 
     x, edge_index, pseudo = x.cuda(), edge_index.cuda(), pseudo.cuda()
     weight, kernel_size = weight.cuda(), kernel_size.cuda()
@@ -89,7 +89,7 @@ def test_spline_conv_gpu(tensor):
     bias = bias.cuda()
 
     output = spline_conv(x, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, root_weight, 1, bias)
+                         is_open_spline, 1, root_weight, bias)
     assert output.cpu().tolist() == expected_output.tolist()
 
 
