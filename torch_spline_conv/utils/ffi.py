@@ -21,3 +21,10 @@ def basis_forward(degree, basis, weight_index, pseudo, kernel_size,
     name = '{}BasisForward'.format(get_degree_str(degree))
     func = get_func(name, basis.is_cuda, basis)
     func(basis, weight_index, pseudo, kernel_size, is_open_spline)
+
+
+def basis_backward(degree, self, grad_basis, pseudo, kernel_size,
+                   is_open_spline):
+    name = '{}BasisBackward'.format(get_degree_str(degree))
+    func = get_func(name, self.is_cuda, self)
+    func(self, grad_basis, pseudo, kernel_size, is_open_spline)

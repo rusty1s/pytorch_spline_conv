@@ -40,4 +40,16 @@ void THTensor_(cubicBasisForward)(THTensor *basis, THLongTensor *weightIndex, TH
   )
 }
 
+void THTensor_(linearBasisBackward)(THTensor *self, THTensor *gradBasis, THTensor *pseudo,
+                                    THLongTensor *kernelSize, THByteTensor *isOpenSpline) {
+}
+
+void THTensor_(quadraticBasisBackward)(THTensor *self, THTensor *gradBasis, THTensor *pseudo,
+                                       THLongTensor *kernelSize, THByteTensor *isOpenSpline) {
+}
+
+void THTensor_(cubicBasisBackward)(THTensor *self, THTensor *gradBasis, THTensor *pseudo,
+                                   THLongTensor *kernelSize, THByteTensor *isOpenSpline) {
+}
+
 #endif // TH_GENERIC_FILE

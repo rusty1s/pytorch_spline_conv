@@ -20,4 +20,19 @@ void THCCTensor_(cubicBasisForward)(THCTensor *basis, THCudaLongTensor *weightIn
   THCTensor_(cubicBasisForward)(state, basis, weightIndex, pseudo, kernelSize, isOpenSpline);
 }
 
+void THCCTensor_(linearBasisBackward)(THCTensor *self, THCTensor *gradBasis, THCTensor *pseudo,
+                                      THCudaLongTensor *kernelSize,
+                                      THCudaByteTensor *isOpenSpline) {
+}
+
+void THCCTensor_(quadraticBasisBackward)(THCTensor *self, THCTensor *gradBasis, THCTensor *pseudo,
+                                         THCudaLongTensor *kernelSize,
+                                         THCudaByteTensor *isOpenSpline) {
+}
+
+void THCCTensor_(cubicBasisBackward)(THCTensor *self, THCTensor *gradBasis, THCTensor *pseudo,
+                                     THCudaLongTensor *kernelSize,
+                                     THCudaByteTensor *isOpenSpline) {
+}
+
 #endif  // THC_GENERIC_FILE
