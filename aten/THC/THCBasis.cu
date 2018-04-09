@@ -46,16 +46,72 @@
 }
 
 template<typename T>
-__global__ void linearBasisForwardKernel(TensorInfo<T> basis, TensorInfo<int64_t>weightIndex,
-                                         TensorInfo<T> pseudo, int64_t *kernelSize,
-                                         uint8_t *isOpenSpline, ptrdiff_t n) {
-  THC_TENSOR_BASIS_FORWARD_KERNEL(1, basis, weightIndex, pseudo, kernelSize, isOpenSpline, n,
+struct BasisForward {
+  static inline __device__ T linear(T v, int64_t kMod) {
       // 1 - v - kMod + 2 * v * kMod
       T tmp1 = THCNumerics<T>::sub(ScalarConvert<int, T>::to(1), v);
       tmp1 = THCNumerics<T>::sub(tmp1, ScalarConvert<int64_t, T>::to(kMod));
       T tmp2 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(2), v);
       tmp2 = THCNumerics<T>::mul(tmp2, ScalarConvert<int64_t, T>::to(kMod));
-      v = THCNumerics<T>::add(tmp1, tmp2);
+      return THCNumerics<T>::add(tmp1, tmp2);
+  }
+
+  static inline __device__ T quadratic(T v, int64_t kMod) {
+    if (kMod == 0) {
+      // 0.5 * v * v - v + 0.5
+      T tmp = THCNumerics<T>::mul(THCNumerics<T>::mul(ScalarConvert<float, T>::to(0.5), v), v);
+      return THCNumerics<T>::sub(tmp, THCNumerics<T>::add(v, ScalarConvert<float, T>::to(0.5)));
+    }
+    else if (kMod == 1) {
+      // -v * v + v + 0.5
+      T tmp = THCNumerics<T>::mul(THCNumerics<T>::neg(v), v);
+      return THCNumerics<T>::add(THCNumerics<T>::add(tmp, v), ScalarConvert<float, T>::to(0.5));
+    }
+    else {
+      // 0.5 * v * v
+      return THCNumerics<T>::mul(ScalarConvert<float, T>::to(0.5), THCNumerics<T>::mul(v, v));
+    }
+  }
+
+  static inline __device__ T cubic(T v, int64_t kMod) {
+    if (kMod == 0) {
+      // (1 - v) * (1 -v) * (1 - v) / 6
+      T tmp = THCNumerics<T>::sub(ScalarConvert<int, T>::to(1), v);
+      tmp = THCNumerics<T>::mul(THCNumerics<T>::mul(tmp, tmp), tmp);
+      return THCNumerics<T>::div(tmp, ScalarConvert<int, T>::to(6));
+    }
+    else if (kMod == 1) {
+      // (3 * v * v * v - 6 * v * v + 4) / 6
+      T tmp1 = THCNumerics<T>::mul(THCNumerics<T>::mul(v, v), v);
+      tmp1 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(3), tmp1);
+      T tmp2 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(6), THCNumerics<T>::mul(v, v));
+      tmp1 = THCNumerics<T>::add(THCNumerics<T>::sub(tmp1, tmp2), ScalarConvert<int, T>::to(4));
+      return THCNumerics<T>::div(tmp1, ScalarConvert<int, T>::to(6));
+    }
+    else if (kMod == 2) {
+      // (-3 * v * v * v + 3 * v * v + 3 * v + 1) / 6
+      T tmp1 = THCNumerics<T>::mul(THCNumerics<T>::mul(v, v), v);
+      tmp1 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(-3), tmp1);
+      T tmp2 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(3), THCNumerics<T>::mul(v, v));
+      T tmp3 = THCNumerics<T>::mul(ScalarConvert<int, T>::to(3), v);
+      tmp1 = THCNumerics<T>::add(THCNumerics<T>::add(tmp1, tmp2), tmp3);
+      tmp1 = THCNumerics<T>::add(tmp1, ScalarConvert<int, T>::to(1));
+      return THCNumerics<T>::div(tmp1, ScalarConvert<int, T>::to(6));
+    }
+    else {
+      // v * v * v / 6
+      T tmp = THCNumerics<T>::mul(THCNumerics<T>::mul(v, v), v);
+      return THCNumerics<T>::div(tmp, ScalarConvert<int, T>::to(6));
+    }
+  }
+};
+
+template<typename T>
+__global__ void linearBasisForwardKernel(TensorInfo<T> basis, TensorInfo<int64_t>weightIndex,
+                                         TensorInfo<T> pseudo, int64_t *kernelSize,
+                                         uint8_t *isOpenSpline, ptrdiff_t n) {
+  THC_TENSOR_BASIS_FORWARD_KERNEL(1, basis, weightIndex, pseudo, kernelSize, isOpenSpline, n,
+    v = BasisForward<T>::linear(v, kMod);
   )
 }
 
@@ -64,7 +120,7 @@ __global__ void quadraticBasisForwardKernel(TensorInfo<T> basis, TensorInfo<int6
                                             TensorInfo<T> pseudo, int64_t *kernelSize,
                                             uint8_t *isOpenSpline, ptrdiff_t n) {
   THC_TENSOR_BASIS_FORWARD_KERNEL(2, basis, weightIndex, pseudo, kernelSize, isOpenSpline, n,
-    /* printf("DRIN"); */
+    v = BasisForward<T>::quadratic(v, kMod);
   )
 }
 
@@ -73,7 +129,7 @@ __global__ void cubicBasisForwardKernel(TensorInfo<T> basis, TensorInfo<int64_t>
                                         TensorInfo<T> pseudo, int64_t *kernelSize,
                                         uint8_t *isOpenSpline, ptrdiff_t n) {
   THC_TENSOR_BASIS_FORWARD_KERNEL(3, basis, weightIndex, pseudo, kernelSize, isOpenSpline, n,
-    /* printf("DRIN"); */
+    v = BasisForward<T>::cubic(v, kMod);
   )
 }
 

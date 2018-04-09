@@ -18,6 +18,8 @@ struct THCNumerics {
   static inline __host__ __device__ T add(T a, T b) { return a + b; }
   static inline __host__ __device__ T sub(T a, T b) { return a - b; }
   static inline __host__ __device__ T mul(T a, T b) { return a * b; }
+  static inline __host__ __device__ T div(T a, T b) { return a / b; }
+  static inline __host__ __device__ T neg(T a) { return -a; }
 };
 
 #ifdef CUDA_HALF_TENSOR
@@ -26,6 +28,8 @@ struct THCNumerics<half> {
   static inline __host__ __device__ half add(half a, half b) { return f2h(h2f(a) + h2f(b)); }
   static inline __host__ __device__ half sub(half a, half b) { return f2h(h2f(a) - h2f(b)); }
   static inline __host__ __device__ half mul(half a, half b) { return f2h(h2f(a) * h2f(b)); }
+  static inline __host__ __device__ half div(half a, half b) { return f2h(h2f(a) / h2f(b)); }
+  static inline __host__ __device__ half neg(half a) { return f2h(-h2f(a)); }
 };
 #endif // CUDA_HALF_TENSOR
 

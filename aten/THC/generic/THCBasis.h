@@ -15,4 +15,8 @@ void THCTensor_(cubicBasisForward)(THCState *state, THCTensor *basis,
                                    THCudaLongTensor *weightIndex, THCTensor *pseudo,
                                    THCudaLongTensor *kernelSize, THCudaByteTensor *isOpenSpline);
 
+void THCTensor_(linearBasisBackward)(THCState *state, THCTensor *basis,
+                                     THCudaLongTensor *weightIndex, THCTensor *pseudo,
+                                     THCudaLongTensor *kernelSize, THCudaByteTensor *isOpenSpline);
+
 #endif // THC_GENERIC_FILE
