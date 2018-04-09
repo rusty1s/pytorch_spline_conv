@@ -8,9 +8,11 @@ from torch.utils.ffi import create_extension
 if osp.exists('build'):
     shutil.rmtree('build')
 
-headers = ['torch_spline_conv/src/cpu.h']
-sources = ['torch_spline_conv/src/cpu.c']
-include_dirs = ['torch_spline_conv/src']
+files = ['Basis']
+
+headers = ['aten/TH/TH{}.h'.format(f) for f in files]
+sources = ['aten/TH/TH{}.c'.format(f) for f in files]
+include_dirs = ['aten/TH']
 define_macros = []
 extra_objects = []
 with_cuda = False
@@ -18,11 +20,11 @@ with_cuda = False
 if torch.cuda.is_available():
     subprocess.call(['./build.sh', osp.dirname(torch.__file__)])
 
-    headers += ['torch_spline_conv/src/cuda.h']
-    sources += ['torch_spline_conv/src/cuda.c']
-    include_dirs += ['torch_spline_conv/kernel']
+    headers += ['aten/THCC/THCC{}.h'.format(f) for f in files]
+    sources += ['aten/THCC/THCC{}.c'.format(f) for f in files]
+    include_dirs += ['aten/THCC']
     define_macros += [('WITH_CUDA', None)]
-    extra_objects += ['torch_spline_conv/build/kernel.so']
+    extra_objects += ['torch_spline_conv/_ext/THC.so']
     with_cuda = True
 
 ffi = create_extension(

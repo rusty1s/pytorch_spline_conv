@@ -1,0 +1,1 @@
+tensors = ['FloatTensor', 'DoubleTensor']
