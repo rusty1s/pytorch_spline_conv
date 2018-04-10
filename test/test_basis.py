@@ -57,12 +57,11 @@ def test_spline_basis_gpu(tensor, i):  # pragma: no cover
 
 
 def test_spline_basis_grad_cpu():
-    degree = 1
     kernel_size = torch.LongTensor([5, 5, 5])
     is_open_spline = torch.ByteTensor([1, 0, 1])
-    op = SplineBasis(degree, kernel_size, is_open_spline)
-
     pseudo = torch.DoubleTensor(4, 3).uniform_(0, 1)
     pseudo = Variable(pseudo, requires_grad=True)
 
-    assert gradcheck(op, (pseudo, ), eps=1e-6, atol=1e-4) is True
+    for degree in implemented_degrees.keys():
+        op = SplineBasis(degree, kernel_size, is_open_spline)
+        assert gradcheck(op, (pseudo, ), eps=1e-6, atol=1e-4) is True
