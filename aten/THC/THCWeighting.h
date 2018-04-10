@@ -1,5 +1,5 @@
-#ifndef THC_CONV_INC
-#define THC_CONV_INC
+#ifndef THC_WEIGHTING_INC
+#define THC_WEIGHTING_INC
 
 #include <THC/THC.h>
 
@@ -7,11 +7,11 @@
 extern "C" {
 #endif  // __cplusplus
 
-#include "generic/THCConv.h"
+#include "generic/THCWeighting.h"
 #include "THC/THCGenerateFloatTypes.h"
 
 #ifdef __cplusplus
 }
 #endif  // __cplusplus
 
-#endif // THC_CONV_INC
+#endif // THC_WEIGHTING_INC

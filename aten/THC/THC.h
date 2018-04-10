@@ -2,7 +2,7 @@
 #define THC_INC
 
 #include "THCBasis.h"
-#include "THCConv.h"
+#include "THCWeighting.h"
 
 #endif  // THC_INC
 

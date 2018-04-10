@@ -1,4 +1,4 @@
 #include <TH/TH.h>
 
-#include "generic/THConv.c"
+#include "generic/THWeighting.c"
 #include "THGenerateFloatTypes.h"

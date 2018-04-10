@@ -1,4 +1,4 @@
-from .spline_conv import spline_conv
+from .conv import spline_conv
 
 __version__ = '0.1.0'
 

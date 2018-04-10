@@ -6,6 +6,6 @@
 
 extern THCState *state;
 
-#include "generic/THCCConv.c"
+#include "generic/THCCWeighting.c"
 #include "THCGenerateFloatTypes.h"
 

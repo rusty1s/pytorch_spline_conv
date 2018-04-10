@@ -1,2 +1,2 @@
 #include "THCBasis.cu"
-#include "THCConv.cu"
+#include "THCWeighting.cu"

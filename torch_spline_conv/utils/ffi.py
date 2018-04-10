@@ -28,3 +28,23 @@ def basis_backward(degree, self, grad_basis, pseudo, kernel_size,
     name = '{}BasisBackward'.format(get_degree_str(degree))
     func = get_func(name, self.is_cuda, self)
     func(self, grad_basis, pseudo, kernel_size, is_open_spline)
+
+
+def weighting_forward(self, src, weight, basis, weight_index):
+    func = get_func('weightingForward', self.is_cuda, self)
+    func(self, src, weight, basis, weight_index)
+
+
+def weighting_backward_src(self, grad_output, weight, basis, weight_index):
+    func = get_func('weightingBackwardSrc', self.is_cuda, self)
+    func(self, grad_output, weight, basis, weight_index)
+
+
+def weighting_backward_weight(self, grad_output, src, basis, weight_index):
+    func = get_func('weightingBackwardWeight', self.is_cuda, self)
+    func(self, grad_output, src, basis, weight_index)
+
+
+def weighting_backward_basis(self, grad_output, src, weight, weight_index):
+    func = get_func('weightingBackwardBasis', self.is_cuda, self)
+    func(self, grad_output, src, weight, weight_index)
