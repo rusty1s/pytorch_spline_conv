@@ -30,7 +30,7 @@ tests = [{
 
 
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_basis_cpu(tensor, i):
+def test_spline_basis_forward_cpu(tensor, i):
     data = tests[i]
 
     pseudo = getattr(torch, tensor)(data['pseudo'])
@@ -44,7 +44,7 @@ def test_spline_basis_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_basis_gpu(tensor, i):  # pragma: no cover
+def test_spline_basis_forward_gpu(tensor, i):  # pragma: no cover
     data = tests[i]
 
     pseudo = getattr(torch.cuda, tensor)(data['pseudo'])
@@ -56,12 +56,24 @@ def test_spline_basis_gpu(tensor, i):  # pragma: no cover
     assert weight_index.cpu().tolist() == data['weight_index']
 
 
-def test_spline_basis_grad_cpu():
+@pytest.mark.parametrize('degree', implemented_degrees.keys())
+def test_spline_basis_backward_cpu(degree):
     kernel_size = torch.LongTensor([5, 5, 5])
     is_open_spline = torch.ByteTensor([1, 0, 1])
     pseudo = torch.DoubleTensor(4, 3).uniform_(0, 1)
     pseudo = Variable(pseudo, requires_grad=True)
 
-    for degree in implemented_degrees.keys():
-        op = SplineBasis(degree, kernel_size, is_open_spline)
-        assert gradcheck(op, (pseudo, ), eps=1e-6, atol=1e-4) is True
+    op = SplineBasis(degree, kernel_size, is_open_spline)
+    assert gradcheck(op, (pseudo, ), eps=1e-6, atol=1e-4) is True
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
+@pytest.mark.parametrize('degree', implemented_degrees.keys())
+def test_spline_basis_backward_gpu(degree):
+    kernel_size = torch.cuda.LongTensor([5, 5, 5])
+    is_open_spline = torch.cuda.ByteTensor([1, 0, 1])
+    pseudo = torch.cuda.DoubleTensor(4, 1).uniform_(0, 1)
+    pseudo = Variable(pseudo, requires_grad=True)
+
+    op = SplineBasis(degree, kernel_size, is_open_spline)
+    assert gradcheck(op, (pseudo, ), eps=1e-6, atol=1e-4) is True

@@ -65,6 +65,7 @@
           v = CODE; \
           tmp *= v; \
         } \
+\
         g += tmp * gradBasisData[e * gradBasis->stride[0] + s * gradBasis->stride[1]]; \
       } \
       g *= kernelSizeData[d] - M * isOpenSplineData[d]; \

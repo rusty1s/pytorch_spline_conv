@@ -15,8 +15,8 @@
   int64_t *kernelSizeData = THCudaLongTensor_data(state, kernelSize); \
   uint8_t *isOpenSplineData = THCudaByteTensor_data(state, isOpenSpline); \
 \
-  KERNEL_REAL_RUN(NAME, THCTensor_(nElement)(state, basis), basisInfo, \
-                  weightIndexInfo, pseudoInfo, kernelSizeData, isOpenSplineData); \
+  KERNEL_REAL_RUN(NAME, THCTensor_(nElement)(state, basis), basisInfo, weightIndexInfo, \
+                  pseudoInfo, kernelSizeData, isOpenSplineData); \
 }
 
 #define THC_TENSOR_BASIS_FORWARD_KERNEL(M, basis, weightIndex, pseudo, kernelSize, isOpenSpline, \
@@ -37,7 +37,7 @@
       wiOffset *= kernelSize[d]; \
 \
       v = THCNumerics<T>::sub(v, ScalarConvert<int64_t, T>::to(ScalarConvert<T, int64_t>::to(v))); \
-      CODE \
+      v = CODE; \
       b = THCNumerics<T>::mul(b, v); \
     } \
 \

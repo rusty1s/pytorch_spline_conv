@@ -31,7 +31,7 @@ inline real THTensor_(cubic)(real v, int64_t kMod) {
 
 inline real THTensor_(gradCubic)(real v, int64_t kMod) {
   if (kMod == 0) return (-v * v + 2 * v - 1) / 2;
-  else if (kMod == 1) return (3 * v * v -4 * v) / 2;
+  else if (kMod == 1) return (3 * v * v - 4 * v) / 2;
   else if (kMod == 2) return (-3 * v * v + 2 * v + 1) / 2;
   else return v * v / 2;
 }
