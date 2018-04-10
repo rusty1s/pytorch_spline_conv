@@ -1,3 +1,6 @@
+# import torch
+
+
 def spline_conv(x,
                 edge_index,
                 pseudo,
@@ -7,4 +10,4 @@ def spline_conv(x,
                 degree=1,
                 root_weight=None,
                 bias=None):
-    pass
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo

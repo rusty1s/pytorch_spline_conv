@@ -13,7 +13,7 @@
 #     edge_index = torch.LongTensor([[0, 0, 0, 0], [1, 2, 3, 4]])
 #     pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
 #     pseudo = Tensor(tensor, pseudo)
-#     weight = torch.arange(0.5, 0.5 * 25, step=0.5, out=x.new()).view(12, 2, 1)
+#    weight = torch.arange(0.5, 0.5 * 25, step=0.5, out=x.new()).view(12, 2, 1)
 #     kernel_size = torch.LongTensor([3, 4])
 #     is_open_spline = torch.ByteTensor([1, 0])
 #     root_weight = torch.arange(12.5, 13.5, step=0.5, out=x.new()).view(2, 1)
@@ -60,7 +60,7 @@
 #         weight = torch.DoubleTensor(25, 2, 4).uniform_(-1, 1)
 #         weight = Variable(weight, requires_grad=True)
 
-#         assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True
+#        assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True
 
 # @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 # @pytest.mark.parametrize('tensor', tensors)
@@ -69,7 +69,7 @@
 #     edge_index = torch.LongTensor([[0, 0, 0, 0], [1, 2, 3, 4]])
 #     pseudo = [[0.25, 0.125], [0.25, 0.375], [0.75, 0.625], [0.75, 0.875]]
 #     pseudo = Tensor(tensor, pseudo)
-#     weight = torch.arange(0.5, 0.5 * 25, step=0.5, out=x.new()).view(12, 2, 1)
+#    weight = torch.arange(0.5, 0.5 * 25, step=0.5, out=x.new()).view(12, 2, 1)
 #     kernel_size = torch.LongTensor([3, 4])
 #     is_open_spline = torch.ByteTensor([1, 0])
 #     root_weight = torch.arange(12.5, 13.5, step=0.5, out=x.new()).view(2, 1)
@@ -109,4 +109,4 @@
 #         weight = torch.cuda.DoubleTensor(25, 2, 4).uniform_(-1, 1)
 #         weight = Variable(weight, requires_grad=True)
 
-#         assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True
+#        assert gradcheck(op, (x, pseudo, weight), eps=1e-6, atol=1e-4) is True
