@@ -41,46 +41,34 @@
   int64_t *kernelSizeData = THLongTensor_data(kernelSize); \
   uint8_t *isOpenSplineData = THByteTensor_data(isOpenSpline); \
 \
-  ptrdiff_t e, d, s; \
-  int64_t k, kMod, wi, wiOffset; \
-  real b, v; \
-  real g; \
+  ptrdiff_t e, d, s, dIt, dOther; \
+  int64_t kMod; \
+  real g, v, tmp; \
 \
   for (e = 0; e < THTensor_(size)(pseudo, 0); e++) { \
     for (d = 0; d < THTensor_(size)(pseudo, 1); d++) { \
-      real g_out = 0; \
-      int64_t quotient = pow(M + 1, d); \
+      g = 0; \
       for (s = 0; s < THTensor_(size)(gradBasis, 1); s++) { \
-        kMod = (s / quotient) % (M + 1); \
+        kMod = (s / (ptrdiff_t) pow(M + 1, d)) % (M + 1); \
         v = pseudoData[e * pseudo->stride[0] + d * pseudo->stride[1]]; \
         v *= kernelSizeData[d] - M * isOpenSplineData[d]; \
         v -= floor(v); \
         v = GRAD_CODE; \
-        g = v; \
+        tmp = v; \
 \
-        ptrdiff_t d_it; \
-        for (d_it = 0; d_it < d; d_it++) { \
-          int64_t quotient2 = pow(M + 1, d_it); \
-          kMod = (s / quotient2) % (M + 1); \
-          v = pseudoData[e * pseudo->stride[0] + d_it * pseudo->stride[1]]; \
-          v *= kernelSizeData[d_it] - M * isOpenSplineData[d_it]; \
+        for (dIt = 1; dIt < THTensor_(size)(pseudo, 1); dIt++) { \
+          dOther = dIt - (d >= dIt); \
+          kMod = (s / (ptrdiff_t) pow(M + 1, dOther)) % (M + 1); \
+          v = pseudoData[e * pseudo->stride[0] + dOther * pseudo->stride[1]]; \
+          v *= kernelSizeData[dOther] - M * isOpenSplineData[dOther]; \
           v -= floor(v); \
           v = CODE; \
-          g *= v; \
+          tmp *= v; \
         } \
-        for (d_it = d + 1; d_it < THTensor_(size)(pseudo, 1); d_it++) { \
-          int64_t quotient2 = pow(M + 1, d_it); \
-          kMod = (s / quotient2) % (M + 1); \
-          v = pseudoData[e * pseudo->stride[0] + d_it * pseudo->stride[1]]; \
-          v *= kernelSizeData[d_it] - M * isOpenSplineData[d_it]; \
-          v -= floor(v); \
-          v = CODE; \
-          g *= v; \
-        } \
-        g_out += g * gradBasisData[e * gradBasis->stride[0] + s * gradBasis->stride[1]]; \
+        g += tmp * gradBasisData[e * gradBasis->stride[0] + s * gradBasis->stride[1]]; \
       } \
-      g_out *= kernelSizeData[d] - M * isOpenSplineData[d]; \
-      selfData[e * self->stride[0] + d * self->stride[1]] = g_out; \
+      g *= kernelSizeData[d] - M * isOpenSplineData[d]; \
+      selfData[e * self->stride[0] + d * self->stride[1]] = g; \
     } \
   } \
 }
