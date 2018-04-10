@@ -42,6 +42,38 @@ void THTensor_(cubicBasisForward)(THTensor *basis, THLongTensor *weightIndex, TH
 
 void THTensor_(linearBasisBackward)(THTensor *self, THTensor *gradBasis, THTensor *pseudo,
                                     THLongTensor *kernelSize, THByteTensor *isOpenSpline) {
+  THTensor_(fill)(self, 0);
+
+  real *selfData = THTensor_(data)(self);
+  real *gradBasisData = THTensor_(data)(gradBasis);
+  real *pseudoData = THTensor_(data)(pseudo);
+  int64_t *kernelSizeData = THLongTensor_data(kernelSize);
+  uint8_t *isOpenSplineData = THByteTensor_data(isOpenSpline);
+
+  ptrdiff_t e, d, s;
+  int64_t k, kMod, wi, wiOffset;
+  real b, v;
+  real g;
+
+  for (e = 0; e < THTensor_(size)(pseudo, 0); e++) {
+    for (d = 0; d < THTensor_(size)(pseudo, 1); d++) {
+      int64_t quotient = pow(2, d);
+      /* printf("e = %i, d = %i, stride0 = %i, stride1 = %i \n", e, d, pseudo->stride[0], pseudo->stride[1]); */
+      for (s = 0; s < THTensor_(size)(gradBasis, 1); s++) {
+        kMod = (s / quotient) % 2;
+        real v = pseudoData[e * pseudo->stride[0] + d * pseudo->stride[1]];
+        v *= kernelSizeData[d] - 2 * isOpenSplineData[d];
+        v -= floor(v);
+        v = -1 + kMod + kMod;  // grad code
+        g = v;
+
+        ptrdiff_t d_it;
+        for (d_it = 0; d_it < d; d_it++) {
+        }
+      }
+    }
+    /* selfData[e * self->stride[0] + d * self->stride[1]] = 1; */
+  }
 }
 
 void THTensor_(quadraticBasisBackward)(THTensor *self, THTensor *gradBasis, THTensor *pseudo,
