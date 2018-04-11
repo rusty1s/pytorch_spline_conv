@@ -15,7 +15,6 @@ def weighting_forward(src, weight, basis, weight_index):
 
 def weighting_backward_src(grad_output, weight, basis, weight_index):
     grad_src = grad_output.new(grad_output.size(0), weight.size(1))
-    weight = weight.transpose(1, 2).contiguous()  # Coalesced memory access.
     weighting_bw_src(grad_src, grad_output, weight, basis, weight_index)
     return grad_src
 
@@ -49,8 +48,9 @@ class SplineWeighting(Function):
             grad_src = weighting_backward_src(grad_output, weight, basis,
                                               self.weight_index)
         if self.needs_input_grad[1]:
+            K = weight.size(0)
             grad_weight = weighting_backward_weight(grad_output, src, basis,
-                                                    self.weight_index)
+                                                    self.weight_index, K)
         if self.needs_input_grad[2]:
             grad_basis = weighting_backward_basis(grad_output, src, weight,
                                                   self.weight_index)

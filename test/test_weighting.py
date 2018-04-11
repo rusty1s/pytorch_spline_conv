@@ -2,7 +2,9 @@ from itertools import product
 
 import pytest
 import torch
-from torch_spline_conv.weighting import spline_weighting
+from torch.autograd import Variable, gradcheck
+from torch_spline_conv.weighting import spline_weighting, SplineWeighting
+from torch_spline_conv.basis import spline_basis
 
 from .tensor import tensors
 
@@ -19,7 +21,7 @@ tests = [{
 
 
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_basis_forward_cpu(tensor, i):
+def test_spline_weighting_forward_cpu(tensor, i):
     data = tests[i]
 
     src = getattr(torch, tensor)(data['src'])
@@ -33,7 +35,7 @@ def test_spline_basis_forward_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_basis_forward_gpu(tensor, i):
+def test_spline_weighting_forward_gpu(tensor, i):
     data = tests[i]
 
     src = getattr(torch.cuda, tensor)(data['src'])
@@ -43,3 +45,19 @@ def test_spline_basis_forward_gpu(tensor, i):
 
     output = spline_weighting(src, weight, basis, weight_index)
     assert output.cpu().tolist() == data['output']
+
+
+def test_spline_basis_backward_cpu():
+    src = torch.DoubleTensor(4, 2).uniform_(0, 1)
+    weight = torch.DoubleTensor(25, 2, 4).uniform_(0, 1)
+    kernel_size = torch.LongTensor([5, 5])
+    is_open_spline = torch.ByteTensor([1, 1])
+    pseudo = torch.DoubleTensor(4, 2).uniform_(0, 1)
+    basis, weight_index = spline_basis(1, pseudo, kernel_size, is_open_spline)
+
+    src = Variable(src, requires_grad=True)
+    weight = Variable(weight, requires_grad=True)
+    basis = Variable(basis, requires_grad=True)
+
+    op = SplineWeighting(weight_index)
+    assert gradcheck(op, (src, weight, basis), eps=1e-6, atol=1e-4) is True
