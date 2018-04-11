@@ -5,6 +5,7 @@ from .utils.ffi import weighting_forward as weighting_fw
 from .utils.ffi import weighting_backward_src as weighting_bw_src
 from .utils.ffi import weighting_backward_weight as weighting_bw_weight
 from .utils.ffi import weighting_backward_basis as weighting_bw_basis
+from .utils.ffi import weighting_backward as weighting_bw
 
 
 def weighting_forward(src, weight, basis, weight_index):
@@ -31,6 +32,16 @@ def weighting_backward_basis(grad_output, src, weight, weight_index):
     return grad_basis
 
 
+def weighting_backward(grad_output, src, weight, basis, weight_index):
+    grad_src = src.new(src.size())
+    # grad_weight = weight.new(weight.size())
+    grad_weight = weight.new(weight.size(0), weight.size(2), weight.size(1))
+    grad_basis = basis.new(basis.size())
+    weighting_bw(grad_src, grad_weight, grad_basis, grad_output, src, weight,
+                 basis, weight_index)
+    return grad_src, grad_weight.transpose(1, 2), grad_basis
+
+
 class SplineWeighting(Function):
     def __init__(self, weight_index):
         super(SplineWeighting, self).__init__()
@@ -44,14 +55,20 @@ class SplineWeighting(Function):
         grad_src = grad_weight = grad_basis = None
         src, weight, basis = self.saved_tensors
 
-        if self.needs_input_grad[0]:
+        needs_src, needs_weight, needs_basis = self.needs_input_grad
+
+        if needs_src and needs_weight and needs_basis:
+            return weighting_backward(grad_output, src, weight, basis,
+                                      self.weight_index)
+
+        if needs_src:
             grad_src = weighting_backward_src(grad_output, weight, basis,
                                               self.weight_index)
-        if self.needs_input_grad[1]:
+        if needs_weight:
             K = weight.size(0)
             grad_weight = weighting_backward_weight(grad_output, src, basis,
                                                     self.weight_index, K)
-        if self.needs_input_grad[2]:
+        if needs_basis:
             grad_basis = weighting_backward_basis(grad_output, src, weight,
                                                   self.weight_index)
 

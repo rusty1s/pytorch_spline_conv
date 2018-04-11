@@ -74,7 +74,7 @@ def test_spline_basis_backward_gpu():
 
     src = Variable(src, requires_grad=True)
     weight = Variable(weight, requires_grad=True)
-    basis = Variable(basis, requires_grad=False)
+    basis = Variable(basis, requires_grad=True)
 
     op = SplineWeighting(weight_index)
     assert gradcheck(op, (src, weight, basis), eps=1e-6, atol=1e-4) is True

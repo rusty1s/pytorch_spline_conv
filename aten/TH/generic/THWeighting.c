@@ -116,4 +116,41 @@ void THTensor_(weightingBackwardBasis)(THTensor *self, THTensor *gradOutput, THT
   }
 }
 
+void THTensor_(weightingBackward)(THTensor *gradSrc, THTensor *gradWeight, THTensor *gradBasis,
+                                  THTensor *gradOutput, THTensor *src, THTensor *weight,
+                                  THTensor *basis, THLongTensor *weightIndex) {
+  THTensor_(fill)(gradSrc, 0);
+  THTensor_(fill)(gradWeight, 0);
+  THTensor_(fill)(gradBasis, 0);
+
+  real *gradSrcData = THTensor_(data)(gradSrc);
+  real *gradWeightData = THTensor_(data)(gradWeight);
+  real *gradBasisData = THTensor_(data)(gradBasis);
+  real *gradOutputData = THTensor_(data)(gradOutput);
+  real *srcData = THTensor_(data)(src);
+  real *weightData = THTensor_(data)(weight);
+  real *basisData = THTensor_(data)(basis);
+  int64_t *weightIndexData = THLongTensor_data(weightIndex);
+
+  ptrdiff_t e, mOut, s, mIn;
+  real g, b, w, f;
+  int64_t wi;
+  for (e = 0; e < THTensor_(size)(src, 0); e++) {
+    for (mOut = 0; mOut < THTensor_(size)(gradOutput, 1); mOut++) {
+      g = gradOutputData[e * gradOutput->stride[0] + mOut * gradOutput->stride[1]];
+      for (s = 0; s < THTensor_(size)(basis, 1); s++) {
+        b = basisData[e * basis->stride[0] + s * basis->stride[1]];
+        wi = weightIndexData[e * weightIndex->stride[0] + s * weightIndex->stride[1]];
+        for (mIn = 0; mIn < THTensor_(size)(src, 1); mIn++) {
+          w = weightData[wi * weight->stride[0] + mIn * weight->stride[1] + mOut * weight->stride[2]];
+          f = srcData[e * src->stride[0] + mIn * src->stride[1]];
+          gradSrcData[e * gradSrc->stride[0] + mIn * gradSrc->stride[1]] += g * w * b;
+          gradWeightData[wi * gradWeight->stride[0] + mOut * gradWeight->stride[1] + mIn * gradWeight->stride[2]] += f * g * b;
+          gradBasisData[e * gradBasis->stride[0] + s * gradBasis->stride[1]] += g * w * f;
+        }
+      }
+    }
+  }
+}
+
 #endif // TH_GENERIC_FILE

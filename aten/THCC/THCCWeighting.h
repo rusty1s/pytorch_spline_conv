@@ -9,3 +9,6 @@ void THCCDoubleTensor_weightingBackwardWeight(THCudaDoubleTensor *self, THCudaDo
 
 void  THCCFloatTensor_weightingBackwardBasis(      THCudaTensor *self,       THCudaTensor *gradOutput,       THCudaTensor *src,       THCudaTensor *weight, THCudaLongTensor *weightIndex);
 void THCCDoubleTensor_weightingBackwardBasis(THCudaDoubleTensor *self, THCudaDoubleTensor *gradOutput, THCudaDoubleTensor *src, THCudaDoubleTensor *weight, THCudaLongTensor *weightIndex);
+
+void  THCCFloatTensor_weightingBackward(      THCudaTensor *gradSrc,       THCudaTensor *gradWeight,      THCudaTensor *gradBasis,        THCudaTensor *gradOutput,       THCudaTensor *src,       THCudaTensor *weight,       THCudaTensor *basis, THCudaLongTensor *weightIndex);
+void THCCDoubleTensor_weightingBackward(THCudaDoubleTensor *gradSrc, THCudaDoubleTensor *gradWeight, THCudaDoubleTensor *gradBasis, THCudaDoubleTensor *gradOutput, THCudaDoubleTensor *src, THCudaDoubleTensor *weight, THCudaDoubleTensor *basis, THCudaLongTensor *weightIndex);

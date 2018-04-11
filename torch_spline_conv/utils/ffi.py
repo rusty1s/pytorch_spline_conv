@@ -48,3 +48,10 @@ def weighting_backward_weight(self, grad_output, src, basis, weight_index):
 def weighting_backward_basis(self, grad_output, src, weight, weight_index):
     func = get_func('weightingBackwardBasis', self.is_cuda, self)
     func(self, grad_output, src, weight, weight_index)
+
+
+def weighting_backward(grad_src, grad_weight, grad_basis, grad_output, src,
+                       weight, basis, weight_index):
+    func = get_func('weightingBackward', grad_src.is_cuda, grad_src)
+    func(grad_src, grad_weight, grad_basis, grad_output, src, weight, basis,
+         weight_index)
