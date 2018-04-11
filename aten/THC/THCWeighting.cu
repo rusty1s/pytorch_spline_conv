@@ -49,14 +49,36 @@ __global__ void weightingBackwardSrcKernel(TensorInfo<T> self, TensorInfo<T> gra
 }
 
 template<typename T>
+__global__ void weightingBackwardWeightKernel(TensorInfo<T> self, TensorInfo<T> gradOutput,
+                                              TensorInfo<T> src, TensorInfo<T> basis,
+                                              TensorInfo<int64_t> weightIndex, int n) {
+  KERNEL_LOOP(i, n) {
+    ptrdiff_t e = i / gradOutput.size[1], mOut = i % gradOutput.size[1], s, mIn;
+    T b, v;
+    int64_t wi;
+    T g = gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]];
+    for (s = 0; s < weightIndex.size[1]; s++) {
+      b = basis.data[e * basis.stride[0] + s * basis.stride[1]];
+      wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];
+      for (mIn = 0; mIn < src.size[1]; mIn++) {
+        v = src.data[e * src.stride[0] + mIn * src.stride[1]];
+        v = THCNumerics<T>::mul(v, b);
+        v = THCNumerics<T>::mul(v, g);
+        atomicAdd(&self.data[wi * self.stride[0] + mIn * self.stride[1] + mOut * self.stride[2]], v);
+      }
+    }
+  }
+}
+
+template<typename T>
 __global__ void weightingBackwardBasisKernel(TensorInfo<T> self, TensorInfo<T> gradOutput,
                                              TensorInfo<T> src, TensorInfo<T> weight,
                                              TensorInfo<int64_t> weightIndex, int n) {
   KERNEL_LOOP(i, n) {
     ptrdiff_t e = i / gradOutput.size[1], mOut = i % gradOutput.size[1], s, mIn;
-    T v, g, tmp;
+    T v, tmp;
     int64_t wi;
-    g = gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]];
+    T g = gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]];
     for (s = 0; s < weightIndex.size[1]; s++) {
       v = ScalarConvert<int, T>::to(0);
       wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];

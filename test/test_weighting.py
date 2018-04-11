@@ -72,9 +72,9 @@ def test_spline_basis_backward_gpu():
     pseudo = torch.cuda.DoubleTensor(4, 2).uniform_(0, 1)
     basis, weight_index = spline_basis(1, pseudo, kernel_size, is_open_spline)
 
-    src = Variable(src, requires_grad=False)
-    weight = Variable(weight, requires_grad=False)
-    basis = Variable(basis, requires_grad=True)
+    src = Variable(src, requires_grad=True)
+    weight = Variable(weight, requires_grad=True)
+    basis = Variable(basis, requires_grad=False)
 
     op = SplineWeighting(weight_index)
     assert gradcheck(op, (src, weight, basis), eps=1e-6, atol=1e-4) is True
