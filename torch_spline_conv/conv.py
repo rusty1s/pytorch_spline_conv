@@ -16,6 +16,32 @@ def spline_conv(src,
                 degree=1,
                 root_weight=None,
                 bias=None):
+    """Applies the spline-based convolutional operator :math:`(f \star g)(i) =
+    \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
+    f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
+    Here, :math:`g_l` denotes the kernel function defined over the weighted
+    B-Spline tensor product basis for a single input feature map :math:`l`.
+
+    Args:
+        src (Tensor): Input node features of shape (number_of_nodes x
+            in_channels)
+        edge_idex (LongTensor): Graph edges, given by source and target
+            indices, of shape (2 x number_of_edges)
+        pseudo (Tensor): Edge attributes, ie. pseudo coordinates, of shape
+            (number_of_edges x number_of_edge_attributes)
+        weight (Tensor): Trainable weight parameters of shape (kernel_size x
+            in_channels x out_channels)
+        kernel_size (LongTensor): Number of trainable weight parameters in each
+            edge dimension
+        is_open_spline (ByteTensor): Whether to use open or closed B-spline
+            bases for each dimension
+        degree (int): B-spline basis degree (default: :obj:`1`)
+        root_weight (Tensor): Additional shared trainable parameters for each
+            feature of the root node of shape (in_channels x out_channels)
+            (default: :obj:`None`)
+        bias (Tensor): Optional bias of shape (out_channels) (default:
+            :obj:`None`)
+    """
 
     src = src.unsqueeze(-1) if src.dim() == 1 else src
     row, col = edge_index
