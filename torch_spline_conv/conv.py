@@ -26,8 +26,9 @@ def spline_conv(src,
     Args:
         src (Tensor or Variable): Input node features of shape
             (number_of_nodes x in_channels)
-        edge_idex (LongTensor): Graph edges, given by source and target
-            indices, of shape (2 x number_of_edges)
+        edge_index (LongTensor): Graph edges, given by source and target
+            indices, of shape (2 x number_of_edges) in the fixed interval
+            [0, 1]
         pseudo (Tensor or Variable): Edge attributes, ie. pseudo coordinates,
             of shape (number_of_edges x number_of_edge_attributes)
         weight (Tensor or Variable): Trainable weight parameters of shape
