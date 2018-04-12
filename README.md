@@ -71,7 +71,7 @@ from torch_spline_conv import spline_conv
 src = torch.Tensor(4, 2)  # 4 nodes with 2 features each
 edge_index = torch.LongTensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
 pseudo = torch.Tensor(6, 2)  # two-dimensional edge attributes
-weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for each in_channels x out_channels combination
+weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for in_channels x out_channels
 kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge dimension
 is_open_spline = torch.ByteTensor([1, 1])  # only use open B-splines
 degree = 1  # B-spline degree of 1
