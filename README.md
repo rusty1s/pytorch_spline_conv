@@ -5,7 +5,7 @@
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_spline_conv/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_spline_conv?branch=master
 
-# PyTorch Spline-Based Convolution Operator of SplineCNN
+# Spline-Based Convolution Operator of SplineCNN
 
 [![PyPI Version][pypi-image]][pypi-url]
 [![Build Status][build-image]][build-url]
@@ -17,11 +17,11 @@ This is a PyTorch implementation of the spline-based convolution operator of Spl
 
 Matthias Fey, Jan Eric Lenssen, Frank Weichert, Heinrich Müller: [SplineCNN: Fast Geometric Deep Learning with Continuous B-Spline Kernels](https://arxiv.org/abs/1711.08920) (CVPR 2018)
 
-The operator works on all floating data types and is implemented both for CPU and GPU.
+The operator works on all floating point data types and is implemented both for CPU and GPU.
 
 ## Installation
 
-Check that `nvcc` is accessible from terminal, e.g. `nvcc --version`.
+If cuda is available, check that `nvcc` is accessible from your terminal, e.g. by typing `nvcc --version`.
 If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
 Then run:
 
@@ -96,4 +96,10 @@ Please cite our paper if you use this code in your own work:
   booktitle={IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}
   year={2018},
 }
+```
+
+## Running tests
+
+```
+python setup.py test
 ```
