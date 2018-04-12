@@ -69,7 +69,7 @@ def test_spline_basis_backward_cpu(degree):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('degree', implemented_degrees.keys())
-def test_spline_basis_backward_gpu(degree):
+def test_spline_basis_backward_gpu(degree):  # pragma: no cover
     kernel_size = torch.cuda.LongTensor([5, 5, 5])
     is_open_spline = torch.cuda.ByteTensor([1, 0, 1])
     pseudo = torch.cuda.DoubleTensor(4, 3).uniform_(0, 1)

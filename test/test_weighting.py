@@ -35,7 +35,7 @@ def test_spline_weighting_forward_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_weighting_forward_gpu(tensor, i):
+def test_spline_weighting_forward_gpu(tensor, i):  # pragma: no cover
     data = tests[i]
 
     src = getattr(torch.cuda, tensor)(data['src'])
@@ -65,7 +65,7 @@ def test_spline_basis_backward_cpu():
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
-def test_spline_basis_backward_gpu():
+def test_spline_basis_backward_gpu():  # pragma: no cover
     src = torch.cuda.DoubleTensor(4, 2).uniform_(0, 1)
     weight = torch.cuda.DoubleTensor(25, 2, 4).uniform_(0, 1)
     kernel_size = torch.cuda.LongTensor([5, 5])

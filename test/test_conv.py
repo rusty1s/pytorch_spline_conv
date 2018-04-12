@@ -60,7 +60,7 @@ def test_spline_conv_forward_cpu(tensor, i):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_conv_forward_gpu(tensor, i):
+def test_spline_conv_forward_gpu(tensor, i):  # pragma: no cover
     data = tests[i]
 
     src = getattr(torch.cuda, tensor)(data['src'])
@@ -104,7 +104,7 @@ def test_spline_basis_backward_cpu(degree):
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
 @pytest.mark.parametrize('degree', [2])
-def test_spline_basis_backward_gpu(degree):
+def test_spline_basis_backward_gpu(degree):  # pragma: no cover
     src = torch.cuda.DoubleTensor(3, 2).uniform_(-1, 1)
     edge_index = torch.cuda.LongTensor([[0, 1, 1, 2], [1, 0, 2, 1]])
     pseudo = torch.cuda.DoubleTensor(4, 3).uniform_(0, 1)

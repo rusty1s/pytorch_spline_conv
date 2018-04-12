@@ -13,19 +13,22 @@ def weighting_forward(src, weight, basis, weight_index):
     return output
 
 
-def weighting_backward_src(grad_output, weight, basis, weight_index):
+def weighting_backward_src(grad_output, weight, basis,
+                           weight_index):  # pragma: no cover
     grad_src = grad_output.new(grad_output.size(0), weight.size(1))
     weighting_bw_src(grad_src, grad_output, weight, basis, weight_index)
     return grad_src
 
 
-def weighting_backward_weight(grad_output, src, basis, weight_index, K):
+def weighting_backward_weight(grad_output, src, basis, weight_index,
+                              K):  # pragma: no cover
     grad_weight = src.new(K, src.size(1), grad_output.size(1))
     weighting_bw_weight(grad_weight, grad_output, src, basis, weight_index)
     return grad_weight
 
 
-def weighting_backward_basis(grad_output, src, weight, weight_index):
+def weighting_backward_basis(grad_output, src, weight,
+                             weight_index):  # pragma: no cover
     grad_basis = src.new(weight_index.size())
     weighting_bw_basis(grad_basis, grad_output, src, weight, weight_index)
     return grad_basis
@@ -36,7 +39,7 @@ class SplineWeighting(Function):
         self.save_for_backward(src, weight, basis, weight_index)
         return weighting_forward(src, weight, basis, weight_index)
 
-    def backward(self, grad_output):
+    def backward(self, grad_output):  # pragma: no cover
         grad_src = grad_weight = grad_basis = None
         src, weight, basis, weight_index = self.saved_tensors
 

@@ -13,7 +13,8 @@ def basis_forward(degree, pseudo, kernel_size, is_open_spline):
     return basis, weight_index
 
 
-def basis_backward(degree, grad_basis, pseudo, kernel_size, is_open_spline):
+def basis_backward(degree, grad_basis, pseudo, kernel_size,
+                   is_open_spline):  # pragma: no cover
     grad_pseudo = pseudo.new(pseudo.size())
     basis_bw(degree, grad_pseudo, grad_basis, pseudo, kernel_size,
              is_open_spline)
@@ -32,7 +33,7 @@ class SplineBasis(Function):
         return basis_forward(self.degree, pseudo, self.kernel_size,
                              self.is_open_spline)
 
-    def backward(self, grad_basis, grad_weight_index):
+    def backward(self, grad_basis, grad_weight_index):  # pragma: no cover
         grad_pseudo = None
         pseudo, = self.saved_tensors
 

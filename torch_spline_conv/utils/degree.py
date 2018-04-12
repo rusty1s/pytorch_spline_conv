@@ -4,7 +4,7 @@ from .new import new
 
 
 def node_degree(index, n, out=None):
-    if out is None:
+    if out is None:  # pragma: no cover
         zero = torch.zeros(n)
     else:
         out.resize_(n) if torch.is_tensor(out) else out.data.resize_(n)
