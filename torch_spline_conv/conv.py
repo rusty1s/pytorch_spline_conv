@@ -20,8 +20,8 @@ def spline_conv(src,
     """Applies the spline-based convolution operator :math:`(f \star g)(i) =
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
-    Here, :math:`g_l` denotes the kernel function defined over the weighted
-    B-spline tensor product basis for a single input feature map :math:`l`.
+    The kernel function :math:`g_l` is defined over the weighted B-spline
+    tensor product basis for a single input feature map :math:`l`.
 
     Args:
         src (Tensor or Variable): Input node features of shape
