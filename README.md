@@ -76,7 +76,7 @@ kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge di
 is_open_spline = torch.ByteTensor([1, 1])  # only use open B-splines
 degree = 1  # B-spline degree of 1
 root_weight = torch.Tensor(2, 4)  # separately weight root nodes
-bias = None  # No additional bias
+bias = None  # do not apply an additional bias
 
 output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
                      is_open_spline, degree, root_weight, bias)
