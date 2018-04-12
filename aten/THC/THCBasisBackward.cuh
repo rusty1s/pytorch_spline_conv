@@ -26,7 +26,7 @@
     int64_t kMod; \
     T g = ScalarConvert<int, T>::to(0), v, tmp; \
     for (s = 0; s < gradBasis.size[1]; s++) { \
-      kMod = (s / (ptrdiff_t) pow(M + 1, d)) % (M + 1); \
+      kMod = (s / (ptrdiff_t) pow((float) M + 1, (float) d)) % (M + 1); \
       v = pseudo.data[e * pseudo.stride[0] + d * pseudo.stride[1]]; \
       v = THCNumerics<T>::mul(v, ScalarConvert<int64_t, T>::to(kernelSize[d] - M * isOpenSpline[d])); \
       v = THCNumerics<T>::sub(v, ScalarConvert<int64_t, T>::to(ScalarConvert<T, int64_t>::to(v))); \
@@ -35,7 +35,7 @@
 \
       for (dIt = 1; dIt < pseudo.size[1]; dIt++) { \
         dOther = dIt - (d >= dIt); \
-        kMod = (s / (ptrdiff_t) pow(M + 1, dOther)) % (M + 1); \
+        kMod = (s / (ptrdiff_t) pow((float) M + 1, (float) dOther)) % (M + 1); \
         v = pseudo.data[e * pseudo.stride[0] + dOther * pseudo.stride[1]]; \
         v = THCNumerics<T>::mul(v, ScalarConvert<int64_t, T>::to(kernelSize[dOther] - M * isOpenSpline[dOther])); \
         v = THCNumerics<T>::sub(v, ScalarConvert<int64_t, T>::to(ScalarConvert<T, int64_t>::to(v))); \

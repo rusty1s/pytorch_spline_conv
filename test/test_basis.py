@@ -72,7 +72,7 @@ def test_spline_basis_backward_cpu(degree):
 def test_spline_basis_backward_gpu(degree):
     kernel_size = torch.cuda.LongTensor([5, 5, 5])
     is_open_spline = torch.cuda.ByteTensor([1, 0, 1])
-    pseudo = torch.cuda.DoubleTensor(4, 1).uniform_(0, 1)
+    pseudo = torch.cuda.DoubleTensor(4, 3).uniform_(0, 1)
     pseudo = Variable(pseudo, requires_grad=True)
 
     op = SplineBasis(degree, kernel_size, is_open_spline)
