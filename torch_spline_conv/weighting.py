@@ -32,34 +32,31 @@ def weighting_backward_basis(grad_output, src, weight, weight_index):
 
 
 class SplineWeighting(Function):
-    def __init__(self, weight_index):
-        super(SplineWeighting, self).__init__()
-        self.weight_index = weight_index
-
-    def forward(self, src, weight, basis):
-        self.save_for_backward(src, weight, basis)
-        return weighting_forward(src, weight, basis, self.weight_index)
+    def forward(self, src, weight, basis, weight_index):
+        self.save_for_backward(src, weight, basis, weight_index)
+        return weighting_forward(src, weight, basis, weight_index)
 
     def backward(self, grad_output):
         grad_src = grad_weight = grad_basis = None
-        src, weight, basis = self.saved_tensors
+        src, weight, basis, weight_index = self.saved_tensors
 
         if self.needs_input_grad[0]:
             grad_src = weighting_backward_src(grad_output, weight, basis,
-                                              self.weight_index)
+                                              weight_index)
         if self.needs_input_grad[1]:
             K = weight.size(0)
             grad_weight = weighting_backward_weight(grad_output, src, basis,
-                                                    self.weight_index, K)
+                                                    weight_index, K)
+
         if self.needs_input_grad[2]:
             grad_basis = weighting_backward_basis(grad_output, src, weight,
-                                                  self.weight_index)
+                                                  weight_index)
 
-        return grad_src, grad_weight, grad_basis
+        return grad_src, grad_weight, grad_basis, None
 
 
 def spline_weighting(src, weight, basis, weight_index):
     if torch.is_tensor(src):
         return weighting_forward(src, weight, basis, weight_index)
     else:
-        return SplineWeighting(weight_index)(src, weight, basis)
+        return SplineWeighting()(src, weight, basis, weight_index)

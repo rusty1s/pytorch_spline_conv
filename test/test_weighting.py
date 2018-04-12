@@ -58,9 +58,10 @@ def test_spline_basis_backward_cpu():
     src = Variable(src, requires_grad=True)
     weight = Variable(weight, requires_grad=True)
     basis = Variable(basis, requires_grad=True)
+    weight_index = Variable(weight_index, requires_grad=False)
 
-    op = SplineWeighting(weight_index)
-    assert gradcheck(op, (src, weight, basis), eps=1e-6, atol=1e-4) is True
+    data = (src, weight, basis, weight_index)
+    assert gradcheck(SplineWeighting(), data, eps=1e-6, atol=1e-4) is True
 
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
@@ -73,8 +74,9 @@ def test_spline_basis_backward_gpu():
     basis, weight_index = spline_basis(1, pseudo, kernel_size, is_open_spline)
 
     src = Variable(src, requires_grad=True)
-    weight = Variable(weight, requires_grad=False)
-    basis = Variable(basis, requires_grad=False)
+    weight = Variable(weight, requires_grad=True)
+    basis = Variable(basis, requires_grad=True)
+    weight_index = Variable(weight_index, requires_grad=False)
 
-    op = SplineWeighting(weight_index)
-    assert gradcheck(op, (src, weight, basis), eps=1e-6, atol=1e-4) is True
+    data = (src, weight, basis, weight_index)
+    assert gradcheck(SplineWeighting(), data, eps=1e-6, atol=1e-4) is True
