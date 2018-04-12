@@ -38,7 +38,7 @@ output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
                      is_open_spline, degree=1, root_weight=None, bias=None)
 ```
 
-Applies the spline-based convolutional operator
+Applies the spline-based convolution operator
 <p align="center">
   <img width="50%" src="https://user-images.githubusercontent.com/6945922/38684093-36d9c52e-3e6f-11e8-9021-db054223c6b9.png" />
 </p>

@@ -17,7 +17,7 @@ def spline_conv(src,
                 degree=1,
                 root_weight=None,
                 bias=None):
-    """Applies the spline-based convolutional operator :math:`(f \star g)(i) =
+    """Applies the spline-based convolution operator :math:`(f \star g)(i) =
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
     Here, :math:`g_l` denotes the kernel function defined over the weighted
