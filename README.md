@@ -43,7 +43,7 @@ Applies the spline-based convolutional operator
   <img width="50%" src="https://user-images.githubusercontent.com/6945922/38684093-36d9c52e-3e6f-11e8-9021-db054223c6b9.png" />
 </p>
 over several node features of an input graph.
-The kernel function *g* is defined over the weighted B-spline tensor product basis, as shown below for different B-spline degrees.
+The kernel function g is defined over the weighted B-spline tensor product basis, as shown below for different B-spline degrees.
 
 <p align="center">
   <img width="45%" src="https://user-images.githubusercontent.com/6945922/38685443-3a2a0c68-3e72-11e8-8e13-9ce9ad8fe43e.png" />
