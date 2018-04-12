@@ -6,8 +6,8 @@
 
 #define THC_TENSOR_BASIS_BACKWARD(NAME, state, self, gradBasis, pseudo, kernelSize, \
                                   isOpenSpline) { \
-  THCAssertSameGPU( \
-    THCTensor_(checkGPU)(state, 5, self, gradBasis, pseudo, kernelSize, isOpenSpline)); \
+  THCAssertSameGPU(THCTensor_(checkGPU)(state, 5, self, gradBasis, pseudo, kernelSize, \
+                                        isOpenSpline)); \
 \
   TensorInfo<real> selfInfo = THCTensor_(getTensorInfo)(state, self); \
   TensorInfo<real> gradBasisInfo = THCTensor_(getTensorInfo)(state, gradBasis); \
