@@ -21,7 +21,7 @@ def spline_conv(src,
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
     Here, :math:`g_l` denotes the kernel function defined over the weighted
-    B-Spline tensor product basis for a single input feature map :math:`l`.
+    B-spline tensor product basis for a single input feature map :math:`l`.
 
     Args:
         src (Tensor or Variable): Input node features of shape
@@ -64,7 +64,7 @@ def spline_conv(src,
     # Normalize output by node degree.
     index = row if torch.is_tensor(src) else Variable(row)
     degree = node_degree(index, n, out=new(src))
-    output /= degree.unsqueeze(-1).clamp_(min=1)
+    output /= degree.unsqueeze(-1).clamp(min=1)
 
     # Weight root node separately (if wished).
     if root_weight is not None:

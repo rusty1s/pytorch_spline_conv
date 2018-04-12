@@ -13,6 +13,71 @@
 
 --------------------------------------------------------------------------------
 
+This is a PyTorch implementation of the spline-based convolution operator of SplineCNN, as described in our paper:
+
+Matthias Fey, Jan Eric Lenssen, Frank Weichert, Heinrich Müller: [SplineCNN: Fast Geometric Deep Learning with Continuous B-Spline Kernels](https://arxiv.org/abs/1711.08920) (CVPR 2018)
+
+The operator works on all floating data types and is implemented both for CPU and GPU.
+
+## Installation
+
+Check that `nvcc` is accessible from terminal, e.g. `nvcc --version`.
+If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
+Then run:
+
+```
+pip install cffi torch-spline-conv
+```
+
+## Usage
+
+```python
+from torch_spline_conv import spline_conv
+
+output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
+                     is_open_spline, degree=1, root_weight=None, bias=None)
+```
+
+Applies the spline-based convolutional operator
+<img width="25%" src="https://user-images.githubusercontent.com/6945922/38684093-36d9c52e-3e6f-11e8-9021-db054223c6b9.png" />
+over several node features of an input graph.
+The kernel function *g* is defined over the weighted B-spline tensor product basis, as shown below for different B-spline degrees.
+
+### Parameters
+
+* **src** *(Tensor or Variable)* - Input node features of shape `(number_of_nodes x in_channels)`
+* **edge_idex** *(LongTensor)* - Graph edges, given by source and target indices, of shape `(2 x number_of_edges)`
+* **pseudo** *(Tensor or Variable)* - Edge attributes, ie. pseudo coordinates, of shape `(number_of_edges x number_of_edge_attributes)`
+* **weight** *(Tensor or Variable)* - Trainable weight parameters of shape `(kernel_size x in_channels x out_channels)`
+* **kernel_size** *(LongTensor)* - Number of trainable weight parameters in each edge dimension
+* **is_open_spline** *(ByteTensor)* - Whether to use open or closed B-spline bases for each dimension
+* **degree** *(int)* - B-spline basis degree (default: `1`)
+* **root_weight** *(Tensor or Variable)* - Additional shared trainable parameters for each feature of the root node of shape `(in_channels x out_channels)` (default: `None`)
+* **bias** *(Tensor or Variable)* - Optional bias of shape (out_channels) (default: `None`)
+
+### Example
+
+```python
+import torch
+from torch_spline_conv import spline_conv
+
+src = torch.Tensor(4, 2)  # 4 nodes with 2 features
+edge_index = torch.LongTensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
+pseudo = torch.Tensor(6, 2)  # 2-dimensional edge attributes, restricted to [0, 1]
+weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for each in_channels x out_channels combination
+kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge dimension
+is_open_spline = torch.ByteTensor([1, 1])  # Both B-spline bases should be open
+degree = 1  # B-spline degree of 1 (implemented: 1, 2, 3)
+root_weight = torch.Tensor(2, 4)  # Weight root nodes in addition
+bias = torch.Tensor(4)  # Add bias
+
+output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
+                     is_open_spline, degree=1, root_weight=None, bias=None)
+
+print(output.size())
+torch.Size([4, 4])  # 4 nodes with 4 features
+```
+
 ## Cite
 
 Please cite our paper if you use this code in your own work:
