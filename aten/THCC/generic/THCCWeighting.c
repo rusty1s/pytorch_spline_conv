@@ -22,12 +22,4 @@ void THCCTensor_(weightingBackwardBasis)(THCTensor *self, THCTensor *gradOutput,
   THCTensor_(weightingBackwardBasis)(state, self, gradOutput, src, weight, weightIndex);
 }
 
-void THCCTensor_(weightingBackward)(THCTensor *gradSrc, THCTensor *gradWeight,
-                                    THCTensor *gradBasis, THCTensor *gradOutput, THCTensor *src,
-                                    THCTensor *weight, THCTensor *basis,
-                                    THCudaLongTensor *weightIndex) {
-  THCTensor_(weightingBackward)(state, gradSrc, gradWeight, gradBasis, gradOutput, src, weight,
-                                basis, weightIndex);
-}
-
 #endif  // THC_GENERIC_FILE

@@ -18,9 +18,4 @@ void THCTensor_(weightingBackwardBasis)(THCState *state, THCTensor *self, THCTen
                                         THCTensor *src, THCTensor *weight,
                                         THCudaLongTensor *weightIndex);
 
-void THCTensor_(weightingBackward)(THCState *state, THCTensor *gradSrc, THCTensor *gradWeight,
-                                   THCTensor *gradBasis, THCTensor *gradOutput, THCTensor *src,
-                                   THCTensor *weight, THCTensor *basis,
-                                   THCudaLongTensor *weightIndex);
-
 #endif // THC_GENERIC_FILE

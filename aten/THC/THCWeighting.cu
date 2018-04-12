@@ -31,20 +31,22 @@ __global__ void weightingBackwardSrcKernel(TensorInfo<T> self, TensorInfo<T> gra
                                            TensorInfo<T> weight, TensorInfo<T> basis,
                                            TensorInfo<int64_t> weightIndex, int n) {
   KERNEL_LOOP(i, n) {
-    ptrdiff_t e = i / self.size[1], mIn = i % self.size[1], s, mOut;
-    T v = ScalarConvert<int, T>::to(0), b, tmp;
+    ptrdiff_t e = i / gradOutput.size[1], mOut = i % gradOutput.size[1], s, mIn;
+    T v, b, tmp;
     int64_t wi;
-    for (s = 0; s < basis.size[1]; s++) {
-      b = basis.data[e * basis.stride[0] + s * basis.stride[1]];
-      wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];
-      for (mOut = 0; mOut < gradOutput.size[1]; mOut++) {
-        tmp = weight.data[wi * weight.stride[0] + mOut * weight.stride[1] + mIn * weight.stride[2]];
-        tmp = THCNumerics<T>::mul(tmp, gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]]);
+    T g = gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]];
+    for (mIn = 0; mIn < self.size[1]; mIn++) {
+      v = ScalarConvert<int, T>::to(0);
+      for (s = 0; s < basis.size[1]; s++) {
+        b = basis.data[e * basis.stride[0] + s * basis.stride[1]];
+        wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];
+        tmp = weight.data[wi * weight.stride[0] + mIn * weight.stride[1] + mOut * weight.stride[2]];
         tmp = THCNumerics<T>::mul(tmp, b);
+        tmp = THCNumerics<T>::mul(tmp, g);
         v = THCNumerics<T>::add(v, tmp);
       }
+      atomicAdd(&self.data[e * self.stride[0] + mIn * self.stride[1]], v);
     }
-    self.data[e * self.stride[0] + mIn * self.stride[1]] = v;
   }
 }
 
@@ -62,8 +64,7 @@ __global__ void weightingBackwardWeightKernel(TensorInfo<T> self, TensorInfo<T> 
       wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];
       for (mIn = 0; mIn < src.size[1]; mIn++) {
         v = src.data[e * src.stride[0] + mIn * src.stride[1]];
-        v = THCNumerics<T>::mul(v, b);
-        v = THCNumerics<T>::mul(v, g);
+        v = THCNumerics<T>::mul(THCNumerics<T>::mul(v, b), g);
         atomicAdd(&self.data[wi * self.stride[0] + mIn * self.stride[1] + mOut * self.stride[2]], v);
       }
     }
@@ -90,38 +91,6 @@ __global__ void weightingBackwardBasisKernel(TensorInfo<T> self, TensorInfo<T> g
       }
       atomicAdd(&self.data[e * self.stride[0] + s * self.stride[1]], v);
     }
-  }
-}
-
-template<typename T>
-__global__ void weightingBackwardKernel(TensorInfo<T> gradSrc, TensorInfo<T> gradWeight,
-                                        TensorInfo<T> gradBasis, TensorInfo<T> gradOutput,
-                                        TensorInfo<T> src, TensorInfo<T> weight,
-                                        TensorInfo<T> basis, TensorInfo<int64_t> weightIndex,
-                                        int n) {
-  KERNEL_LOOP(i, n) {
-    ptrdiff_t e = i / src.size[1], mIn = i % src.size[1], s, mOut;
-    T b, g, w, gs = ScalarConvert<int, T>::to(0), gw, gb;
-    int64_t wi;
-    T f = src.data[e * src.stride[0] + mIn * src.stride[1]];
-    for (s = 0; s < basis.size[1]; s++) {
-      b = basis.data[e * basis.stride[0] + s * basis.stride[1]];
-      wi = weightIndex.data[e * weightIndex.stride[0] + s * weightIndex.stride[1]];
-      gb = ScalarConvert<int, T>::to(0);
-      for (mOut = 0; mOut < gradOutput.size[1]; mOut++) {
-        g = gradOutput.data[e * gradOutput.stride[0] + mOut * gradOutput.stride[1]];
-        w = weight.data[wi * weight.stride[0] + mOut * weight.stride[1] + mIn * weight.stride[2]];
-
-        gs = THCNumerics<T>::add(gs, THCNumerics<T>::mul(THCNumerics<T>::mul(b, g), w));
-
-        gw = THCNumerics<T>::mul(THCNumerics<T>::mul(f, b), g);
-        atomicAdd(&gradWeight.data[wi * gradWeight.stride[0] + mOut * gradWeight.stride[1] + mIn * gradWeight.stride[2]], gw);
-
-        gb = THCNumerics<T>::add(gb, THCNumerics<T>::mul(THCNumerics<T>::mul(g, f), w));
-      }
-      atomicAdd(&gradBasis.data[e * gradBasis.stride[0] + s * gradBasis.stride[1]], gb);
-    }
-    gradSrc.data[e * gradSrc.stride[0] + mIn * gradSrc.stride[1]] = gs;
   }
 }
 
