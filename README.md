@@ -39,7 +39,9 @@ output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
 ```
 
 Applies the spline-based convolutional operator
-<img width="25%" src="https://user-images.githubusercontent.com/6945922/38684093-36d9c52e-3e6f-11e8-9021-db054223c6b9.png" />
+<p align="center">
+  <img width="25%" src="https://user-images.githubusercontent.com/6945922/38684093-36d9c52e-3e6f-11e8-9021-db054223c6b9.png" />
+</p>
 over several node features of an input graph.
 The kernel function *g* is defined over the weighted B-spline tensor product basis, as shown below for different B-spline degrees.
 
