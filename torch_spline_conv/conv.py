@@ -5,7 +5,7 @@ from .basis import spline_basis
 from .weighting import spline_weighting
 
 from .utils.new import new
-from .utils.degree import node_degree
+from .utils.degree import degree as node_degree
 
 
 def spline_conv(src,
@@ -49,7 +49,7 @@ def spline_conv(src,
     row, col = edge_index
     pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
-    n, e, m_out = src.size(0), row.size(0), weight.size(2)
+    n, m_out = src.size(0), weight.size(2)
 
     # Weight each node.
     basis, weight_index = spline_basis(degree, pseudo, kernel_size,
@@ -58,14 +58,12 @@ def spline_conv(src,
 
     # Perform the real convolution => Convert e x m_out to n x m_out features.
     zero = new(src, n, m_out).fill_(0)
-    row_expand = row.unsqueeze(-1).expand(e, m_out)
+    row_expand = row.unsqueeze(-1).expand_as(output)
     row_expand = row_expand if torch.is_tensor(src) else Variable(row_expand)
     output = zero.scatter_add_(0, row_expand, output)
 
     # Normalize output by node degree.
-    index = row if torch.is_tensor(src) else Variable(row)
-    degree = node_degree(index, n, out=new(src))
-    output /= degree.unsqueeze(-1).clamp(min=1)
+    output /= node_degree(row, n, out=new(src)).unsqueeze(-1).clamp(min=1)
 
     # Weight root node separately (if wished).
     if root_weight is not None:
