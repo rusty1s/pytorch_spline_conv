@@ -60,7 +60,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 * **is_open_spline** *(ByteTensor)* - Whether to use open or closed B-spline bases for each dimension
 * **degree** *(int)* - B-spline basis degree (default: `1`)
 * **root_weight** *(Tensor or Variable)* - Additional shared trainable parameters for each feature of the root node of shape `(in_channels x out_channels)` (default: `None`)
-* **bias** *(Tensor or Variable)* - Optional bias of shape (out_channels) (default: `None`)
+* **bias** *(Tensor or Variable)* - Optional bias of shape (`out_channels`) (default: `None`)
 
 ### Example
 
