@@ -1,5 +1,5 @@
-from .conv import spline_conv
+from .conv import SplineConv
 
 __version__ = '0.1.0'
 
-__all__ = ['spline_conv', '__version__']
+__all__ = ['SplineConv', '__version__']
