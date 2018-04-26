@@ -34,8 +34,14 @@ pip install cffi torch-spline-conv
 ```python
 from torch_spline_conv import SplineConv
 
-output = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
-                          is_open_spline, degree=1, root_weight=None,
+output = SplineConv.apply(src,
+                          edge_index,
+                          pseudo,
+                          weight,
+                          kernel_size,
+                          is_open_spline,
+                          degree,
+                          root_weight=None,
                           bias=None)
 ```
 
