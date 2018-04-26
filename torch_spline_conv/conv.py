@@ -1,10 +1,8 @@
 import torch
-from torch.autograd import Variable
 
-from .basis import spline_basis
-from .weighting import spline_weighting
+from .basis import SplineBasis
+from .weighting import SplineWeighting
 
-from .utils.new import new
 from .utils.degree import degree as node_degree
 
 
@@ -14,7 +12,7 @@ def spline_conv(src,
                 weight,
                 kernel_size,
                 is_open_spline,
-                degree=1,
+                degree,
                 root_weight=None,
                 bias=None):
     """Applies the spline-based convolution operator :math:`(f \star g)(i) =
@@ -24,46 +22,47 @@ def spline_conv(src,
     tensor product basis for a single input feature map :math:`l`.
 
     Args:
-        src (Tensor or Variable): Input node features of shape
-            (number_of_nodes x in_channels)
-        edge_index (LongTensor): Graph edges, given by source and target
-            indices, of shape (2 x number_of_edges) in the fixed interval
-            [0, 1]
-        pseudo (Tensor or Variable): Edge attributes, ie. pseudo coordinates,
-            of shape (number_of_edges x number_of_edge_attributes)
-        weight (Tensor or Variable): Trainable weight parameters of shape
-            (kernel_size x in_channels x out_channels)
-        kernel_size (LongTensor): Number of trainable weight parameters in each
-            edge dimension
-        is_open_spline (ByteTensor): Whether to use open or closed B-spline
-            bases for each dimension
-        degree (int): B-spline basis degree (default: :obj:`1`)
-        root_weight (Tensor or Variable): Additional shared trainable
+        src (:class:`Tensor`): Input node features of shape
+            (number_of_nodes x in_channels).
+        edge_index (:class:`LongTensor`): Graph edges, given by source and
+            target indices, of shape (2 x number_of_edges) in the fixed
+            interval [0, 1].
+        pseudo (:class:`Tensor`): Edge attributes, ie. pseudo coordinates,
+            of shape (number_of_edges x number_of_edge_attributes).
+        weight (:class:`Tensor`): Trainable weight parameters of shape
+            (kernel_size x in_channels x out_channels).
+        kernel_size (:class:`LongTensor`): Number of trainable weight
+            parameters in each edge dimension.
+        is_open_spline (:class:`ByteTensor`): Whether to use open or closed
+            B-spline bases for each dimension.
+        degree (:class:`Scalar`): B-spline basis degree.
+        root_weight (:class:`Tensor`, optional): Additional shared trainable
             parameters for each feature of the root node of shape
-            (in_channels x out_channels) (default: :obj:`None`)
-        bias (Tensor or Variable): Optional bias of shape (out_channels)
-            (default: :obj:`None`)
+            (in_channels x out_channels). (default: :obj:`None`)
+        bias (:class:`Tensor`, optional): Optional bias of shape
+            (out_channels). (default: :obj:`None`)
+
+    :rtype: :class:`Tensor`
     """
 
     src = src.unsqueeze(-1) if src.dim() == 1 else src
-    row, col = edge_index
     pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
+    row, col = edge_index
     n, m_out = src.size(0), weight.size(2)
 
     # Weight each node.
-    basis, weight_index = spline_basis(degree, pseudo, kernel_size,
-                                       is_open_spline)
-    output = spline_weighting(src[col], weight, basis, weight_index)
+    basis, weight_index = SplineBasis.apply(degree, pseudo, kernel_size,
+                                            is_open_spline)
+    output = SplineWeighting.apply(src[col], weight, basis, weight_index)
 
     # Perform the real convolution => Convert e x m_out to n x m_out features.
-    zero = new(src, n, m_out).fill_(0)
     row_expand = row.unsqueeze(-1).expand_as(output)
-    row_expand = row_expand if torch.is_tensor(src) else Variable(row_expand)
-    output = zero.scatter_add_(0, row_expand, output)
+    output = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, output)
 
     # Normalize output by node degree.
-    output /= node_degree(row, n, out=new(src)).unsqueeze(-1).clamp(min=1)
+    deg = node_degree(row, n, out=src.new_empty(()))
+    output /= deg.unsqueeze(-1).clamp(min=1)
 
     # Weight root node separately (if wished).
     if root_weight is not None:

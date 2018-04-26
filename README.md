@@ -52,19 +52,19 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 
 ### Parameters
 
-* **src** *(Tensor or Variable)* - Input node features of shape `(number_of_nodes x in_channels)`
-* **edge_index** *(LongTensor)* - Graph edges, given by source and target indices, of shape `(2 x number_of_edges)`
-* **pseudo** *(Tensor or Variable)* - Edge attributes, ie. pseudo coordinates, of shape `(number_of_edges x number_of_edge_attributes)` in the fixed interval [0, 1]
-* **weight** *(Tensor or Variable)* - Trainable weight parameters of shape `(kernel_size x in_channels x out_channels)`
-* **kernel_size** *(LongTensor)* - Number of trainable weight parameters in each edge dimension
-* **is_open_spline** *(ByteTensor)* - Whether to use open or closed B-spline bases for each dimension
-* **degree** *(int)* - B-spline basis degree (default: `1`)
-* **root_weight** *(Tensor or Variable)* - Additional shared trainable parameters for each feature of the root node of shape `(in_channels x out_channels)` (default: `None`)
-* **bias** *(Tensor or Variable)* - Optional bias of shape `(out_channels)` (default: `None`)
+* **src** *(Tensor)* - Input node features of shape `(number_of_nodes x in_channels)`.
+* **edge_index** *(LongTensor)* - Graph edges, given by source and target indices, of shape `(2 x number_of_edges)`.
+* **pseudo** *(Tensor)* - Edge attributes, ie. pseudo coordinates, of shape `(number_of_edges x number_of_edge_attributes)` in the fixed interval [0, 1].
+* **weight** *(Tensor)* - Trainable weight parameters of shape `(kernel_size x in_channels x out_channels)`.
+* **kernel_size** *(LongTensor)* - Number of trainable weight parameters in each edge dimension.
+* **is_open_spline** *(ByteTensor)* - Whether to use open or closed B-spline bases for each dimension.
+* **degree** *(Scalar)* - B-spline basis degree.
+* **root_weight** *(Tensor, optional)* - Additional shared trainable parameters for each feature of the root node of shape `(in_channels x out_channels)`. (default: `None`)
+* **bias** *(Tensor, optional)* - Optional bias of shape `(out_channels)`. (default: `None`)
 
 ### Returns
 
-* **output** *(Tensor or Variable)* - Output node features of shape `(number_of_nodes x out_channels)`
+* **output** *(Tensor)* - Output node features of shape `(number_of_nodes x out_channels)`.
 
 ### Example
 
@@ -78,7 +78,7 @@ pseudo = torch.Tensor(6, 2)  # two-dimensional edge attributes
 weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for in_channels x out_channels
 kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge dimension
 is_open_spline = torch.ByteTensor([1, 1])  # only use open B-splines
-degree = 1  # B-spline degree of 1
+degree = torch.tensor(1)  # B-spline degree of 1
 root_weight = torch.Tensor(2, 4)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 

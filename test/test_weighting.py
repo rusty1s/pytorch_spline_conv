@@ -2,11 +2,11 @@ from itertools import product
 
 import pytest
 import torch
-from torch.autograd import Variable, gradcheck
-from torch_spline_conv.weighting import spline_weighting, SplineWeighting
-from torch_spline_conv.basis import spline_basis
+from torch.autograd import gradcheck
+from torch_spline_conv.weighting import SplineWeighting
+from torch_spline_conv.basis import SplineBasis
 
-from .tensor import tensors
+from .utils import dtypes, devices, tensor
 
 tests = [{
     'src': [[1, 2], [3, 4]],
@@ -20,63 +20,32 @@ tests = [{
 }]
 
 
-@pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_weighting_forward_cpu(tensor, i):
-    data = tests[i]
+@pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
+def test_spline_weighting_forward(test, dtype, device):
+    src = tensor(test['src'], dtype, device)
+    weight = tensor(test['weight'], dtype, device)
+    basis = tensor(test['basis'], dtype, device)
+    weight_index = tensor(test['weight_index'], torch.long, device)
 
-    src = getattr(torch, tensor)(data['src'])
-    weight = getattr(torch, tensor)(data['weight'])
-    basis = getattr(torch, tensor)(data['basis'])
-    weight_index = torch.LongTensor(data['weight_index'])
-
-    output = spline_weighting(src, weight, basis, weight_index)
-    assert output.tolist() == data['output']
+    output = SplineWeighting.apply(src, weight, basis, weight_index)
+    assert output.tolist() == test['output']
 
 
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
-@pytest.mark.parametrize('tensor,i', product(tensors, range(len(tests))))
-def test_spline_weighting_forward_gpu(tensor, i):  # pragma: no cover
-    data = tests[i]
+@pytest.mark.parametrize('device', devices)
+def test_spline_basis_backward(device):
+    degree = torch.tensor(1)
+    pseudo = torch.rand((4, 2), dtype=torch.double, device=device)
+    pseudo.requires_grad_()
+    kernel_size = tensor([5, 5], torch.long, device)
+    is_open_spline = tensor([1, 1], torch.uint8, device)
 
-    src = getattr(torch.cuda, tensor)(data['src'])
-    weight = getattr(torch.cuda, tensor)(data['weight'])
-    basis = getattr(torch.cuda, tensor)(data['basis'])
-    weight_index = torch.cuda.LongTensor(data['weight_index'])
+    basis, weight_index = SplineBasis.apply(degree, pseudo, kernel_size,
+                                            is_open_spline)
 
-    output = spline_weighting(src, weight, basis, weight_index)
-    assert output.cpu().tolist() == data['output']
-
-
-def test_spline_basis_backward_cpu():
-    src = torch.DoubleTensor(4, 2).uniform_(0, 1)
-    weight = torch.DoubleTensor(25, 2, 4).uniform_(0, 1)
-    kernel_size = torch.LongTensor([5, 5])
-    is_open_spline = torch.ByteTensor([1, 1])
-    pseudo = torch.DoubleTensor(4, 2).uniform_(0, 1)
-    basis, weight_index = spline_basis(1, pseudo, kernel_size, is_open_spline)
-
-    src = Variable(src, requires_grad=True)
-    weight = Variable(weight, requires_grad=True)
-    basis = Variable(basis, requires_grad=True)
-    weight_index = Variable(weight_index, requires_grad=False)
+    src = torch.rand((4, 2), dtype=torch.double, device=device)
+    src.requires_grad_()
+    weight = torch.rand((25, 2, 4), dtype=torch.double, device=device)
+    weight.requires_grad_()
 
     data = (src, weight, basis, weight_index)
-    assert gradcheck(SplineWeighting(), data, eps=1e-6, atol=1e-4) is True
-
-
-@pytest.mark.skipif(not torch.cuda.is_available(), reason='no CUDA')
-def test_spline_basis_backward_gpu():  # pragma: no cover
-    src = torch.cuda.DoubleTensor(4, 2).uniform_(0, 1)
-    weight = torch.cuda.DoubleTensor(25, 2, 4).uniform_(0, 1)
-    kernel_size = torch.cuda.LongTensor([5, 5])
-    is_open_spline = torch.cuda.ByteTensor([1, 1])
-    pseudo = torch.cuda.DoubleTensor(4, 2).uniform_(0, 1)
-    basis, weight_index = spline_basis(1, pseudo, kernel_size, is_open_spline)
-
-    src = Variable(src, requires_grad=True)
-    weight = Variable(weight, requires_grad=True)
-    basis = Variable(basis, requires_grad=True)
-    weight_index = Variable(weight_index, requires_grad=False)
-
-    data = (src, weight, basis, weight_index)
-    assert gradcheck(SplineWeighting(), data, eps=1e-6, atol=1e-4) is True
+    assert gradcheck(SplineWeighting.apply, data, eps=1e-6, atol=1e-4) is True
