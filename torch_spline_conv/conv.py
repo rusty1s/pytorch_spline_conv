@@ -63,7 +63,7 @@ class SplineConv(object):
         output = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, output)
 
         # Normalize output by node degree.
-        deg = node_degree(row, n, out=src.new_empty(()))
+        deg = node_degree(row, n, output.dtype, output.device)
         output /= deg.unsqueeze(-1).clamp(min=1)
 
         # Weight root node separately (if wished).
