@@ -1,5 +1,4 @@
 import torch
-from torch.autograd import Function
 
 from .basis import SplineBasis
 from .weighting import SplineWeighting
@@ -7,7 +6,7 @@ from .weighting import SplineWeighting
 from .utils.degree import degree as node_degree
 
 
-class SplineConv(Function):
+class SplineConv(object):
     """Applies the spline-based convolution operator :math:`(f \star g)(i) =
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
@@ -28,7 +27,7 @@ class SplineConv(Function):
             parameters in each edge dimension.
         is_open_spline (:class:`ByteTensor`): Whether to use open or closed
             B-spline bases for each dimension.
-        degree (:class:`Scalar`): B-spline basis degree.
+        degree (int, optional): B-spline basis degree. (default: :obj:`1`)
         root_weight (:class:`Tensor`, optional): Additional shared trainable
             parameters for each feature of the root node of shape
             (in_channels x out_channels). (default: :obj:`None`)
@@ -39,16 +38,15 @@ class SplineConv(Function):
     """
 
     @staticmethod
-    def forward(ctx,
-                src,
-                edge_index,
-                pseudo,
-                weight,
-                kernel_size,
-                is_open_spline,
-                degree,
-                root_weight=None,
-                bias=None):
+    def apply(src,
+              edge_index,
+              pseudo,
+              weight,
+              kernel_size,
+              is_open_spline,
+              degree=1,
+              root_weight=None,
+              bias=None):
 
         src = src.unsqueeze(-1) if src.dim() == 1 else src
         pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
@@ -57,8 +55,8 @@ class SplineConv(Function):
         n, m_out = src.size(0), weight.size(2)
 
         # Weight each node.
-        b, wi = SplineBasis.apply(degree, pseudo, kernel_size, is_open_spline)
-        output = SplineWeighting.apply(src[col], weight, b, wi)
+        data = SplineBasis.apply(pseudo, kernel_size, is_open_spline, degree)
+        output = SplineWeighting.apply(src[col], weight, *data)
 
         # Convert e x m_out to n x m_out features.
         row_expand = row.unsqueeze(-1).expand_as(output)

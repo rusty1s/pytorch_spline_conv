@@ -3,7 +3,7 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_spline_conv import spline_conv
+from torch_spline_conv import SplineConv
 from torch_spline_conv.utils.ffi import implemented_degrees as degrees
 
 from .utils import dtypes, devices, tensor
@@ -48,36 +48,30 @@ def test_spline_conv_forward(test, dtype, device):
     weight = tensor(test['weight'], dtype, device)
     kernel_size = tensor(test['kernel_size'], torch.long, device)
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
-    degree = torch.tensor(1)
     root_weight = tensor(test['root_weight'], dtype, device)
     bias = tensor(test['bias'], dtype, device)
 
-    output = spline_conv(src, edge_index, pseudo, weight, kernel_size,
-                         is_open_spline, degree, root_weight, bias)
+    output = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
+                              is_open_spline, 1, root_weight, bias)
     assert output.tolist() == test['output']
 
 
 @pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))
 def test_spline_basis_backward(degree, device):
-    pass
-    # src = torch.DoubleTensor(3, 2).uniform_(-1, 1)
-    # edge_index = torch.LongTensor([[0, 1, 1, 2], [1, 0, 2, 1]])
-    # pseudo = torch.DoubleTensor(4, 3).uniform_(0, 1)
-    # weight = torch.DoubleTensor(125, 2, 4).uniform_(-1, 1)
-    # kernel_size = torch.LongTensor([5, 5, 5])
-    # is_open_spline = torch.ByteTensor([1, 0, 1])
-    # root_weight = torch.DoubleTensor(2, 4).uniform_(-1, 1)
-    # bias = torch.DoubleTensor(4).uniform_(-1, 1)
+    src = torch.rand((3, 2), dtype=torch.double, device=device)
+    src.requires_grad_()
+    edge_index = tensor([[0, 1, 1, 2], [1, 0, 2, 1]], torch.long, device)
+    pseudo = torch.rand((4, 3), dtype=torch.double, device=device)
+    pseudo.requires_grad_()
+    weight = torch.rand((125, 2, 4), dtype=torch.double, device=device)
+    weight.requires_grad_()
+    kernel_size = tensor([5, 5, 5], torch.long, device)
+    is_open_spline = tensor([1, 0, 1], torch.uint8, device)
+    root_weight = torch.rand((2, 4), dtype=torch.double, device=device)
+    root_weight.requires_grad_()
+    bias = torch.rand((4), dtype=torch.double, device=device)
+    bias.requires_grad_()
 
-    # src = Variable(src, requires_grad=True)
-    # pseudo = Variable(pseudo, requires_grad=True)
-    # weight = Variable(weight, requires_grad=True)
-    # root_weight = Variable(root_weight, requires_grad=True)
-    # bias = Variable(bias, requires_grad=True)
-
-    # def op(src, pseudo, weight, root_weight, bias):
-    #     return spline_conv(src, edge_index, pseudo, weight, kernel_size,
-    #                        is_open_spline, degree, root_weight, bias)
-
-    # data = (src, pseudo, weight, root_weight, bias)
-    # assert gradcheck(op, data, eps=1e-6, atol=1e-4) is True
+    data = (src, edge_index, pseudo, weight, kernel_size, is_open_spline,
+            degree, root_weight, bias)
+    assert gradcheck(SplineConv.apply, data, eps=1e-6, atol=1e-4) is True

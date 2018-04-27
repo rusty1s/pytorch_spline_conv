@@ -20,17 +20,20 @@ def bw(degree, grad_basis, pseudo, kernel_size, is_open_spline):
 
 class SplineBasis(Function):
     @staticmethod
-    def forward(ctx, degree, pseudo, kernel_size, is_open_spline):
-        ctx.save_for_backward(degree, pseudo, kernel_size, is_open_spline)
-        return fw(degree.item(), pseudo, kernel_size, is_open_spline)
+    def forward(ctx, pseudo, kernel_size, is_open_spline, degree=1):
+        ctx.save_for_backward(pseudo)
+        ctx.kernel_size = kernel_size
+        ctx.is_open_spline = is_open_spline
+        ctx.degree = degree
+        return fw(degree, pseudo, kernel_size, is_open_spline)
 
     @staticmethod
     def backward(ctx, grad_basis, grad_weight_index):
-        degree, pseudo, kernel_size, is_open_spline = ctx.saved_tensors
+        pseudo, = ctx.saved_tensors
 
         grad_pseudo = None
-        if ctx.needs_input_grad[1]:
-            grad_pseudo = bw(degree.item(), grad_basis, pseudo, kernel_size,
-                             is_open_spline)
+        if ctx.needs_input_grad[0]:
+            grad_pseudo = bw(ctx.degree, grad_basis, pseudo, ctx.kernel_size,
+                             ctx.is_open_spline)
 
-        return None, grad_pseudo, None, None
+        return grad_pseudo, None, None, None

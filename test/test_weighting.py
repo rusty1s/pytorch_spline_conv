@@ -33,19 +33,17 @@ def test_spline_weighting_forward(test, dtype, device):
 
 @pytest.mark.parametrize('device', devices)
 def test_spline_basis_backward(device):
-    degree = torch.tensor(1)
     pseudo = torch.rand((4, 2), dtype=torch.double, device=device)
     pseudo.requires_grad_()
     kernel_size = tensor([5, 5], torch.long, device)
     is_open_spline = tensor([1, 1], torch.uint8, device)
 
-    basis, weight_index = SplineBasis.apply(degree, pseudo, kernel_size,
-                                            is_open_spline)
+    basis, weight_idx = SplineBasis.apply(pseudo, kernel_size, is_open_spline)
 
     src = torch.rand((4, 2), dtype=torch.double, device=device)
     src.requires_grad_()
     weight = torch.rand((25, 2, 4), dtype=torch.double, device=device)
     weight.requires_grad_()
 
-    data = (src, weight, basis, weight_index)
+    data = (src, weight, basis, weight_idx)
     assert gradcheck(SplineWeighting.apply, data, eps=1e-6, atol=1e-4) is True

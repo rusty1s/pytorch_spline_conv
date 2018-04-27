@@ -2,9 +2,7 @@ from itertools import product
 
 import pytest
 import torch
-from torch.autograd import gradcheck
 from torch_spline_conv.basis import SplineBasis
-from torch_spline_conv.utils.ffi import implemented_degrees as degrees
 
 from .utils import dtypes, devices, tensor
 
@@ -31,24 +29,10 @@ tests = [{
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_spline_basis_forward(test, dtype, device):
-    degree = torch.tensor(1)
     pseudo = tensor(test['pseudo'], dtype, device)
     kernel_size = tensor(test['kernel_size'], torch.long, device)
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
 
-    basis, weight_index = SplineBasis.apply(degree, pseudo, kernel_size,
-                                            is_open_spline)
+    basis, weight_idx = SplineBasis.apply(pseudo, kernel_size, is_open_spline)
     assert basis.tolist() == test['basis']
-    assert weight_index.tolist() == test['weight_index']
-
-
-@pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))
-def test_spline_basis_backward(degree, device):
-    degree = torch.tensor(degree)
-    pseudo = torch.rand((4, 3), dtype=torch.double, device=device)
-    pseudo.requires_grad_()
-    kernel_size = tensor([5, 5, 5], torch.long, device)
-    is_open_spline = tensor([1, 0, 1], torch.uint8, device)
-
-    data = (degree, pseudo, kernel_size, is_open_spline)
-    # assert gradcheck(SplineBasis.apply, data, eps=1e-6, atol=1e-4) is True
+    assert weight_idx.tolist() == test['weight_index']

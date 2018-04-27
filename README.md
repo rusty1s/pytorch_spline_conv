@@ -40,7 +40,7 @@ output = SplineConv.apply(src,
                           weight,
                           kernel_size,
                           is_open_spline,
-                          degree,
+                          degree=1,
                           root_weight=None,
                           bias=None)
 ```
@@ -65,7 +65,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 * **weight** *(Tensor)* - Trainable weight parameters of shape `(kernel_size x in_channels x out_channels)`.
 * **kernel_size** *(LongTensor)* - Number of trainable weight parameters in each edge dimension.
 * **is_open_spline** *(ByteTensor)* - Whether to use open or closed B-spline bases for each dimension.
-* **degree** *(Scalar)* - B-spline basis degree.
+* **degree** *(int, optional)* - B-spline basis degree. (default: `1`)
 * **root_weight** *(Tensor, optional)* - Additional shared trainable parameters for each feature of the root node of shape `(in_channels x out_channels)`. (default: `None`)
 * **bias** *(Tensor, optional)* - Optional bias of shape `(out_channels)`. (default: `None`)
 
@@ -85,7 +85,7 @@ pseudo = torch.Tensor(6, 2)  # two-dimensional edge attributes
 weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for in_channels x out_channels
 kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge dimension
 is_open_spline = torch.ByteTensor([1, 1])  # only use open B-splines
-degree = torch.tensor(1)  # B-spline degree of 1
+degree = 1  # B-spline degree of 1
 root_weight = torch.Tensor(2, 4)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 
