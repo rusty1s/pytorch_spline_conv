@@ -3,7 +3,7 @@ import torch
 dtypes = [torch.float, torch.double]
 
 devices = [torch.device('cpu')]
-if torch.cuda.is_available():
+if torch.cuda.is_available():  # pragma: no cover
     devices += [torch.device('cuda:{}'.format(torch.cuda.current_device()))]
 
 
