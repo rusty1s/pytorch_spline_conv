@@ -30,7 +30,7 @@ tests = [{
     'is_open_spline': [1, 0],
     'root_weight': [[12.5], [13]],
     'bias': [1],
-    'output': [
+    'expected': [
         [1 + 12.5 * 9 + 13 * 10 + (8.5 + 40.5 + 107.5 + 101.5) / 4],
         [1 + 12.5 * 1 + 13 * 2],
         [1 + 12.5 * 3 + 13 * 4],
@@ -51,9 +51,9 @@ def test_spline_conv_forward(test, dtype, device):
     root_weight = tensor(test['root_weight'], dtype, device)
     bias = tensor(test['bias'], dtype, device)
 
-    output = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
-                              is_open_spline, 1, root_weight, bias)
-    assert output.tolist() == test['output']
+    out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
+                           is_open_spline, 1, root_weight, bias)
+    assert out.tolist() == test['expected']
 
 
 @pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))

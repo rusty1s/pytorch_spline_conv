@@ -34,7 +34,7 @@ pip install cffi torch-spline-conv
 ```python
 from torch_spline_conv import SplineConv
 
-output = SplineConv.apply(src,
+out = SplineConv.apply(src,
                           edge_index,
                           pseudo,
                           weight,
@@ -71,7 +71,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 
 ### Returns
 
-* **output** *(Tensor)* - Output node features of shape `(number_of_nodes x out_channels)`.
+* **out** *(Tensor)* - out node features of shape `(number_of_nodes x out_channels)`.
 
 ### Example
 
@@ -89,10 +89,10 @@ degree = 1  # B-spline degree of 1
 root_weight = torch.Tensor(2, 4)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 
-output = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
+out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
                           is_open_spline, degree, root_weight, bias)
 
-print(output.size())
+print(out.size())
 torch.Size([4, 4])  # 4 nodes with 4 features each
 ```
 

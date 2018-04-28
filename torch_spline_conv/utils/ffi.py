@@ -33,16 +33,16 @@ def fw_weighting(self, src, weight, basis, weight_index):
     func(self, src, weight, basis, weight_index)
 
 
-def bw_weighting_src(self, grad_output, weight, basis, weight_index):
+def bw_weighting_src(self, grad_out, weight, basis, weight_index):
     func = get_func('weightingBackwardSrc', self)
-    func(self, grad_output, weight, basis, weight_index)
+    func(self, grad_out, weight, basis, weight_index)
 
 
-def bw_weighting_weight(self, grad_output, src, basis, weight_index):
+def bw_weighting_weight(self, grad_out, src, basis, weight_index):
     func = get_func('weightingBackwardWeight', self)
-    func(self, grad_output, src, basis, weight_index)
+    func(self, grad_out, src, basis, weight_index)
 
 
-def bw_weighting_basis(self, grad_output, src, weight, weight_index):
+def bw_weighting_basis(self, grad_out, src, weight, weight_index):
     func = get_func('weightingBackwardBasis', self)
-    func(self, grad_output, src, weight, weight_index)
+    func(self, grad_out, src, weight, weight_index)

@@ -56,22 +56,22 @@ class SplineConv(object):
 
         # Weight each node.
         data = SplineBasis.apply(pseudo, kernel_size, is_open_spline, degree)
-        output = SplineWeighting.apply(src[col], weight, *data)
+        out = SplineWeighting.apply(src[col], weight, *data)
 
         # Convert e x m_out to n x m_out features.
-        row_expand = row.unsqueeze(-1).expand_as(output)
-        output = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, output)
+        row_expand = row.unsqueeze(-1).expand_as(out)
+        out = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
 
-        # Normalize output by node degree.
-        deg = node_degree(row, n, output.dtype, output.device)
-        output /= deg.unsqueeze(-1).clamp(min=1)
+        # Normalize out by node degree.
+        deg = node_degree(row, n, out.dtype, out.device)
+        out /= deg.unsqueeze(-1).clamp(min=1)
 
         # Weight root node separately (if wished).
         if root_weight is not None:
-            output += torch.mm(src, root_weight)
+            out += torch.mm(src, root_weight)
 
         # Add bias (if wished).
         if bias is not None:
-            output += bias
+            out += bias
 
-        return output
+        return out

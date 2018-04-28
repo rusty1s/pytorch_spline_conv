@@ -13,7 +13,7 @@ tests = [{
     'weight': [[[1], [2]], [[3], [4]], [[5], [6]], [[7], [8]]],
     'basis': [[0.5, 0, 0.5, 0], [0, 0, 0.5, 0.5]],
     'weight_index': [[0, 1, 2, 3], [0, 1, 2, 3]],
-    'output': [
+    'expected': [
         [0.5 * ((1 * (1 + 5)) + (2 * (2 + 6)))],
         [0.5 * ((3 * (5 + 7)) + (4 * (6 + 8)))],
     ]
@@ -27,8 +27,8 @@ def test_spline_weighting_forward(test, dtype, device):
     basis = tensor(test['basis'], dtype, device)
     weight_index = tensor(test['weight_index'], torch.long, device)
 
-    output = SplineWeighting.apply(src, weight, basis, weight_index)
-    assert output.tolist() == test['output']
+    out = SplineWeighting.apply(src, weight, basis, weight_index)
+    assert out.tolist() == test['expected']
 
 
 @pytest.mark.parametrize('device', devices)
