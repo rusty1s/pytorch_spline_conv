@@ -35,14 +35,14 @@ pip install cffi torch-spline-conv
 from torch_spline_conv import SplineConv
 
 out = SplineConv.apply(src,
-                          edge_index,
-                          pseudo,
-                          weight,
-                          kernel_size,
-                          is_open_spline,
-                          degree=1,
-                          root_weight=None,
-                          bias=None)
+                       edge_index,
+                       pseudo,
+                       weight,
+                       kernel_size,
+                       is_open_spline,
+                       degree=1,
+                       root_weight=None,
+                       bias=None)
 ```
 
 Applies the spline-based convolution operator
