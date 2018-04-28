@@ -79,14 +79,14 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 import torch
 from torch_spline_conv import SplineConv
 
-src = torch.Tensor(4, 2)  # 4 nodes with 2 features each
-edge_index = torch.LongTensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
-pseudo = torch.Tensor(6, 2)  # two-dimensional edge attributes
-weight = torch.Tensor(25, 2, 4)  # 25 trainable parameters for in_channels x out_channels
-kernel_size = torch.LongTensor([5, 5])  # 5 trainable parameters in each edge dimension
-is_open_spline = torch.ByteTensor([1, 1])  # only use open B-splines
+src = torch.rand((4, 2), dtype=torch.float)  # 4 nodes with 2 features each
+edge_index = torch.tensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
+pseudo = torch.rand((6, 2), dtype=torch.float)  # two-dimensional edge attributes
+weight = torch.rand((25, 2, 4), dtype=torch.float)  # 25 trainable parameters for in_channels x out_channels
+kernel_size = torch.tensor([5, 5])  # 5 trainable parameters in each edge dimension
+is_open_spline = torch.tensor([1, 1], dtype=torch.uint8)  # only use open B-splines
 degree = 1  # B-spline degree of 1
-root_weight = torch.Tensor(2, 4)  # separately weight root nodes
+root_weight = torch.rand((2, 4), dtype=torch.float)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 
 out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
