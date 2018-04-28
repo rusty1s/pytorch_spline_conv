@@ -3,9 +3,9 @@ from .._ext import ffi
 implemented_degrees = {1: 'linear', 2: 'quadratic', 3: 'cubic'}
 
 
-def get_func(name, is_cuda, tensor=None):
+def get_func(name, is_cuda, tensor):
     prefix = 'THCC' if is_cuda else 'TH'
-    prefix += 'Tensor' if tensor is None else tensor.type().split('.')[-1]
+    prefix += tensor.type().split('.')[-1]
     return getattr(ffi, '{}_{}'.format(prefix, name))
 
 
