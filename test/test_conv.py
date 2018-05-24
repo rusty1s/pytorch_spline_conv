@@ -31,11 +31,11 @@ tests = [{
     'root_weight': [[12.5], [13]],
     'bias': [1],
     'expected': [
-        [1 + 12.5 * 9 + 13 * 10 + (8.5 + 40.5 + 107.5 + 101.5) / 4],
-        [1 + 12.5 * 1 + 13 * 2],
-        [1 + 12.5 * 3 + 13 * 4],
-        [1 + 12.5 * 5 + 13 * 6],
-        [1 + 12.5 * 7 + 13 * 8],
+        1 + (12.5 * 9 + 13 * 10 + 8.5 + 40.5 + 107.5 + 101.5) / 5,
+        1 + 12.5 * 1 + 13 * 2,
+        1 + 12.5 * 3 + 13 * 4,
+        1 + 12.5 * 5 + 13 * 6,
+        1 + 12.5 * 7 + 13 * 8,
     ]
 }]
 
@@ -53,7 +53,8 @@ def test_spline_conv_forward(test, dtype, device):
 
     out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
                            is_open_spline, 1, root_weight, bias)
-    assert out.tolist() == test['expected']
+    assert list(out.size()) == [5, 1]
+    assert pytest.approx(out.view(-1).tolist()) == test['expected']
 
 
 @pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))

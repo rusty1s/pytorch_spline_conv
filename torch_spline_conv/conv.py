@@ -62,13 +62,15 @@ class SplineConv(object):
         row_expand = row.unsqueeze(-1).expand_as(out)
         out = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
 
-        # Normalize out by node degree.
         deg = node_degree(row, n, out.dtype, out.device)
-        out /= deg.unsqueeze(-1).clamp(min=1)
 
         # Weight root node separately (if wished).
         if root_weight is not None:
             out += torch.mm(src, root_weight)
+            deg += 1
+
+        # Normalize out by node degree.
+        out /= deg.unsqueeze(-1).clamp(min=1)
 
         # Add bias (if wished).
         if bias is not None:
