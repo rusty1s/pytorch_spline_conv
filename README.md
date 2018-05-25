@@ -93,7 +93,7 @@ root_weight = torch.rand((2, 4), dtype=torch.float)  # separately weight root no
 bias = None  # do not apply an additional bias
 
 out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
-                       is_open_spline, degree, norm root_weight, bias)
+                       is_open_spline, degree, norm, root_weight, bias)
 
 print(out.size())
 torch.Size([4, 4])  # 4 nodes with 4 features each
