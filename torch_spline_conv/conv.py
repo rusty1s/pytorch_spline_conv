@@ -28,6 +28,8 @@ class SplineConv(object):
         is_open_spline (:class:`ByteTensor`): Whether to use open or closed
             B-spline bases for each dimension.
         degree (int, optional): B-spline basis degree. (default: :obj:`1`)
+        norm (bool, optional): Whether to normalize output by node degree.
+            (default: :obj:`True`)
         root_weight (:class:`Tensor`, optional): Additional shared trainable
             parameters for each feature of the root node of shape
             (in_channels x out_channels). (default: :obj:`None`)
@@ -45,6 +47,7 @@ class SplineConv(object):
               kernel_size,
               is_open_spline,
               degree=1,
+              norm=True,
               root_weight=None,
               bias=None):
 
@@ -62,15 +65,14 @@ class SplineConv(object):
         row_expand = row.unsqueeze(-1).expand_as(out)
         out = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
 
-        deg = node_degree(row, n, out.dtype, out.device)
+        # Normalize out by node degree (if wished).
+        if norm:
+            deg = node_degree(row, n, out.dtype, out.device)
+            out = out / deg.unsqueeze(-1).clamp(min=1)
 
         # Weight root node separately (if wished).
         if root_weight is not None:
             out += torch.mm(src, root_weight)
-            deg += 1
-
-        # Normalize out by node degree.
-        out /= deg.unsqueeze(-1).clamp(min=1)
 
         # Add bias (if wished).
         if bias is not None:

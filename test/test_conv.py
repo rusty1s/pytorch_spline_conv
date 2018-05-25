@@ -31,11 +31,11 @@ tests = [{
     'root_weight': [[12.5], [13]],
     'bias': [1],
     'expected': [
-        1 + (12.5 * 9 + 13 * 10 + 8.5 + 40.5 + 107.5 + 101.5) / 5,
-        1 + 12.5 * 1 + 13 * 2,
-        1 + 12.5 * 3 + 13 * 4,
-        1 + 12.5 * 5 + 13 * 6,
-        1 + 12.5 * 7 + 13 * 8,
+        [1 + 12.5 * 9 + 13 * 10 + (8.5 + 40.5 + 107.5 + 101.5) / 4],
+        [1 + 12.5 * 1 + 13 * 2],
+        [1 + 12.5 * 3 + 13 * 4],
+        [1 + 12.5 * 5 + 13 * 6],
+        [1 + 12.5 * 7 + 13 * 8],
     ]
 }]
 
@@ -52,9 +52,8 @@ def test_spline_conv_forward(test, dtype, device):
     bias = tensor(test['bias'], dtype, device)
 
     out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
-                           is_open_spline, 1, root_weight, bias)
-    assert list(out.size()) == [5, 1]
-    assert pytest.approx(out.view(-1).tolist()) == test['expected']
+                           is_open_spline, 1, True, root_weight, bias)
+    assert out.tolist() == test['expected']
 
 
 @pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))
@@ -74,5 +73,5 @@ def test_spline_basis_backward(degree, device):
     bias.requires_grad_()
 
     data = (src, edge_index, pseudo, weight, kernel_size, is_open_spline,
-            degree, root_weight, bias)
+            degree, True, root_weight, bias)
     assert gradcheck(SplineConv.apply, data, eps=1e-6, atol=1e-4) is True
