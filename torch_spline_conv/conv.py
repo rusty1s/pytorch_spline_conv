@@ -72,10 +72,10 @@ class SplineConv(object):
 
         # Weight root node separately (if wished).
         if root_weight is not None:
-            out += torch.mm(src, root_weight)
+            out = out + torch.mm(src, root_weight)
 
         # Add bias (if wished).
         if bias is not None:
-            out += bias
+            out = out + bias
 
         return out
