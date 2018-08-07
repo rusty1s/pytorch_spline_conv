@@ -6,8 +6,6 @@ from torch_spline_conv.basis import SplineBasis
 
 from .utils import dtypes, devices, tensor
 
-devices = [torch.device('cpu')]
-
 tests = [{
     'pseudo': [[0], [0.0625], [0.25], [0.75], [0.9375], [1]],
     'kernel_size': [5],

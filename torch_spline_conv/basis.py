@@ -1,12 +1,14 @@
 import torch
 import basis_cpu
 
+if torch.cuda.is_available():
+    import basis_cuda
+
 implemented_degrees = {1: 'linear', 2: 'quadratic', 3: 'cubic'}
 
 
 def get_func(name, tensor):
-    # module = basis_cuda if tensor.is_cuda else basis_cpu
-    module = basis_cpu
+    module = basis_cuda if tensor.is_cuda else basis_cpu
     return getattr(module, name)
 
 
