@@ -177,7 +177,7 @@ template <typename scalar_t> struct BasisBackward {
     });                                                                        \
                                                                                \
     return grad_pseudo;                                                        \
-  }
+  }()
 
 #define BASIS_BACKWARD_KERNEL(M, GRAD_PSEUDO, GRAD_BASIS, PSEUDO, KERNEL_SIZE, \
                               IS_OPEN_SPLINE, NUMEL, CODE, GRAD_CODE)          \
@@ -188,18 +188,58 @@ template <typename scalar_t> struct BasisBackward {
     }                                                                          \
   }()
 
+template <typename scalar_t>
+__global__ void
+linear_bw_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_pseudo,
+                 at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_basis,
+                 at::cuda::detail::TensorInfo<scalar_t, int64_t> pseudo,
+                 int64_t *kernel_size, uint8_t *is_open_spline, size_t numel) {
+  BASIS_BACKWARD_KERNEL(1, grad_pseudo, grad_basis, pseudo, kernel_size,
+                        is_open_spline, numel,
+                        BasisForward<scalar_t>::linear(v, k_mod),
+                        BasisBackward<scalar_t>::linear(v, k_mod));
+}
+
 at::Tensor linear_bw_cuda(at::Tensor grad_basis, at::Tensor pseudo,
                           at::Tensor kernel_size, at::Tensor is_open_spline) {
-  return grad_basis;
+  return BASIS_BACKWARD(1, grad_basis, pseudo, kernel_size, is_open_spline,
+                        linear_bw_kernel);
+}
+
+template <typename scalar_t>
+__global__ void
+quadratic_bw_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_pseudo,
+                    at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_basis,
+                    at::cuda::detail::TensorInfo<scalar_t, int64_t> pseudo,
+                    int64_t *kernel_size, uint8_t *is_open_spline,
+                    size_t numel) {
+  BASIS_BACKWARD_KERNEL(2, grad_pseudo, grad_basis, pseudo, kernel_size,
+                        is_open_spline, numel,
+                        BasisForward<scalar_t>::quadratic(v, k_mod),
+                        BasisBackward<scalar_t>::quadratic(v, k_mod));
 }
 
 at::Tensor quadratic_bw_cuda(at::Tensor grad_basis, at::Tensor pseudo,
                              at::Tensor kernel_size,
                              at::Tensor is_open_spline) {
-  return grad_basis;
+  return BASIS_BACKWARD(2, grad_basis, pseudo, kernel_size, is_open_spline,
+                        quadratic_bw_kernel);
+}
+
+template <typename scalar_t>
+__global__ void
+cubic_bw_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_pseudo,
+                at::cuda::detail::TensorInfo<scalar_t, int64_t> grad_basis,
+                at::cuda::detail::TensorInfo<scalar_t, int64_t> pseudo,
+                int64_t *kernel_size, uint8_t *is_open_spline, size_t numel) {
+  BASIS_BACKWARD_KERNEL(3, grad_pseudo, grad_basis, pseudo, kernel_size,
+                        is_open_spline, numel,
+                        BasisForward<scalar_t>::cubic(v, k_mod),
+                        BasisBackward<scalar_t>::cubic(v, k_mod));
 }
 
 at::Tensor cubic_bw_cuda(at::Tensor grad_basis, at::Tensor pseudo,
                          at::Tensor kernel_size, at::Tensor is_open_spline) {
-  return grad_basis;
+  return BASIS_BACKWARD(3, grad_basis, pseudo, kernel_size, is_open_spline,
+                        cubic_bw_kernel);
 }

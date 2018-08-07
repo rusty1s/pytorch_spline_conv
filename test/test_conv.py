@@ -8,8 +8,6 @@ from torch_spline_conv.basis import implemented_degrees as degrees
 
 from .utils import dtypes, devices, tensor
 
-devices = [torch.device('cpu')]
-
 tests = [{
     'x': [[9, 10], [1, 2], [3, 4], [5, 6], [7, 8]],
     'edge_index': [[0, 0, 0, 0], [1, 2, 3, 4]],
