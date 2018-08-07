@@ -21,13 +21,26 @@ The operator works on all floating point data types and is implemented both for 
 
 ## Installation
 
-If cuda is available, check that `nvcc` is accessible from your terminal, e.g. by typing `nvcc --version`.
-If not, add cuda (`/usr/local/cuda/bin`) to your `$PATH`.
+Ensure that at least PyTorch 0.4.1 is installed and verify that `cuda/bin` and `cuda/install` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+
+```
+$ python -c "import torch; print(torch.__version__)"
+>>> 0.4.1
+
+$ echo $PATH
+>>> /usr/local/cuda/bin:...
+
+$ echo $CPATH
+>>> /usr/local/cuda/install:...
+```
+
 Then run:
 
 ```
-pip install cffi torch-spline-conv
+pip install torch-spline-conv
 ```
+
+If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_spline_conv/issues).
 
 ## Usage
 
