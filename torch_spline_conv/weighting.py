@@ -35,7 +35,7 @@ class SplineWeighting(Function):
         return fw(src, weight, basis, weight_index)
 
     @staticmethod
-    def backward(ctx, grad_out):  # pragma: no cover
+    def backward(ctx, grad_out):
         grad_src = grad_weight = grad_basis = None
         src, weight, basis, weight_index = ctx.saved_tensors
 

@@ -1,5 +1,5 @@
 [report]
 exclude_lines =
     pragma: no cover
-    def backward
-    def bw
+    cuda
+    backward
