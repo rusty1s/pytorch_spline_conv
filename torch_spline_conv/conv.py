@@ -14,7 +14,7 @@ class SplineConv(object):
     tensor product basis for a single input feature map :math:`l`.
 
     Args:
-        src (:class:`Tensor`): Input node features of shape
+        x (:class:`Tensor`): Input node features of shape
             (number_of_nodes x in_channels).
         edge_index (:class:`LongTensor`): Graph edges, given by source and
             target indices, of shape (2 x number_of_edges) in the fixed
@@ -40,7 +40,7 @@ class SplineConv(object):
     """
 
     @staticmethod
-    def apply(src,
+    def apply(x,
               edge_index,
               pseudo,
               weight,
@@ -51,19 +51,19 @@ class SplineConv(object):
               root_weight=None,
               bias=None):
 
-        src = src.unsqueeze(-1) if src.dim() == 1 else src
+        x = x.unsqueeze(-1) if x.dim() == 1 else x
         pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
         row, col = edge_index
-        n, m_out = src.size(0), weight.size(2)
+        n, m_out = x.size(0), weight.size(2)
 
         # Weight each node.
         data = SplineBasis.apply(pseudo, kernel_size, is_open_spline, degree)
-        out = SplineWeighting.apply(src[col], weight, *data)
+        out = SplineWeighting.apply(x[col], weight, *data)
 
         # Convert e x m_out to n x m_out features.
         row_expand = row.unsqueeze(-1).expand_as(out)
-        out = src.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
+        out = x.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
 
         # Normalize out by node degree (if wished).
         if norm:
@@ -72,7 +72,7 @@ class SplineConv(object):
 
         # Weight root node separately (if wished).
         if root_weight is not None:
-            out = out + torch.mm(src, root_weight)
+            out = out + torch.mm(x, root_weight)
 
         # Add bias (if wished).
         if bias is not None:

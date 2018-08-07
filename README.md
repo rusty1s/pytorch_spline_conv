@@ -47,7 +47,7 @@ If you are running into any installation problems, please create an [issue](http
 ```python
 from torch_spline_conv import SplineConv
 
-out = SplineConv.apply(src,
+out = SplineConv.apply(x,
                        edge_index,
                        pseudo,
                        weight,
@@ -73,7 +73,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 
 ### Parameters
 
-* **src** *(Tensor)* - Input node features of shape `(number_of_nodes x in_channels)`.
+* **x** *(Tensor)* - Input node features of shape `(number_of_nodes x in_channels)`.
 * **edge_index** *(LongTensor)* - Graph edges, given by source and target indices, of shape `(2 x number_of_edges)`.
 * **pseudo** *(Tensor)* - Edge attributes, ie. pseudo coordinates, of shape `(number_of_edges x number_of_edge_attributes)` in the fixed interval [0, 1].
 * **weight** *(Tensor)* - Trainable weight parameters of shape `(kernel_size x in_channels x out_channels)`.
@@ -94,7 +94,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 import torch
 from torch_spline_conv import SplineConv
 
-src = torch.rand((4, 2), dtype=torch.float)  # 4 nodes with 2 features each
+x = torch.rand((4, 2), dtype=torch.float)  # 4 nodes with 2 features each
 edge_index = torch.tensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
 pseudo = torch.rand((6, 2), dtype=torch.float)  # two-dimensional edge attributes
 weight = torch.rand((25, 2, 4), dtype=torch.float)  # 25 parameters for in_channels x out_channels
@@ -105,7 +105,7 @@ norm = True  # Normalize output by node degree.
 root_weight = torch.rand((2, 4), dtype=torch.float)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 
-out = SplineConv.apply(src, edge_index, pseudo, weight, kernel_size,
+out = SplineConv.apply(x, edge_index, pseudo, weight, kernel_size,
                        is_open_spline, degree, norm, root_weight, bias)
 
 print(out.size())

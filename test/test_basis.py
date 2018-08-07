@@ -6,6 +6,8 @@ from torch_spline_conv.basis import SplineBasis
 
 from .utils import dtypes, devices, tensor
 
+devices = [torch.device('cpu')]
+
 tests = [{
     'pseudo': [[0], [0.0625], [0.25], [0.75], [0.9375], [1]],
     'kernel_size': [5],
@@ -32,7 +34,9 @@ def test_spline_basis_forward(test, dtype, device):
     pseudo = tensor(test['pseudo'], dtype, device)
     kernel_size = tensor(test['kernel_size'], torch.long, device)
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
+    degree = 1
 
-    basis, weight_idx = SplineBasis.apply(pseudo, kernel_size, is_open_spline)
+    op = SplineBasis.apply
+    basis, weight_index = op(pseudo, kernel_size, is_open_spline, degree)
     assert basis.tolist() == test['basis']
-    assert weight_idx.tolist() == test['weight_index']
+    assert weight_index.tolist() == test['weight_index']

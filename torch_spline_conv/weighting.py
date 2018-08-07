@@ -1,52 +1,38 @@
-from torch.autograd import Function
-
-from .utils.ffi import fw_weighting, bw_weighting_src
-from .utils.ffi import bw_weighting_weight, bw_weighting_basis
+import torch
+import weighting_cpu
 
 
-def fw(src, weight, basis, weight_index):
-    out = src.new_empty((src.size(0), weight.size(2)))
-    fw_weighting(out, src, weight, basis, weight_index)
-    return out
+def get_func(name, tensor):
+    # module = weighting_cuda if tensor.is_cuda else weighting_cpu
+    module = weighting_cpu
+    return getattr(module, name)
 
 
-def bw_src(grad_out, weight, basis, weight_index):
-    grad_src = grad_out.new_empty((grad_out.size(0), weight.size(1)))
-    bw_weighting_src(grad_src, grad_out, weight, basis, weight_index)
-    return grad_src
-
-
-def bw_weight(grad_out, src, basis, weight_index, K):
-    grad_weight = src.new_empty((K, src.size(1), grad_out.size(1)))
-    bw_weighting_weight(grad_weight, grad_out, src, basis, weight_index)
-    return grad_weight
-
-
-def bw_basis(grad_out, src, weight, weight_index):
-    grad_basis = src.new_empty(weight_index.size())
-    bw_weighting_basis(grad_basis, grad_out, src, weight, weight_index)
-    return grad_basis
-
-
-class SplineWeighting(Function):
+class SplineWeighting(torch.autograd.Function):
     @staticmethod
-    def forward(ctx, src, weight, basis, weight_index):
-        ctx.save_for_backward(src, weight, basis, weight_index)
-        return fw(src, weight, basis, weight_index)
+    def forward(ctx, x, weight, basis, weight_index):
+        ctx.weight_index = weight_index
+        ctx.save_for_backward(x, weight, basis)
+        op = get_func('weighting_fw', x)
+        out = op(x, weight, basis, weight_index)
+        return out
 
     @staticmethod
     def backward(ctx, grad_out):
-        grad_src = grad_weight = grad_basis = None
-        src, weight, basis, weight_index = ctx.saved_tensors
+        x, weight, basis = ctx.saved_tensors
+        grad_x = grad_weight = grad_basis = None
 
         if ctx.needs_input_grad[0]:
-            grad_src = bw_src(grad_out, weight, basis, weight_index)
+            op = get_func('weighting_bw_x', x)
+            grad_x = op(grad_out, weight, basis, ctx.weight_index)
 
         if ctx.needs_input_grad[1]:
-            K = weight.size(0)
-            grad_weight = bw_weight(grad_out, src, basis, weight_index, K)
+            op = get_func('weighting_bw_w', x)
+            grad_weight = op(grad_out, x, basis, ctx.weight_index,
+                             weight.size(0))
 
         if ctx.needs_input_grad[2]:
-            grad_basis = bw_basis(grad_out, src, weight, weight_index)
+            op = get_func('weighting_bw_b', x)
+            grad_basis = op(grad_out, x, weight, ctx.weight_index)
 
-        return grad_src, grad_weight, grad_basis, None
+        return grad_x, grad_weight, grad_basis, None

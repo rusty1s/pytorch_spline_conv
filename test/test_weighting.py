@@ -8,8 +8,10 @@ from torch_spline_conv.basis import SplineBasis
 
 from .utils import dtypes, devices, tensor
 
+devices = [torch.device('cpu')]
+
 tests = [{
-    'src': [[1, 2], [3, 4]],
+    'x': [[1, 2], [3, 4]],
     'weight': [[[1], [2]], [[3], [4]], [[5], [6]], [[7], [8]]],
     'basis': [[0.5, 0, 0.5, 0], [0, 0, 0.5, 0.5]],
     'weight_index': [[0, 1, 2, 3], [0, 1, 2, 3]],
@@ -22,28 +24,30 @@ tests = [{
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_spline_weighting_forward(test, dtype, device):
-    src = tensor(test['src'], dtype, device)
+    x = tensor(test['x'], dtype, device)
     weight = tensor(test['weight'], dtype, device)
     basis = tensor(test['basis'], dtype, device)
     weight_index = tensor(test['weight_index'], torch.long, device)
 
-    out = SplineWeighting.apply(src, weight, basis, weight_index)
+    out = SplineWeighting.apply(x, weight, basis, weight_index)
     assert out.tolist() == test['expected']
 
 
 @pytest.mark.parametrize('device', devices)
 def test_spline_basis_backward(device):
     pseudo = torch.rand((4, 2), dtype=torch.double, device=device)
-    pseudo.requires_grad_()
     kernel_size = tensor([5, 5], torch.long, device)
     is_open_spline = tensor([1, 1], torch.uint8, device)
+    degree = 1
 
-    basis, weight_idx = SplineBasis.apply(pseudo, kernel_size, is_open_spline)
+    op = SplineBasis.apply
+    basis, weight_index = op(pseudo, kernel_size, is_open_spline, degree)
+    basis.requires_grad_()
 
-    src = torch.rand((4, 2), dtype=torch.double, device=device)
-    src.requires_grad_()
+    x = torch.rand((4, 2), dtype=torch.double, device=device)
+    x.requires_grad_()
     weight = torch.rand((25, 2, 4), dtype=torch.double, device=device)
     weight.requires_grad_()
 
-    data = (src, weight, basis, weight_idx)
+    data = (x, weight, basis, weight_index)
     assert gradcheck(SplineWeighting.apply, data, eps=1e-6, atol=1e-4) is True

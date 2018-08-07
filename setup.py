@@ -1,12 +1,18 @@
-from os import path as osp
-
 from setuptools import setup, find_packages
+import torch
+from torch.utils.cpp_extension import CppExtension, CUDAExtension
+
+ext_modules = [
+    CppExtension('basis_cpu', ['cpu/basis.cpp']),
+    CppExtension('weighting_cpu', ['cpu/weighting.cpp']),
+]
+cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
 __version__ = '1.0.4'
 url = 'https://github.com/rusty1s/pytorch_spline_conv'
 
-install_requires = ['cffi']
-setup_requires = ['pytest-runner', 'cffi']
+install_requires = []
+setup_requires = ['pytest-runner']
 tests_require = ['pytest', 'pytest-cov']
 
 setup(
@@ -25,7 +31,7 @@ setup(
     install_requires=install_requires,
     setup_requires=setup_requires,
     tests_require=tests_require,
-    packages=find_packages(exclude=['build']),
-    ext_package='',
-    cffi_modules=[osp.join(osp.dirname(__file__), 'build.py:ffi')],
+    ext_modules=ext_modules,
+    cmdclass=cmdclass,
+    packages=find_packages(),
 )
