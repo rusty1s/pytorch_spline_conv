@@ -86,7 +86,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 
 ### Returns
 
-* **out** *(Tensor)* - out node features of shape `(number_of_nodes x out_channels)`.
+* **out** *(Tensor)* - Out node features of shape `(number_of_nodes x out_channels)`.
 
 ### Example
 
