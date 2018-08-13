@@ -7,7 +7,6 @@ from torch_spline_conv import SplineConv
 from torch_spline_conv.basis import implemented_degrees as degrees
 
 from .utils import dtypes, devices, tensor
-devices = [torch.device('cuda')]
 
 tests = [{
     'x': [[9, 10], [1, 2], [3, 4], [5, 6], [7, 8]],
