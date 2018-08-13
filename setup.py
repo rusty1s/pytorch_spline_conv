@@ -10,7 +10,10 @@ cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
 if torch.cuda.is_available():
     ext_modules += [
-        CUDAExtension('basis_cuda', ['cuda/basis.cpp', 'cuda/basis_kernel.cu'])
+        CUDAExtension('basis_cuda',
+                      ['cuda/basis.cpp', 'cuda/basis_kernel.cu']),
+        CUDAExtension('weighting_cuda',
+                      ['cuda/weighting.cpp', 'cuda/weighting_kernel.cu']),
     ]
 
 __version__ = '1.0.4'

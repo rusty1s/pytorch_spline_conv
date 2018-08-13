@@ -185,6 +185,32 @@ template <typename scalar_t> struct BasisBackward {
     const size_t index = blockIdx.x * blockDim.x + threadIdx.x;                \
     const size_t stride = blockDim.x * gridDim.x;                              \
     for (ptrdiff_t i = index; i < NUMEL; i += stride) {                        \
+      int64_t e = i / GRAD_PSEUDO.sizes[1], d = i % GRAD_PSEUDO.sizes[1];      \
+      scalar_t g = 0, tmp;                                                     \
+                                                                               \
+      for (ptrdiff_t s = 0; s < GRAD_BASIS.sizes[1]; s++) {                    \
+        auto k_mod = (s / (int64_t)(pow(M + 1, d) + 0.5)) % (M + 1);           \
+        auto v = PSEUDO.data[e * PSEUDO.strides[0] + d * PSEUDO.strides[1]];   \
+        v *= KERNEL_SIZE[d] - M * IS_OPEN_SPLINE[d];                           \
+        v -= floor(v);                                                         \
+        v = CODE;                                                              \
+        tmp = v;                                                               \
+                                                                               \
+        for (ptrdiff_t d_it = 1; d_it < GRAD_PSEUDO.sizes[1]; d_it++) {        \
+          auto d_new = d_it - (d >= d_it);                                     \
+          k_mod = (s / (int64_t)(pow(M + 1, d_new) + 0.5)) % (M + 1);          \
+          v = PSEUDO.data[e * pseudo.strides[0] + d_new * PSEUDO.strides[1]];  \
+          v *= KERNEL_SIZE[d_new] - M * IS_OPEN_SPLINE[d_new];                 \
+          v -= floor(v);                                                       \
+          v = GRAD_CODE;                                                       \
+          tmp *= v;                                                            \
+        }                                                                      \
+        g += tmp *                                                             \
+             GRAD_BASIS                                                        \
+                 .data[e * GRAD_BASIS.strides[0] + s * GRAD_BASIS.strides[1]]; \
+      }                                                                        \
+      g *= KERNEL_SIZE[d] - M * IS_OPEN_SPLINE[d];                             \
+      GRAD_PSEUDO.data[e * GRAD_PSEUDO.sizes[1] + d] = g;                      \
     }                                                                          \
   }()
 

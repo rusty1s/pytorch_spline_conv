@@ -142,12 +142,11 @@ inline scalar_t grad_cubic(scalar_t v, int64_t k_mod) {
             tmp = v;                                                           \
                                                                                \
             for (ptrdiff_t d_it = 1; d_it < D; d_it++) {                       \
-              auto d_other = d_it - (d >= d_it);                               \
-              k_mod = (s / (int64_t)(pow(M + 1, d_other) + 0.5)) % (M + 1);    \
+              auto d_new = d_it - (d >= d_it);                                 \
+              k_mod = (s / (int64_t)(pow(M + 1, d_new) + 0.5)) % (M + 1);      \
               v = pseudo_data[e * pseudo.stride(0) +                           \
-                              d_other * pseudo.stride(1)];                     \
-              v *= kernel_size_data[d_other] -                                 \
-                   M * is_open_spline_data[d_other];                           \
+                              d_new * pseudo.stride(1)];                       \
+              v *= kernel_size_data[d_new] - M * is_open_spline_data[d_new];   \
               v -= floor(v);                                                   \
               v = FUNC<scalar_t>(v, k_mod);                                    \
               tmp *= v;                                                        \

@@ -7,6 +7,7 @@ from torch_spline_conv.weighting import SplineWeighting
 from torch_spline_conv.basis import SplineBasis
 
 from .utils import dtypes, devices, tensor
+devices = [torch.device('cuda')]
 
 tests = [{
     'x': [[1, 2], [3, 4]],

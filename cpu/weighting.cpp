@@ -142,6 +142,6 @@ at::Tensor weighting_bw_b(at::Tensor grad_out, at::Tensor x, at::Tensor weight,
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
   m.def("weighting_fw", &weighting_fw, "Weighting Forward (CPU)");
   m.def("weighting_bw_x", &weighting_bw_x, "Weighting Backward X (CPU)");
-  m.def("weighting_bw_w", &weighting_bw_w, "Weighting Backward W (CPU)");
-  m.def("weighting_bw_b", &weighting_bw_b, "Weighting Backward B (CPU)");
+  m.def("weighting_bw_w", &weighting_bw_w, "Weighting Backward Weight (CPU)");
+  m.def("weighting_bw_b", &weighting_bw_b, "Weighting Backward Basis (CPU)");
 }
