@@ -193,7 +193,7 @@ template <typename scalar_t> struct BasisBackward {
         auto v = PSEUDO.data[e * PSEUDO.strides[0] + d * PSEUDO.strides[1]];   \
         v *= KERNEL_SIZE[d] - M * IS_OPEN_SPLINE[d];                           \
         v -= floor(v);                                                         \
-        v = CODE;                                                              \
+        v = GRAD_CODE;                                                         \
         tmp = v;                                                               \
                                                                                \
         for (ptrdiff_t d_it = 1; d_it < GRAD_PSEUDO.sizes[1]; d_it++) {        \
@@ -202,7 +202,7 @@ template <typename scalar_t> struct BasisBackward {
           v = PSEUDO.data[e * pseudo.strides[0] + d_new * PSEUDO.strides[1]];  \
           v *= KERNEL_SIZE[d_new] - M * IS_OPEN_SPLINE[d_new];                 \
           v -= floor(v);                                                       \
-          v = GRAD_CODE;                                                       \
+          v = CODE;                                                            \
           tmp *= v;                                                            \
         }                                                                      \
         g += tmp *                                                             \
