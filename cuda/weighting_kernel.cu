@@ -33,7 +33,7 @@ weighting_fw_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> out,
         v += tmp;
       }
     }
-    out.data[e * out.sizes[1] + m_out] = v;
+    out.data[i] = v;
   }
 }
 
@@ -80,7 +80,7 @@ __global__ void weighting_bw_x_kernel(
         v += tmp;
       }
     }
-    grad_x.data[e * grad_x.sizes[1] + m_in] = v;
+    grad_x.data[i] = v;
   }
 }
 

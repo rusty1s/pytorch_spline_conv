@@ -75,8 +75,8 @@ template <typename scalar_t> struct BasisForward {
         b *= v;                                                                \
       }                                                                        \
                                                                                \
-      BASIS.data[e * BASIS.sizes[1] + s] = b;                                  \
-      WEIGHT_INDEX.data[e * WEIGHT_INDEX.sizes[1] + s] = wi;                   \
+      BASIS.data[i] = b;                                                       \
+      WEIGHT_INDEX.data[i] = wi;                                               \
     }                                                                          \
   }()
 
@@ -210,7 +210,7 @@ template <typename scalar_t> struct BasisBackward {
                  .data[e * GRAD_BASIS.strides[0] + s * GRAD_BASIS.strides[1]]; \
       }                                                                        \
       g *= KERNEL_SIZE[d] - M * IS_OPEN_SPLINE[d];                             \
-      GRAD_PSEUDO.data[e * GRAD_PSEUDO.sizes[1] + d] = g;                      \
+      GRAD_PSEUDO.data[i] = g;                                                 \
     }                                                                          \
   }()
 
