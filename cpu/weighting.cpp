@@ -4,7 +4,7 @@ at::Tensor weighting_fw(at::Tensor x, at::Tensor weight, at::Tensor basis,
                         at::Tensor weight_index) {
   auto E = x.size(0), M_in = x.size(1), M_out = weight.size(2);
   auto S = basis.size(1);
-  auto out = at::empty({E, M_out}, x.type());
+  auto out = at::empty({E, M_out}, x.options());
 
   AT_DISPATCH_FLOATING_TYPES(out.type(), "weighting_fw", [&] {
     auto x_data = x.data<scalar_t>();
@@ -41,7 +41,7 @@ at::Tensor weighting_bw_x(at::Tensor grad_out, at::Tensor weight,
                           at::Tensor basis, at::Tensor weight_index) {
   auto E = grad_out.size(0), M_in = weight.size(1), M_out = grad_out.size(1);
   auto S = basis.size(1);
-  auto grad_x = at::zeros({E, M_in}, grad_out.type());
+  auto grad_x = at::zeros({E, M_in}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_x", [&] {
     auto grad_out_data = grad_out.data<scalar_t>();
@@ -75,7 +75,7 @@ at::Tensor weighting_bw_w(at::Tensor grad_out, at::Tensor x, at::Tensor basis,
                           at::Tensor weight_index, int64_t K) {
   auto E = grad_out.size(0), M_in = x.size(1), M_out = grad_out.size(1);
   auto S = basis.size(1);
-  auto grad_weight = at::zeros({K, M_in, M_out}, grad_out.type());
+  auto grad_weight = at::zeros({K, M_in, M_out}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_w", [&] {
     auto grad_out_data = grad_out.data<scalar_t>();
@@ -107,7 +107,7 @@ at::Tensor weighting_bw_b(at::Tensor grad_out, at::Tensor x, at::Tensor weight,
                           at::Tensor weight_index) {
   auto E = grad_out.size(0), M_in = x.size(1), M_out = grad_out.size(1);
   auto S = weight_index.size(1);
-  auto grad_basis = at::zeros({E, S}, grad_out.type());
+  auto grad_basis = at::zeros({E, S}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_b", [&] {
     auto grad_out_data = grad_out.data<scalar_t>();

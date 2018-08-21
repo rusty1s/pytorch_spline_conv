@@ -35,8 +35,8 @@ template <typename scalar_t> struct BasisForward {
   [&]() -> std::tuple<at::Tensor, at::Tensor> {                                \
     auto E = PSEUDO.size(0);                                                   \
     auto S = (int64_t)(pow(M + 1, KERNEL_SIZE.size(0)) + 0.5);                 \
-    auto basis = at::empty({E, S}, PSEUDO.type());                             \
-    auto weight_index = at::empty({E, S}, KERNEL_SIZE.type());                 \
+    auto basis = at::empty({E, S}, PSEUDO.options());                          \
+    auto weight_index = at::empty({E, S}, KERNEL_SIZE.options());              \
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_forward_##M", [&] {       \
       KERNEL_NAME<scalar_t><<<BLOCKS(basis.numel()), THREADS>>>(               \
@@ -165,7 +165,7 @@ template <typename scalar_t> struct BasisBackward {
   [&]() -> at::Tensor {                                                        \
     auto E = PSEUDO.size(0);                                                   \
     auto D = PSEUDO.size(1);                                                   \
-    auto grad_pseudo = at::empty({E, D}, PSEUDO.type());                       \
+    auto grad_pseudo = at::empty({E, D}, PSEUDO.options());                    \
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(GRAD_BASIS.type(), "basis_backward_##M", [&] {  \
       KERNEL_NAME<scalar_t><<<BLOCKS(grad_pseudo.numel()), THREADS>>>(         \

@@ -29,8 +29,8 @@ template <typename scalar_t> inline scalar_t cubic(scalar_t v, int64_t k_mod) {
   [&]() -> std::tuple<at::Tensor, at::Tensor> {                                \
     auto E = PSEUDO.size(0), D = PSEUDO.size(1);                               \
     auto S = (int64_t)(pow(M + 1, KERNEL_SIZE.size(0)) + 0.5);                 \
-    auto basis = at::empty({E, S}, PSEUDO.type());                             \
-    auto weight_index = at::empty({E, S}, KERNEL_SIZE.type());                 \
+    auto basis = at::empty({E, S}, PSEUDO.options());                          \
+    auto weight_index = at::empty({E, S}, KERNEL_SIZE.options());              \
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_forward_##M", [&] {       \
       auto pseudo_data = PSEUDO.data<scalar_t>();                              \
@@ -119,7 +119,7 @@ inline scalar_t grad_cubic(scalar_t v, int64_t k_mod) {
   [&]() -> at::Tensor {                                                        \
     auto E = PSEUDO.size(0), D = PSEUDO.size(1);                               \
     auto S = GRAD_BASIS.size(1);                                               \
-    auto grad_pseudo = at::empty({E, D}, PSEUDO.type());                       \
+    auto grad_pseudo = at::empty({E, D}, PSEUDO.options());                    \
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_backward_##M", [&] {      \
       auto grad_basis_data = GRAD_BASIS.data<scalar_t>();                      \
