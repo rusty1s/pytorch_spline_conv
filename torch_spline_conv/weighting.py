@@ -1,10 +1,12 @@
 import torch
 import weighting_cpu
 
+if torch.cuda.is_available():
+    import weighting_cuda
+
 
 def get_func(name, tensor):
-    # module = weighting_cuda if tensor.is_cuda else weighting_cpu
-    module = weighting_cpu
+    module = weighting_cuda if tensor.is_cuda else weighting_cpu
     return getattr(module, name)
 
 
