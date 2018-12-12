@@ -1,4 +1,4 @@
-#include <torch/torch.h>
+#include <torch/extension.h>
 
 at::Tensor weighting_fw(at::Tensor x, at::Tensor weight, at::Tensor basis,
                         at::Tensor weight_index) {

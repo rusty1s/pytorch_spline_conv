@@ -1,4 +1,4 @@
-#include <torch/torch.h>
+#include <torch/extension.h>
 
 template <typename scalar_t> inline scalar_t linear(scalar_t v, int64_t k_mod) {
   return 1 - v - k_mod + 2 * v * k_mod;
