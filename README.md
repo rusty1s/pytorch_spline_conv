@@ -21,11 +21,11 @@ The operator works on all floating point data types and is implemented both for 
 
 ## Installation
 
-Ensure that at least PyTorch 0.4.1 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+Ensure that at least PyTorch 1.0.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
 
 ```
 $ python -c "import torch; print(torch.__version__)"
->>> 0.4.1
+>>> 1.0.0
 
 $ echo $PATH
 >>> /usr/local/cuda/bin:...
