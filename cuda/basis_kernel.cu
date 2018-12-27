@@ -34,7 +34,7 @@ template <typename scalar_t> struct BasisForward {
 #define BASIS_FORWARD(M, PSEUDO, KERNEL_SIZE, IS_OPEN_SPLINE, KERNEL_NAME)     \
   [&]() -> std::tuple<at::Tensor, at::Tensor> {                                \
     auto E = PSEUDO.size(0);                                                   \
-    auto S = (int64_t)(pow(M + 1, KERNEL_SIZE.size(0)) + 0.5);                 \
+    auto S = (int64_t)(powf(M + 1, KERNEL_SIZE.size(0)) + 0.5);                \
     auto basis = at::empty({E, S}, PSEUDO.options());                          \
     auto weight_index = at::empty({E, S}, KERNEL_SIZE.options());              \
                                                                                \
@@ -189,7 +189,7 @@ template <typename scalar_t> struct BasisBackward {
       scalar_t g = 0, tmp;                                                     \
                                                                                \
       for (ptrdiff_t s = 0; s < GRAD_BASIS.sizes[1]; s++) {                    \
-        auto k_mod = (s / (int64_t)(pow(M + 1, d) + 0.5)) % (M + 1);           \
+        auto k_mod = (s / (int64_t)(powf(M + 1, d) + 0.5)) % (M + 1);          \
         auto v = PSEUDO.data[e * PSEUDO.strides[0] + d * PSEUDO.strides[1]];   \
         v *= KERNEL_SIZE[d] - M * IS_OPEN_SPLINE[d];                           \
         v -= floor(v);                                                         \
@@ -198,7 +198,7 @@ template <typename scalar_t> struct BasisBackward {
                                                                                \
         for (ptrdiff_t d_it = 1; d_it < GRAD_PSEUDO.sizes[1]; d_it++) {        \
           auto d_new = d_it - (d >= d_it);                                     \
-          k_mod = (s / (int64_t)(pow(M + 1, d_new) + 0.5)) % (M + 1);          \
+          k_mod = (s / (int64_t)(powf(M + 1, d_new) + 0.5)) % (M + 1);         \
           v = PSEUDO.data[e * pseudo.strides[0] + d_new * PSEUDO.strides[1]];  \
           v *= KERNEL_SIZE[d_new] - M * IS_OPEN_SPLINE[d_new];                 \
           v -= floor(v);                                                       \
