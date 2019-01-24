@@ -1,15 +1,17 @@
 import torch
-import basis_cpu
+import torch_spline_conv.basis_cpu
 
 if torch.cuda.is_available():
-    import basis_cuda
+    import torch_spline_conv.basis_cuda
 
 implemented_degrees = {1: 'linear', 2: 'quadratic', 3: 'cubic'}
 
 
 def get_func(name, tensor):
-    module = basis_cuda if tensor.is_cuda else basis_cpu
-    return getattr(module, name)
+    if tensor.is_cuda:
+        return getattr(torch_spline_conv.basis_cuda, name)
+    else:
+        return getattr(torch_spline_conv.basis_cpu, name)
 
 
 class SplineBasis(torch.autograd.Function):

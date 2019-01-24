@@ -1,3 +1,5 @@
+[run]
+source=torch_spline_conv
 [report]
 exclude_lines =
     pragma: no cover

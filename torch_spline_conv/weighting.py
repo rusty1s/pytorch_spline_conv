@@ -1,13 +1,15 @@
 import torch
-import weighting_cpu
+import torch_spline_conv.weighting_cpu
 
 if torch.cuda.is_available():
-    import weighting_cuda
+    import torch_spline_conv.weighting_cuda
 
 
 def get_func(name, tensor):
-    module = weighting_cuda if tensor.is_cuda else weighting_cpu
-    return getattr(module, name)
+    if tensor.is_cuda:
+        return getattr(torch_spline_conv.weighting_cuda, name)
+    else:
+        return getattr(torch_spline_conv.weighting_cpu, name)
 
 
 class SplineWeighting(torch.autograd.Function):

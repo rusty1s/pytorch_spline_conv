@@ -3,16 +3,16 @@ import torch
 from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 
 ext_modules = [
-    CppExtension('basis_cpu', ['cpu/basis.cpp']),
-    CppExtension('weighting_cpu', ['cpu/weighting.cpp']),
+    CppExtension('torch_spline_conv.basis_cpu', ['cpu/basis.cpp']),
+    CppExtension('torch_spline_conv.weighting_cpu', ['cpu/weighting.cpp']),
 ]
 cmdclass = {'build_ext': torch.utils.cpp_extension.BuildExtension}
 
 if CUDA_HOME is not None:
     ext_modules += [
-        CUDAExtension('basis_cuda',
+        CUDAExtension('torch_spline_conv.basis_cuda',
                       ['cuda/basis.cpp', 'cuda/basis_kernel.cu']),
-        CUDAExtension('weighting_cuda',
+        CUDAExtension('torch_spline_conv.weighting_cuda',
                       ['cuda/weighting.cpp', 'cuda/weighting_kernel.cu']),
     ]
 
@@ -26,8 +26,8 @@ tests_require = ['pytest', 'pytest-cov']
 setup(
     name='torch_spline_conv',
     version=__version__,
-    description='Implementation of the Spline-Based Convolution'
-    'Operator of SplineCNN in PyTorch',
+    description=('Implementation of the Spline-Based Convolution Operator of'
+                 'SplineCNN in PyTorch'),
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url=url,
