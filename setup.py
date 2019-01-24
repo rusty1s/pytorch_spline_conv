@@ -26,7 +26,7 @@ tests_require = ['pytest', 'pytest-cov']
 setup(
     name='torch_spline_conv',
     version=__version__,
-    description=('Implementation of the Spline-Based Convolution Operator of'
+    description=('Implementation of the Spline-Based Convolution Operator of '
                  'SplineCNN in PyTorch'),
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
