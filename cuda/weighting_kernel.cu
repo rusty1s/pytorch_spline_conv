@@ -39,6 +39,7 @@ weighting_fw_kernel(at::cuda::detail::TensorInfo<scalar_t, int64_t> out,
 
 at::Tensor weighting_fw_cuda(at::Tensor x, at::Tensor weight, at::Tensor basis,
                              at::Tensor weight_index) {
+  cudaSetDevice(x.get_device());
   auto E = x.size(0), M_out = weight.size(2);
   auto out = at::empty({E, M_out}, x.options());
   AT_DISPATCH_FLOATING_TYPES(out.type(), "weighting_fw", [&] {
@@ -86,6 +87,7 @@ __global__ void weighting_bw_x_kernel(
 
 at::Tensor weighting_bw_x_cuda(at::Tensor grad_out, at::Tensor weight,
                                at::Tensor basis, at::Tensor weight_index) {
+  cudaSetDevice(grad_out.get_device());
   auto E = grad_out.size(0), M_in = weight.size(1);
   auto grad_x = at::empty({E, M_in}, grad_out.options());
   weight = weight.transpose(1, 2).contiguous();
@@ -131,6 +133,7 @@ __global__ void weighting_bw_w_kernel(
 at::Tensor weighting_bw_w_cuda(at::Tensor grad_out, at::Tensor x,
                                at::Tensor basis, at::Tensor weight_index,
                                int64_t K) {
+  cudaSetDevice(grad_out.get_device());
   auto M_in = x.size(1), M_out = grad_out.size(1);
   auto grad_weight = at::zeros({K, M_in, M_out}, grad_out.options());
   AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_w", [&] {
@@ -175,6 +178,7 @@ __global__ void weighting_bw_b_kernel(
 
 at::Tensor weighting_bw_b_cuda(at::Tensor grad_out, at::Tensor x,
                                at::Tensor weight, at::Tensor weight_index) {
+  cudaSetDevice(grad_out.get_device());
   auto E = x.size(0), S = weight_index.size(1);
   auto grad_basis = at::zeros({E, S}, grad_out.options());
   AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_b", [&] {

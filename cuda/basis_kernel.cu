@@ -33,6 +33,7 @@ template <typename scalar_t> struct BasisForward {
 
 #define BASIS_FORWARD(M, PSEUDO, KERNEL_SIZE, IS_OPEN_SPLINE, KERNEL_NAME)     \
   [&]() -> std::tuple<at::Tensor, at::Tensor> {                                \
+    cudaSetDevice(PSEUDO.get_device());                                        \
     auto E = PSEUDO.size(0);                                                   \
     auto S = (int64_t)(powf(M + 1, KERNEL_SIZE.size(0)) + 0.5);                \
     auto basis = at::empty({E, S}, PSEUDO.options());                          \
@@ -163,6 +164,7 @@ template <typename scalar_t> struct BasisBackward {
 #define BASIS_BACKWARD(M, GRAD_BASIS, PSEUDO, KERNEL_SIZE, IS_OPEN_SPLINE,     \
                        KERNEL_NAME)                                            \
   [&]() -> at::Tensor {                                                        \
+    cudaSetDevice(GRAD_BASIS.get_device());                                    \
     auto E = PSEUDO.size(0);                                                   \
     auto D = PSEUDO.size(1);                                                   \
     auto grad_pseudo = at::empty({E, D}, PSEUDO.options());                    \
