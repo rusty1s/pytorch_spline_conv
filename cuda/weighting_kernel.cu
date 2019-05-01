@@ -42,7 +42,7 @@ at::Tensor weighting_fw_cuda(at::Tensor x, at::Tensor weight, at::Tensor basis,
   cudaSetDevice(x.get_device());
   auto E = x.size(0), M_out = weight.size(2);
   auto out = at::empty({E, M_out}, x.options());
-  AT_DISPATCH_FLOATING_TYPES(out.type(), "weighting_fw", [&] {
+  AT_DISPATCH_FLOATING_TYPES(out.scalar_type(), "weighting_fw", [&] {
     weighting_fw_kernel<scalar_t><<<BLOCKS(out.numel()), THREADS>>>(
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(out),
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(x),
@@ -91,7 +91,7 @@ at::Tensor weighting_bw_x_cuda(at::Tensor grad_out, at::Tensor weight,
   auto E = grad_out.size(0), M_in = weight.size(1);
   auto grad_x = at::empty({E, M_in}, grad_out.options());
   weight = weight.transpose(1, 2).contiguous();
-  AT_DISPATCH_FLOATING_TYPES(grad_x.type(), "weighting_bw_x", [&] {
+  AT_DISPATCH_FLOATING_TYPES(grad_x.scalar_type(), "weighting_bw_x", [&] {
     weighting_bw_x_kernel<scalar_t><<<BLOCKS(grad_x.numel()), THREADS>>>(
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_x),
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_out),
@@ -136,7 +136,7 @@ at::Tensor weighting_bw_w_cuda(at::Tensor grad_out, at::Tensor x,
   cudaSetDevice(grad_out.get_device());
   auto M_in = x.size(1), M_out = grad_out.size(1);
   auto grad_weight = at::zeros({K, M_in, M_out}, grad_out.options());
-  AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_w", [&] {
+  AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_w", [&] {
     weighting_bw_w_kernel<scalar_t><<<BLOCKS(grad_out.numel()), THREADS>>>(
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_weight),
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_out),
@@ -181,7 +181,7 @@ at::Tensor weighting_bw_b_cuda(at::Tensor grad_out, at::Tensor x,
   cudaSetDevice(grad_out.get_device());
   auto E = x.size(0), S = weight_index.size(1);
   auto grad_basis = at::zeros({E, S}, grad_out.options());
-  AT_DISPATCH_FLOATING_TYPES(grad_out.type(), "weighting_bw_b", [&] {
+  AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_b", [&] {
     weighting_bw_b_kernel<scalar_t><<<BLOCKS(grad_out.numel()), THREADS>>>(
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_basis),
         at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_out),

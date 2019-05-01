@@ -32,41 +32,44 @@ template <typename scalar_t> inline scalar_t cubic(scalar_t v, int64_t k_mod) {
     auto basis = at::empty({E, S}, PSEUDO.options());                          \
     auto weight_index = at::empty({E, S}, KERNEL_SIZE.options());              \
                                                                                \
-    AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_forward_##M", [&] {       \
-      auto pseudo_data = PSEUDO.data<scalar_t>();                              \
-      auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                     \
-      auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();               \
-      auto basis_data = basis.data<scalar_t>();                                \
-      auto weight_index_data = weight_index.data<int64_t>();                   \
+    AT_DISPATCH_FLOATING_TYPES(                                                \
+        PSEUDO.scalar_type(), "basis_forward_##M", [&] {                       \
+          auto pseudo_data = PSEUDO.data<scalar_t>();                          \
+          auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                 \
+          auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();           \
+          auto basis_data = basis.data<scalar_t>();                            \
+          auto weight_index_data = weight_index.data<int64_t>();               \
                                                                                \
-      int64_t k, wi, wi_offset;                                                \
-      scalar_t b;                                                              \
+          int64_t k, wi, wi_offset;                                            \
+          scalar_t b;                                                          \
                                                                                \
-      for (ptrdiff_t e = 0; e < E; e++) {                                      \
-        for (ptrdiff_t s = 0; s < S; s++) {                                    \
-          k = s;                                                               \
-          wi = 0;                                                              \
-          wi_offset = 1;                                                       \
-          b = 1;                                                               \
-          for (ptrdiff_t d = 0; d < D; d++) {                                  \
-            auto k_mod = k % (M + 1);                                          \
-            k /= M + 1;                                                        \
+          for (ptrdiff_t e = 0; e < E; e++) {                                  \
+            for (ptrdiff_t s = 0; s < S; s++) {                                \
+              k = s;                                                           \
+              wi = 0;                                                          \
+              wi_offset = 1;                                                   \
+              b = 1;                                                           \
+              for (ptrdiff_t d = 0; d < D; d++) {                              \
+                auto k_mod = k % (M + 1);                                      \
+                k /= M + 1;                                                    \
                                                                                \
-            auto v = pseudo_data[e * pseudo.stride(0) + d * pseudo.stride(1)]; \
-            v *= kernel_size_data[d] - M * is_open_spline_data[d];             \
+                auto v =                                                       \
+                    pseudo_data[e * pseudo.stride(0) + d * pseudo.stride(1)];  \
+                v *= kernel_size_data[d] - M * is_open_spline_data[d];         \
                                                                                \
-            wi += (((int64_t)v + k_mod) % kernel_size_data[d]) * wi_offset;    \
-            wi_offset *= kernel_size_data[d];                                  \
+                wi +=                                                          \
+                    (((int64_t)v + k_mod) % kernel_size_data[d]) * wi_offset;  \
+                wi_offset *= kernel_size_data[d];                              \
                                                                                \
-            v -= floor(v);                                                     \
-            v = FUNC<scalar_t>(v, k_mod);                                      \
-            b *= v;                                                            \
+                v -= floor(v);                                                 \
+                v = FUNC<scalar_t>(v, k_mod);                                  \
+                b *= v;                                                        \
+              }                                                                \
+              basis_data[e * S + s] = b;                                       \
+              weight_index_data[e * S + s] = wi;                               \
+            }                                                                  \
           }                                                                    \
-          basis_data[e * S + s] = b;                                           \
-          weight_index_data[e * S + s] = wi;                                   \
-        }                                                                      \
-      }                                                                        \
-    });                                                                        \
+        });                                                                    \
     return std::make_tuple(basis, weight_index);                               \
   }()
 
@@ -121,44 +124,47 @@ inline scalar_t grad_cubic(scalar_t v, int64_t k_mod) {
     auto S = GRAD_BASIS.size(1);                                               \
     auto grad_pseudo = at::empty({E, D}, PSEUDO.options());                    \
                                                                                \
-    AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_backward_##M", [&] {      \
-      auto grad_basis_data = GRAD_BASIS.data<scalar_t>();                      \
-      auto pseudo_data = PSEUDO.data<scalar_t>();                              \
-      auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                     \
-      auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();               \
-      auto grad_pseudo_data = grad_pseudo.data<scalar_t>();                    \
+    AT_DISPATCH_FLOATING_TYPES(                                                \
+        PSEUDO.scalar_type(), "basis_backward_##M", [&] {                      \
+          auto grad_basis_data = GRAD_BASIS.data<scalar_t>();                  \
+          auto pseudo_data = PSEUDO.data<scalar_t>();                          \
+          auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                 \
+          auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();           \
+          auto grad_pseudo_data = grad_pseudo.data<scalar_t>();                \
                                                                                \
-      scalar_t g, tmp;                                                         \
+          scalar_t g, tmp;                                                     \
                                                                                \
-      for (ptrdiff_t e = 0; e < E; e++) {                                      \
-        for (ptrdiff_t d = 0; d < D; d++) {                                    \
-          g = 0;                                                               \
-          for (ptrdiff_t s = 0; s < S; s++) {                                  \
-            auto k_mod = (s / (int64_t)(pow(M + 1, d) + 0.5)) % (M + 1);       \
-            auto v = pseudo_data[e * pseudo.stride(0) + d * pseudo.stride(1)]; \
-            v *= kernel_size_data[d] - M * is_open_spline_data[d];             \
-            v -= floor(v);                                                     \
-            v = GRAD_FUNC<scalar_t>(v, k_mod);                                 \
-            tmp = v;                                                           \
+          for (ptrdiff_t e = 0; e < E; e++) {                                  \
+            for (ptrdiff_t d = 0; d < D; d++) {                                \
+              g = 0;                                                           \
+              for (ptrdiff_t s = 0; s < S; s++) {                              \
+                auto k_mod = (s / (int64_t)(pow(M + 1, d) + 0.5)) % (M + 1);   \
+                auto v =                                                       \
+                    pseudo_data[e * pseudo.stride(0) + d * pseudo.stride(1)];  \
+                v *= kernel_size_data[d] - M * is_open_spline_data[d];         \
+                v -= floor(v);                                                 \
+                v = GRAD_FUNC<scalar_t>(v, k_mod);                             \
+                tmp = v;                                                       \
                                                                                \
-            for (ptrdiff_t d_it = 1; d_it < D; d_it++) {                       \
-              auto d_new = d_it - (d >= d_it);                                 \
-              k_mod = (s / (int64_t)(pow(M + 1, d_new) + 0.5)) % (M + 1);      \
-              v = pseudo_data[e * pseudo.stride(0) +                           \
-                              d_new * pseudo.stride(1)];                       \
-              v *= kernel_size_data[d_new] - M * is_open_spline_data[d_new];   \
-              v -= floor(v);                                                   \
-              v = FUNC<scalar_t>(v, k_mod);                                    \
-              tmp *= v;                                                        \
+                for (ptrdiff_t d_it = 1; d_it < D; d_it++) {                   \
+                  auto d_new = d_it - (d >= d_it);                             \
+                  k_mod = (s / (int64_t)(pow(M + 1, d_new) + 0.5)) % (M + 1);  \
+                  v = pseudo_data[e * pseudo.stride(0) +                       \
+                                  d_new * pseudo.stride(1)];                   \
+                  v *= kernel_size_data[d_new] -                               \
+                       M * is_open_spline_data[d_new];                         \
+                  v -= floor(v);                                               \
+                  v = FUNC<scalar_t>(v, k_mod);                                \
+                  tmp *= v;                                                    \
+                }                                                              \
+                g += tmp * grad_basis_data[e * grad_basis.stride(0) +          \
+                                           s * grad_basis.stride(1)];          \
+              }                                                                \
+              g *= kernel_size_data[d] - M * is_open_spline_data[d];           \
+              grad_pseudo_data[e * D + d] = g;                                 \
             }                                                                  \
-            g += tmp * grad_basis_data[e * grad_basis.stride(0) +              \
-                                       s * grad_basis.stride(1)];              \
           }                                                                    \
-          g *= kernel_size_data[d] - M * is_open_spline_data[d];               \
-          grad_pseudo_data[e * D + d] = g;                                     \
-        }                                                                      \
-      }                                                                        \
-    });                                                                        \
+        });                                                                    \
     return grad_pseudo;                                                        \
   }()
 

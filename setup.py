@@ -16,7 +16,7 @@ if CUDA_HOME is not None:
                       ['cuda/weighting.cpp', 'cuda/weighting_kernel.cu']),
     ]
 
-__version__ = '1.0.6'
+__version__ = '1.1.0'
 url = 'https://github.com/rusty1s/pytorch_spline_conv'
 
 install_requires = []

@@ -39,14 +39,15 @@ template <typename scalar_t> struct BasisForward {
     auto basis = at::empty({E, S}, PSEUDO.options());                          \
     auto weight_index = at::empty({E, S}, KERNEL_SIZE.options());              \
                                                                                \
-    AT_DISPATCH_FLOATING_TYPES(PSEUDO.type(), "basis_forward_##M", [&] {       \
-      KERNEL_NAME<scalar_t><<<BLOCKS(basis.numel()), THREADS>>>(               \
-          at::cuda::detail::getTensorInfo<scalar_t, int64_t>(basis),           \
-          at::cuda::detail::getTensorInfo<int64_t, int64_t>(weight_index),     \
-          at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),          \
-          KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),         \
-          basis.numel());                                                      \
-    });                                                                        \
+    AT_DISPATCH_FLOATING_TYPES(                                                \
+        PSEUDO.scalar_type(), "basis_forward_##M", [&] {                       \
+          KERNEL_NAME<scalar_t><<<BLOCKS(basis.numel()), THREADS>>>(           \
+              at::cuda::detail::getTensorInfo<scalar_t, int64_t>(basis),       \
+              at::cuda::detail::getTensorInfo<int64_t, int64_t>(weight_index), \
+              at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),      \
+              KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),     \
+              basis.numel());                                                  \
+        });                                                                    \
                                                                                \
     return std::make_tuple(basis, weight_index);                               \
   }()
@@ -169,14 +170,15 @@ template <typename scalar_t> struct BasisBackward {
     auto D = PSEUDO.size(1);                                                   \
     auto grad_pseudo = at::empty({E, D}, PSEUDO.options());                    \
                                                                                \
-    AT_DISPATCH_FLOATING_TYPES(GRAD_BASIS.type(), "basis_backward_##M", [&] {  \
-      KERNEL_NAME<scalar_t><<<BLOCKS(grad_pseudo.numel()), THREADS>>>(         \
-          at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_pseudo),     \
-          at::cuda::detail::getTensorInfo<scalar_t, int64_t>(GRAD_BASIS),      \
-          at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),          \
-          KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),         \
-          grad_pseudo.numel());                                                \
-    });                                                                        \
+    AT_DISPATCH_FLOATING_TYPES(                                                \
+        GRAD_BASIS.scalar_type(), "basis_backward_##M", [&] {                  \
+          KERNEL_NAME<scalar_t><<<BLOCKS(grad_pseudo.numel()), THREADS>>>(     \
+              at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_pseudo), \
+              at::cuda::detail::getTensorInfo<scalar_t, int64_t>(GRAD_BASIS),  \
+              at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),      \
+              KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),     \
+              grad_pseudo.numel());                                            \
+        });                                                                    \
                                                                                \
     return grad_pseudo;                                                        \
   }()
