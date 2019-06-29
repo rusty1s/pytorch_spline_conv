@@ -33,8 +33,10 @@ setup(
     url=url,
     download_url='{}/archive/{}.tar.gz'.format(url, __version__),
     keywords=[
-        'pytorch', 'cnn', 'spline-cnn', 'geometric-deep-learning', 'graph',
-        'mesh', 'neural-networks'
+        'pytorch',
+        'geometric-deep-learning',
+        'graph-neural-networks',
+        'spline-cnn',
     ],
     install_requires=install_requires,
     setup_requires=setup_requires,
