@@ -38,18 +38,9 @@ class SplineConv(object):
 
     :rtype: :class:`Tensor`
     """
-
     @staticmethod
-    def apply(x,
-              edge_index,
-              pseudo,
-              weight,
-              kernel_size,
-              is_open_spline,
-              degree=1,
-              norm=True,
-              root_weight=None,
-              bias=None):
+    def apply(x, edge_index, pseudo, weight, kernel_size, is_open_spline,
+              degree=1, norm=True, root_weight=None, bias=None):
 
         x = x.unsqueeze(-1) if x.dim() == 1 else x
         pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
@@ -58,8 +49,10 @@ class SplineConv(object):
         n, m_out = x.size(0), weight.size(2)
 
         # Weight each node.
-        data = SplineBasis.apply(pseudo, kernel_size, is_open_spline, degree)
-        out = SplineWeighting.apply(x[col], weight, *data)
+        basis, weight_index = SplineBasis.apply(pseudo, kernel_size,
+                                                is_open_spline, degree)
+        weight_index = weight_index.detach()
+        out = SplineWeighting.apply(x[col], weight, basis, weight_index)
 
         # Convert e x m_out to n x m_out features.
         row_expand = row.unsqueeze(-1).expand_as(out)

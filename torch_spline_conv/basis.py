@@ -18,7 +18,8 @@ class SplineBasis(torch.autograd.Function):
     @staticmethod
     def forward(ctx, pseudo, kernel_size, is_open_spline, degree):
         ctx.save_for_backward(pseudo)
-        ctx.kernel_size, ctx.is_open_spline = kernel_size, is_open_spline
+        ctx.kernel_size = kernel_size
+        ctx.is_open_spline = is_open_spline
         ctx.degree = degree
 
         op = get_func('{}_fw'.format(implemented_degrees[degree]), pseudo)

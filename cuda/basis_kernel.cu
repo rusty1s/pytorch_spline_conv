@@ -2,6 +2,8 @@
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
 
+#include "compat.cuh"
+
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
@@ -45,8 +47,8 @@ template <typename scalar_t> struct BasisForward {
               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(basis),       \
               at::cuda::detail::getTensorInfo<int64_t, int64_t>(weight_index), \
               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),      \
-              KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),     \
-              basis.numel());                                                  \
+              KERNEL_SIZE.DATA_PTR<int64_t>(),                                 \
+              IS_OPEN_SPLINE.DATA_PTR<uint8_t>(), basis.numel());              \
         });                                                                    \
                                                                                \
     return std::make_tuple(basis, weight_index);                               \
@@ -176,8 +178,8 @@ template <typename scalar_t> struct BasisBackward {
               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(grad_pseudo), \
               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(GRAD_BASIS),  \
               at::cuda::detail::getTensorInfo<scalar_t, int64_t>(PSEUDO),      \
-              KERNEL_SIZE.data<int64_t>(), IS_OPEN_SPLINE.data<uint8_t>(),     \
-              grad_pseudo.numel());                                            \
+              KERNEL_SIZE.DATA_PTR<int64_t>(),                                 \
+              IS_OPEN_SPLINE.DATA_PTR<uint8_t>(), grad_pseudo.numel());        \
         });                                                                    \
                                                                                \
     return grad_pseudo;                                                        \
