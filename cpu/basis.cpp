@@ -1,5 +1,7 @@
 #include <torch/extension.h>
 
+#include "compat.h"
+
 template <typename scalar_t> inline scalar_t linear(scalar_t v, int64_t k_mod) {
   return 1 - v - k_mod + 2 * v * k_mod;
 }
@@ -34,11 +36,11 @@ template <typename scalar_t> inline scalar_t cubic(scalar_t v, int64_t k_mod) {
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(                                                \
         PSEUDO.scalar_type(), "basis_forward_##M", [&] {                       \
-          auto pseudo_data = PSEUDO.data<scalar_t>();                          \
-          auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                 \
-          auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();           \
-          auto basis_data = basis.data<scalar_t>();                            \
-          auto weight_index_data = weight_index.data<int64_t>();               \
+          auto pseudo_data = PSEUDO.DATA_PTR<scalar_t>();                      \
+          auto kernel_size_data = KERNEL_SIZE.DATA_PTR<int64_t>();             \
+          auto is_open_spline_data = IS_OPEN_SPLINE.DATA_PTR<uint8_t>();       \
+          auto basis_data = basis.DATA_PTR<scalar_t>();                        \
+          auto weight_index_data = weight_index.DATA_PTR<int64_t>();           \
                                                                                \
           int64_t k, wi, wi_offset;                                            \
           scalar_t b;                                                          \
@@ -126,11 +128,11 @@ inline scalar_t grad_cubic(scalar_t v, int64_t k_mod) {
                                                                                \
     AT_DISPATCH_FLOATING_TYPES(                                                \
         PSEUDO.scalar_type(), "basis_backward_##M", [&] {                      \
-          auto grad_basis_data = GRAD_BASIS.data<scalar_t>();                  \
-          auto pseudo_data = PSEUDO.data<scalar_t>();                          \
-          auto kernel_size_data = KERNEL_SIZE.data<int64_t>();                 \
-          auto is_open_spline_data = IS_OPEN_SPLINE.data<uint8_t>();           \
-          auto grad_pseudo_data = grad_pseudo.data<scalar_t>();                \
+          auto grad_basis_data = GRAD_BASIS.DATA_PTR<scalar_t>();              \
+          auto pseudo_data = PSEUDO.DATA_PTR<scalar_t>();                      \
+          auto kernel_size_data = KERNEL_SIZE.DATA_PTR<int64_t>();             \
+          auto is_open_spline_data = IS_OPEN_SPLINE.DATA_PTR<uint8_t>();       \
+          auto grad_pseudo_data = grad_pseudo.DATA_PTR<scalar_t>();            \
                                                                                \
           scalar_t g, tmp;                                                     \
                                                                                \

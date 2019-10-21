@@ -1,5 +1,7 @@
 #include <torch/extension.h>
 
+#include "compat.h"
+
 at::Tensor weighting_fw(at::Tensor x, at::Tensor weight, at::Tensor basis,
                         at::Tensor weight_index) {
   auto E = x.size(0), M_in = x.size(1), M_out = weight.size(2);
@@ -7,11 +9,11 @@ at::Tensor weighting_fw(at::Tensor x, at::Tensor weight, at::Tensor basis,
   auto out = at::empty({E, M_out}, x.options());
 
   AT_DISPATCH_FLOATING_TYPES(out.scalar_type(), "weighting_fw", [&] {
-    auto x_data = x.data<scalar_t>();
-    auto weight_data = weight.data<scalar_t>();
-    auto basis_data = basis.data<scalar_t>();
-    auto weight_index_data = weight_index.data<int64_t>();
-    auto out_data = out.data<scalar_t>();
+    auto x_data = x.DATA_PTR<scalar_t>();
+    auto weight_data = weight.DATA_PTR<scalar_t>();
+    auto basis_data = basis.DATA_PTR<scalar_t>();
+    auto weight_index_data = weight_index.DATA_PTR<int64_t>();
+    auto out_data = out.DATA_PTR<scalar_t>();
 
     scalar_t v;
 
@@ -44,11 +46,11 @@ at::Tensor weighting_bw_x(at::Tensor grad_out, at::Tensor weight,
   auto grad_x = at::zeros({E, M_in}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_x", [&] {
-    auto grad_out_data = grad_out.data<scalar_t>();
-    auto weight_data = weight.data<scalar_t>();
-    auto basis_data = basis.data<scalar_t>();
-    auto weight_index_data = weight_index.data<int64_t>();
-    auto grad_x_data = grad_x.data<scalar_t>();
+    auto grad_out_data = grad_out.DATA_PTR<scalar_t>();
+    auto weight_data = weight.DATA_PTR<scalar_t>();
+    auto basis_data = basis.DATA_PTR<scalar_t>();
+    auto weight_index_data = weight_index.DATA_PTR<int64_t>();
+    auto grad_x_data = grad_x.DATA_PTR<scalar_t>();
 
     for (ptrdiff_t e = 0; e < E; e++) {
       for (ptrdiff_t m_out = 0; m_out < M_out; m_out++) {
@@ -78,11 +80,11 @@ at::Tensor weighting_bw_w(at::Tensor grad_out, at::Tensor x, at::Tensor basis,
   auto grad_weight = at::zeros({K, M_in, M_out}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_w", [&] {
-    auto grad_out_data = grad_out.data<scalar_t>();
-    auto x_data = x.data<scalar_t>();
-    auto basis_data = basis.data<scalar_t>();
-    auto weight_index_data = weight_index.data<int64_t>();
-    auto grad_weight_data = grad_weight.data<scalar_t>();
+    auto grad_out_data = grad_out.DATA_PTR<scalar_t>();
+    auto x_data = x.DATA_PTR<scalar_t>();
+    auto basis_data = basis.DATA_PTR<scalar_t>();
+    auto weight_index_data = weight_index.DATA_PTR<int64_t>();
+    auto grad_weight_data = grad_weight.DATA_PTR<scalar_t>();
 
     for (ptrdiff_t e = 0; e < E; e++) {
       for (ptrdiff_t m_out = 0; m_out < M_out; m_out++) {
@@ -110,11 +112,11 @@ at::Tensor weighting_bw_b(at::Tensor grad_out, at::Tensor x, at::Tensor weight,
   auto grad_basis = at::zeros({E, S}, grad_out.options());
 
   AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_b", [&] {
-    auto grad_out_data = grad_out.data<scalar_t>();
-    auto x_data = x.data<scalar_t>();
-    auto weight_data = weight.data<scalar_t>();
-    auto weight_index_data = weight_index.data<int64_t>();
-    auto grad_basis_data = grad_basis.data<scalar_t>();
+    auto grad_out_data = grad_out.DATA_PTR<scalar_t>();
+    auto x_data = x.DATA_PTR<scalar_t>();
+    auto weight_data = weight.DATA_PTR<scalar_t>();
+    auto weight_index_data = weight_index.DATA_PTR<int64_t>();
+    auto grad_basis_data = grad_basis.DATA_PTR<scalar_t>();
 
     for (ptrdiff_t e = 0; e < E; e++) {
       for (ptrdiff_t m_out = 0; m_out < M_out; m_out++) {

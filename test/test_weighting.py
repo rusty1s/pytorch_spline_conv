@@ -32,7 +32,7 @@ def test_spline_weighting_forward(test, dtype, device):
 
 
 @pytest.mark.parametrize('device', devices)
-def test_spline_basis_backward(device):
+def test_spline_weighting_backward(device):
     pseudo = torch.rand((4, 2), dtype=torch.double, device=device)
     kernel_size = tensor([5, 5], torch.long, device)
     is_open_spline = tensor([1, 1], torch.uint8, device)
