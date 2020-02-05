@@ -2,8 +2,6 @@
 #include <ATen/cuda/detail/IndexUtils.cuh>
 #include <ATen/cuda/detail/TensorInfo.cuh>
 
-#include "atomics.cuh"
-
 #define THREADS 1024
 #define BLOCKS(N) (N + THREADS - 1) / THREADS
 
