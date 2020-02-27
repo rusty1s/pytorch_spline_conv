@@ -21,11 +21,30 @@ The operator works on all floating point data types and is implemented both for 
 
 ## Installation
 
-Ensure that at least PyTorch 1.1.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
+### Binaries
+
+We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
+To install the binaries for PyTorch 1.4.0, simply run
+
+```
+pip install torch-spline-conv==latest+${CUDA} -f https://pytorch-geometric.com/whl/torch-1.4.0.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu100` or `cu101` depending on your PyTorch installation.
+
+|             | `cpu` | `cu92` | `cu100` | `cu101` |
+|-------------|-------|--------|---------|---------|
+| **Linux**   | ✅    | ✅     | ✅      | ✅      |
+| **Windows** | ✅    | ❌     | ❌      | ✅      |
+| **macOS**   | ✅    |        |         |         |
+
+### From source
+
+Ensure that at least PyTorch 1.4.0 is installed and verify that `cuda/bin` and `cuda/include` are in your `$PATH` and `$CPATH` respectively, *e.g.*:
 
 ```
 $ python -c "import torch; print(torch.__version__)"
->>> 1.1.0
+>>> 1.4.0
 
 $ echo $PATH
 >>> /usr/local/cuda/bin:...
@@ -40,24 +59,28 @@ Then run:
 pip install torch-spline-conv
 ```
 
-If you are running into any installation problems, please create an [issue](https://github.com/rusty1s/pytorch_spline_conv/issues).
-Be sure to import `torch` first before using this package to resolve symbols the dynamic linker must see.
+When running in a docker container without NVIDIA driver, PyTorch needs to evaluate the compute capabilities and may fail.
+In this case, ensure that the compute capabilities are set via `TORCH_CUDA_ARCH_LIST`, *e.g.*:
+
+```
+export TORCH_CUDA_ARCH_LIST = "6.0 6.1 7.2+PTX 7.5+PTX"
+```
 
 ## Usage
 
 ```python
-from torch_spline_conv import SplineConv
+from torch_spline_conv import spline_conv
 
-out = SplineConv.apply(x,
-                       edge_index,
-                       pseudo,
-                       weight,
-                       kernel_size,
-                       is_open_spline,
-                       degree=1,
-                       norm=True,
-                       root_weight=None,
-                       bias=None)
+out = spline_conv(x,
+                  edge_index,
+                  pseudo,
+                  weight,
+                  kernel_size,
+                  is_open_spline,
+                  degree=1,
+                  norm=True,
+                  root_weight=None,
+                  bias=None)
 ```
 
 Applies the spline-based convolution operator
@@ -93,7 +116,7 @@ The kernel function is defined over the weighted B-spline tensor product basis, 
 
 ```python
 import torch
-from torch_spline_conv import SplineConv
+from torch_spline_conv import spline_conv
 
 x = torch.rand((4, 2), dtype=torch.float)  # 4 nodes with 2 features each
 edge_index = torch.tensor([[0, 1, 1, 2, 2, 3], [1, 0, 2, 1, 3, 2]])  # 6 edges
@@ -106,8 +129,8 @@ norm = True  # Normalize output by node degree.
 root_weight = torch.rand((2, 4), dtype=torch.float)  # separately weight root nodes
 bias = None  # do not apply an additional bias
 
-out = SplineConv.apply(x, edge_index, pseudo, weight, kernel_size,
-                       is_open_spline, degree, norm, root_weight, bias)
+out = spline_conv(x, edge_index, pseudo, weight, kernel_size,
+                  is_open_spline, degree, norm, root_weight, bias)
 
 print(out.size())
 torch.Size([4, 4])  # 4 nodes with 4 features each

@@ -1,12 +1,18 @@
+from typing import Optional
+
 import torch
 
-from .basis import SplineBasis
-from .weighting import SplineWeighting
-
-from .utils.degree import degree as node_degree
+from .basis import spline_basis
+from .weighting import spline_weighting
 
 
-class SplineConv(object):
+@torch.jit.script
+def spline_conv(x: torch.Tensor, edge_index: torch.Tensor,
+                pseudo: torch.Tensor, weight: torch.Tensor,
+                kernel_size: torch.Tensor, is_open_spline: torch.Tensor,
+                degree: int = 1, norm: bool = True,
+                root_weight: Optional[torch.Tensor] = None,
+                bias: Optional[torch.Tensor] = None) -> torch.Tensor:
     r"""Applies the spline-based convolution operator :math:`(f \star g)(i) =
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.
@@ -38,37 +44,34 @@ class SplineConv(object):
 
     :rtype: :class:`Tensor`
     """
-    @staticmethod
-    def apply(x, edge_index, pseudo, weight, kernel_size, is_open_spline,
-              degree=1, norm=True, root_weight=None, bias=None):
 
-        x = x.unsqueeze(-1) if x.dim() == 1 else x
-        pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
+    x = x.unsqueeze(-1) if x.dim() == 1 else x
+    pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
-        row, col = edge_index
-        n, m_out = x.size(0), weight.size(2)
+    row, col = edge_index
+    N, E, M_out = x.size(0), row.size(0), weight.size(2)
 
-        # Weight each node.
-        basis, weight_index = SplineBasis.apply(pseudo, kernel_size,
-                                                is_open_spline, degree)
-        weight_index = weight_index.detach()
-        out = SplineWeighting.apply(x[col], weight, basis, weight_index)
+    # Weight each node.
+    basis, weight_index = spline_basis(pseudo, kernel_size, is_open_spline,
+                                       degree)
 
-        # Convert e x m_out to n x m_out features.
-        row_expand = row.unsqueeze(-1).expand_as(out)
-        out = x.new_zeros((n, m_out)).scatter_add_(0, row_expand, out)
+    out = spline_weighting(x[col], weight, basis, weight_index)
 
-        # Normalize out by node degree (if wished).
-        if norm:
-            deg = node_degree(row, n, out.dtype, out.device)
-            out = out / deg.unsqueeze(-1).clamp(min=1)
+    # Convert E x M_out to N x M_out features.
+    row_expanded = row.unsqueeze(-1).expand_as(out)
+    out = x.new_zeros((N, M_out)).scatter_add_(0, row_expanded, out)
 
-        # Weight root node separately (if wished).
-        if root_weight is not None:
-            out = out + torch.mm(x, root_weight)
+    # Normalize out by node degree (if wished).
+    if norm:
+        deg = out.new_zeros(N).scatter_add_(0, row, out.new_ones(E))
+        out = out / deg.unsqueeze(-1).clamp_(min=1)
 
-        # Add bias (if wished).
-        if bias is not None:
-            out = out + bias
+    # Weight root node separately (if wished).
+    if root_weight is not None:
+        out = out + torch.matmul(x, root_weight)
 
-        return out
+    # Add bias (if wished).
+    if bias is not None:
+        out = out + bias
+
+    return out
