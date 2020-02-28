@@ -2,7 +2,6 @@
 #include <torch/script.h>
 
 #include "cpu/basis_cpu.h"
-#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/basis_cuda.h"
@@ -63,7 +62,7 @@ public:
     auto grad_basis = grad_outs[0];
     auto saved = ctx->get_saved_variables();
     auto pseudo = saved[0], kernel_size = saved[1], is_open_spline = saved[2];
-    auto gree = ctx->saved_data["degree"].toInt();
+    auto degree = ctx->saved_data["degree"].toInt();
     auto grad_pseudo = spline_basis_bw(grad_basis, pseudo, kernel_size,
                                        is_open_spline, degree);
     return {grad_pseudo, Variable(), Variable(), Variable()};
@@ -73,7 +72,8 @@ public:
 std::tuple<torch::Tensor, torch::Tensor>
 spline_basis(torch::Tensor pseudo, torch::Tensor kernel_size,
              torch::Tensor is_open_spline, int64_t degree) {
-  return SplineBasis::apply(pseudo, kernel_size, is_open_spline, degree);
+  auto result = SplineBasis::apply(pseudo, kernel_size, is_open_spline, degree);
+  return std::make_tuple(result[0], result[1]);
 }
 
 static auto registry = torch::RegisterOperators().op(

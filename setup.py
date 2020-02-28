@@ -45,7 +45,7 @@ def get_extensions():
             sources += [path]
 
         extension = Extension(
-            'torch_scatter._' + name,
+            'torch_spline_conv._' + name,
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,

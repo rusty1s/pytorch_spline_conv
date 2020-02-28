@@ -3,7 +3,7 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_spline_conv import spline_weighting, spline_basis
+from torch_spline_conv import spline_basis, spline_weighting
 
 from .utils import dtypes, devices, tensor
 

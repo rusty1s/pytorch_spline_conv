@@ -48,7 +48,7 @@ def spline_conv(x: torch.Tensor, edge_index: torch.Tensor,
     x = x.unsqueeze(-1) if x.dim() == 1 else x
     pseudo = pseudo.unsqueeze(-1) if pseudo.dim() == 1 else pseudo
 
-    row, col = edge_index
+    row, col = edge_index[0], edge_index[1]
     N, E, M_out = x.size(0), row.size(0), weight.size(2)
 
     # Weight each node.
@@ -63,7 +63,8 @@ def spline_conv(x: torch.Tensor, edge_index: torch.Tensor,
 
     # Normalize out by node degree (if wished).
     if norm:
-        deg = out.new_zeros(N).scatter_add_(0, row, out.new_ones(E))
+        ones = torch.ones(E, dtype=x.dtype, device=x.device)
+        deg = out.new_zeros(N).scatter_add_(0, row, ones)
         out = out / deg.unsqueeze(-1).clamp_(min=1)
 
     # Weight root node separately (if wished).

@@ -2,7 +2,6 @@
 #include <torch/script.h>
 
 #include "cpu/weighting_cpu.h"
-#include "utils.h"
 
 #ifdef WITH_CUDA
 #include "cuda/weighting_cuda.h"
@@ -114,7 +113,7 @@ public:
 torch::Tensor spline_weighting(torch::Tensor x, torch::Tensor weight,
                                torch::Tensor basis,
                                torch::Tensor weight_index) {
-  return SplineWeighting::apply(x, weight, basis, weight_index);
+  return SplineWeighting::apply(x, weight, basis, weight_index)[0];
 }
 
 static auto registry = torch::RegisterOperators().op(
