@@ -11,7 +11,7 @@ template <typename scalar_t>
 __global__ void
 spline_weighting_fw_kernel(const scalar_t *x, const scalar_t *weight,
                            const scalar_t *basis, const int64_t *weight_index,
-                           scalar_t *out_data, int64_t E, int64_t M_in,
+                           scalar_t *out, int64_t E, int64_t M_in,
                            int64_t M_out, int64_t S, int64_t numel) {
 
   const int64_t thread_idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -94,7 +94,7 @@ spline_weighting_bw_x_kernel(const scalar_t *grad_out, const scalar_t *weight,
         v += tmp;
       }
     }
-    grad_x[i] = v;
+    grad_x[thread_idx] = v;
   }
 }
 
