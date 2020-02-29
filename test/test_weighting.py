@@ -3,8 +3,7 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_spline_conv.weighting import SplineWeighting
-from torch_spline_conv.basis import SplineBasis
+from torch_spline_conv import spline_basis, spline_weighting
 
 from .utils import dtypes, devices, tensor
 
@@ -27,7 +26,7 @@ def test_spline_weighting_forward(test, dtype, device):
     basis = tensor(test['basis'], dtype, device)
     weight_index = tensor(test['weight_index'], torch.long, device)
 
-    out = SplineWeighting.apply(x, weight, basis, weight_index)
+    out = spline_weighting(x, weight, basis, weight_index)
     assert out.tolist() == test['expected']
 
 
@@ -38,8 +37,8 @@ def test_spline_weighting_backward(device):
     is_open_spline = tensor([1, 1], torch.uint8, device)
     degree = 1
 
-    op = SplineBasis.apply
-    basis, weight_index = op(pseudo, kernel_size, is_open_spline, degree)
+    basis, weight_index = spline_basis(pseudo, kernel_size, is_open_spline,
+                                       degree)
     basis.requires_grad_()
 
     x = torch.rand((4, 2), dtype=torch.double, device=device)
@@ -48,4 +47,4 @@ def test_spline_weighting_backward(device):
     weight.requires_grad_()
 
     data = (x, weight, basis, weight_index)
-    assert gradcheck(SplineWeighting.apply, data, eps=1e-6, atol=1e-4) is True
+    assert gradcheck(spline_weighting, data, eps=1e-6, atol=1e-4) is True

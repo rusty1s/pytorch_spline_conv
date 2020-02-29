@@ -2,7 +2,7 @@ from itertools import product
 
 import pytest
 import torch
-from torch_spline_conv.basis import SplineBasis
+from torch_spline_conv import spline_basis
 
 from .utils import dtypes, devices, tensor
 
@@ -34,7 +34,7 @@ def test_spline_basis_forward(test, dtype, device):
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
     degree = 1
 
-    op = SplineBasis.apply
-    basis, weight_index = op(pseudo, kernel_size, is_open_spline, degree)
+    basis, weight_index = spline_basis(pseudo, kernel_size, is_open_spline,
+                                       degree)
     assert basis.tolist() == test['basis']
     assert weight_index.tolist() == test['weight_index']

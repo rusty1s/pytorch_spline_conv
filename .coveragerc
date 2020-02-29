@@ -3,5 +3,6 @@ source=torch_spline_conv
 [report]
 exclude_lines =
     pragma: no cover
-    cuda
-    backward
+    torch.jit.script
+    raise
+    except

@@ -3,10 +3,11 @@ from itertools import product
 import pytest
 import torch
 from torch.autograd import gradcheck
-from torch_spline_conv import SplineConv
-from torch_spline_conv.basis import implemented_degrees as degrees
+from torch_spline_conv import spline_conv
 
 from .utils import dtypes, devices, tensor
+
+degrees = [1, 2, 3]
 
 tests = [{
     'x': [[9, 10], [1, 2], [3, 4], [5, 6], [7, 8]],
@@ -51,12 +52,12 @@ def test_spline_conv_forward(test, dtype, device):
     root_weight = tensor(test['root_weight'], dtype, device)
     bias = tensor(test['bias'], dtype, device)
 
-    out = SplineConv.apply(x, edge_index, pseudo, weight, kernel_size,
-                           is_open_spline, 1, True, root_weight, bias)
+    out = spline_conv(x, edge_index, pseudo, weight, kernel_size,
+                      is_open_spline, 1, True, root_weight, bias)
     assert out.tolist() == test['expected']
 
 
-@pytest.mark.parametrize('degree,device', product(degrees.keys(), devices))
+@pytest.mark.parametrize('degree,device', product(degrees, devices))
 def test_spline_basis_backward(degree, device):
     x = torch.rand((3, 2), dtype=torch.double, device=device)
     x.requires_grad_()
@@ -74,4 +75,4 @@ def test_spline_basis_backward(degree, device):
 
     data = (x, edge_index, pseudo, weight, kernel_size, is_open_spline, degree,
             True, root_weight, bias)
-    assert gradcheck(SplineConv.apply, data, eps=1e-6, atol=1e-4) is True
+    assert gradcheck(spline_conv, data, eps=1e-6, atol=1e-4) is True
