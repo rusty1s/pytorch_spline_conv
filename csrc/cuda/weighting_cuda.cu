@@ -41,7 +41,7 @@ torch::Tensor spline_weighting_fw_cuda(torch::Tensor x, torch::Tensor weight,
   CHECK_CUDA(weight);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(x.get_device());
+  // cudaSetDevice(x.get_device());
 
   CHECK_INPUT(x.size(1) == weight.size(1));
 
@@ -54,17 +54,17 @@ torch::Tensor spline_weighting_fw_cuda(torch::Tensor x, torch::Tensor weight,
 
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  auto stream = at::cuda::getCurrentCUDAStream();
+  // auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(x.scalar_type(), "weighting_fw", [&] {
     auto x_data = x.data_ptr<scalar_t>();
     auto weight_data = weight.data_ptr<scalar_t>();
     auto basis_data = basis.data_ptr<scalar_t>();
     auto out_data = out.data_ptr<scalar_t>();
 
-    spline_weighting_fw_kernel<scalar_t>
-        <<<BLOCKS(out.numel()), THREADS, 0, stream>>>(
-            x_data, weight_data, basis_data, weight_index_data, out_data, E,
-            M_in, M_out, S, out.numel());
+    // spline_weighting_fw_kernel<scalar_t>
+    //     <<<BLOCKS(out.numel()), THREADS, 0, stream>>>(
+    //         x_data, weight_data, basis_data, weight_index_data, out_data, E,
+    //         M_in, M_out, S, out.numel());
   });
 
   return out;
@@ -106,7 +106,7 @@ torch::Tensor spline_weighting_bw_x_cuda(torch::Tensor grad_out,
   CHECK_CUDA(weight);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  // cudaSetDevice(grad_out.get_device());
 
   CHECK_INPUT(grad_out.size(1) == weight.size(2));
 
@@ -120,17 +120,17 @@ torch::Tensor spline_weighting_bw_x_cuda(torch::Tensor grad_out,
 
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  auto stream = at::cuda::getCurrentCUDAStream();
+  // auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(grad_out.scalar_type(), "weighting_bw_x", [&] {
     auto grad_out_data = grad_out.data_ptr<scalar_t>();
     auto weight_data = weight.data_ptr<scalar_t>();
     auto basis_data = basis.data_ptr<scalar_t>();
     auto grad_x_data = grad_x.data_ptr<scalar_t>();
 
-    spline_weighting_bw_x_kernel<scalar_t>
-        <<<BLOCKS(grad_x.numel()), THREADS, 0, stream>>>(
-            grad_out_data, weight_data, basis_data, weight_index_data,
-            grad_x_data, E, M_in, M_out, S, grad_x.numel());
+    // spline_weighting_bw_x_kernel<scalar_t>
+    //     <<<BLOCKS(grad_x.numel()), THREADS, 0, stream>>>(
+    //         grad_out_data, weight_data, basis_data, weight_index_data,
+    //         grad_x_data, E, M_in, M_out, S, grad_x.numel());
   });
 
   return grad_x;
@@ -169,7 +169,7 @@ torch::Tensor spline_weighting_bw_weight_cuda(torch::Tensor grad_out,
   CHECK_CUDA(x);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  // cudaSetDevice(grad_out.get_device());
 
   auto E = grad_out.size(0);
   auto M_in = x.size(1);
@@ -180,17 +180,17 @@ torch::Tensor spline_weighting_bw_weight_cuda(torch::Tensor grad_out,
 
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  auto stream = at::cuda::getCurrentCUDAStream();
+  // auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(x.scalar_type(), "weighting_bw_weight", [&] {
     auto grad_out_data = grad_out.data_ptr<scalar_t>();
     auto x_data = x.data_ptr<scalar_t>();
     auto basis_data = basis.data_ptr<scalar_t>();
     auto grad_weight_data = grad_weight.data_ptr<scalar_t>();
 
-    spline_weighting_bw_weight_kernel<scalar_t>
-        <<<BLOCKS(grad_out.numel()), THREADS, 0, stream>>>(
-            grad_out_data, x_data, basis_data, weight_index_data,
-            grad_weight_data, E, M_in, M_out, S, grad_out.numel());
+    // spline_weighting_bw_weight_kernel<scalar_t>
+    //     <<<BLOCKS(grad_out.numel()), THREADS, 0, stream>>>(
+    //         grad_out_data, x_data, basis_data, weight_index_data,
+    //         grad_weight_data, E, M_in, M_out, S, grad_out.numel());
   });
 
   return grad_weight;
@@ -230,7 +230,7 @@ torch::Tensor spline_weighting_bw_basis_cuda(torch::Tensor grad_out,
   CHECK_CUDA(x);
   CHECK_CUDA(weight);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  // cudaSetDevice(grad_out.get_device());
 
   CHECK_INPUT(x.size(1) == weight.size(1));
   CHECK_INPUT(grad_out.size(1) == weight.size(2));
@@ -244,17 +244,17 @@ torch::Tensor spline_weighting_bw_basis_cuda(torch::Tensor grad_out,
 
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  auto stream = at::cuda::getCurrentCUDAStream();
+  // auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(x.scalar_type(), "weighting_bw_basis", [&] {
     auto grad_out_data = grad_out.data_ptr<scalar_t>();
     auto x_data = x.data_ptr<scalar_t>();
     auto weight_data = weight.data_ptr<scalar_t>();
     auto grad_basis_data = grad_basis.data_ptr<scalar_t>();
 
-    spline_weighting_bw_basis_kernel<scalar_t>
-        <<<BLOCKS(grad_out.numel()), THREADS, 0, stream>>>(
-            grad_out_data, x_data, weight_data, weight_index_data,
-            grad_basis_data, E, M_in, M_out, S, grad_out.numel());
+    // spline_weighting_bw_basis_kernel<scalar_t>
+    //     <<<BLOCKS(grad_out.numel()), THREADS, 0, stream>>>(
+    //         grad_out_data, x_data, weight_data, weight_index_data,
+    //         grad_basis_data, E, M_in, M_out, S, grad_out.numel());
   });
 
   return grad_basis;
