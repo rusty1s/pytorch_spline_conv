@@ -2,6 +2,7 @@
 
 #include <ATen/cuda/CUDAContext.h>
 
+#include "atomics.cuh"
 #include "utils.cuh"
 
 #define THREADS 1024
@@ -154,7 +155,7 @@ __global__ void spline_weighting_bw_weight_kernel(
 
       for (int64_t m_in = 0; m_in < M_in; m_in++) {
         auto v = g * b * x[e * M_in + m_in];
-        atomicAdd(&grad_weight[wi * M_in * M_out + m_in * M_out + m_out], v);
+        atomAdd(&grad_weight[wi * M_in * M_out + m_in * M_out + m_out], v);
       }
     }
   }
@@ -217,7 +218,7 @@ __global__ void spline_weighting_bw_basis_kernel(
         const scalar_t w = weight[wi * M_in * M_out + m_in * M_out + m_out];
         v += g * w * x[e * M_in + m_in];
       }
-      atomicAdd(&grad_basis[e * S + s], v);
+      atomAdd(&grad_basis[e * S + s], v);
     }
   }
 }
