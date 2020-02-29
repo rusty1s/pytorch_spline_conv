@@ -1,4 +1,4 @@
-#include "weighting_cpu.h"
+#include "weighting_cuda.h"
 
 #include "utils.cuh"
 

@@ -23,7 +23,7 @@ template <typename scalar_t, int64_t degree> struct Basis {
       else
         return v * v * v / 6.;
     } else {
-      AT_ERROR("Basis degree not implemented");
+      return (scalar_t)-1.;
     }
   }
 
@@ -47,7 +47,7 @@ template <typename scalar_t, int64_t degree> struct Basis {
       else
         return v * v / 2.;
     } else {
-      AT_ERROR("Basis degree not implemented");
+      return (scalar_t)-1.;
     }
   }
 };
