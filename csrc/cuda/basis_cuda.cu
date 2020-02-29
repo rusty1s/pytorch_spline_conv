@@ -98,7 +98,7 @@ spline_basis_fw_cuda(torch::Tensor pseudo, torch::Tensor kernel_size,
   CHECK_CUDA(pseudo);
   CHECK_CUDA(kernel_size);
   CHECK_CUDA(is_open_spline);
-  // cudaSetDevice(pseudo.get_device());
+  cudaSetDevice(pseudo.get_device());
 
   CHECK_INPUT(kernel_size.dim() == 1);
   CHECK_INPUT(pseudo.size(1) == kernel_size.numel());
@@ -116,16 +116,16 @@ spline_basis_fw_cuda(torch::Tensor pseudo, torch::Tensor kernel_size,
   auto is_open_spline_data = is_open_spline.data_ptr<uint8_t>();
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  // auto stream = at::cuda::getCurrentCUDAStream();
+  auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(pseudo.scalar_type(), "basis_fw", [&] {
     auto pseudo_data = pseudo.data_ptr<scalar_t>();
     auto basis_data = basis.data_ptr<scalar_t>();
 
     AT_DISPATCH_DEGREE_TYPES(degree, [&] {
-      // spline_basis_fw_kernel<scalar_t, DEGREE>
-      //     <<<BLOCKS(basis.numel()), THREADS, 0, stream>>>(
-      //         pseudo_data, kernel_size_data, is_open_spline_data, basis_data,
-      //         weight_index_data, E, D, S, basis.numel());
+      spline_basis_fw_kernel<scalar_t, DEGREE>
+          <<<BLOCKS(basis.numel()), THREADS, 0, stream>>>(
+              pseudo_data, kernel_size_data, is_open_spline_data, basis_data,
+              weight_index_data, E, D, S, basis.numel());
     });
   });
 
@@ -180,7 +180,7 @@ torch::Tensor spline_basis_bw_cuda(torch::Tensor grad_basis,
   CHECK_CUDA(pseudo);
   CHECK_CUDA(kernel_size);
   CHECK_CUDA(is_open_spline);
-  // cudaSetDevice(grad_basis.get_device());
+  cudaSetDevice(grad_basis.get_device());
 
   CHECK_INPUT(grad_basis.size(0) == pseudo.size(0));
   CHECK_INPUT(kernel_size.dim() == 1);
@@ -197,18 +197,18 @@ torch::Tensor spline_basis_bw_cuda(torch::Tensor grad_basis,
   auto kernel_size_data = kernel_size.data_ptr<int64_t>();
   auto is_open_spline_data = is_open_spline.data_ptr<uint8_t>();
 
-  // auto stream = at::cuda::getCurrentCUDAStream();
+  auto stream = at::cuda::getCurrentCUDAStream();
   AT_DISPATCH_FLOATING_TYPES(pseudo.scalar_type(), "basis_bw", [&] {
     auto grad_basis_data = grad_basis.data_ptr<scalar_t>();
     auto pseudo_data = pseudo.data_ptr<scalar_t>();
     auto grad_pseudo_data = grad_pseudo.data_ptr<scalar_t>();
 
     AT_DISPATCH_DEGREE_TYPES(degree, [&] {
-      // spline_basis_bw_kernel<scalar_t, DEGREE>
-      //     <<<BLOCKS(grad_pseudo.numel()), THREADS, 0, stream>>>(
-      //         grad_basis_data, pseudo_data, kernel_size_data,
-      //         is_open_spline_data, grad_pseudo_data, E, D, S,
-      //         grad_pseudo.numel());
+      spline_basis_bw_kernel<scalar_t, DEGREE>
+          <<<BLOCKS(grad_pseudo.numel()), THREADS, 0, stream>>>(
+              grad_basis_data, pseudo_data, kernel_size_data,
+              is_open_spline_data, grad_pseudo_data, E, D, S,
+              grad_pseudo.numel());
     });
   });
 
