@@ -73,7 +73,7 @@ spline_basis_fw_kernel(const scalar_t *pseudo, const int64_t *kernel_size,
     scalar_t b = (scalar_t)1.;
 
     for (int64_t d = 0; d < D; d++) {
-      int64_t k_mod = k % (degree + 1);
+      const int64_t k_mod = k % (degree + 1);
       k /= degree + 1;
 
       scalar_t v = pseudo[e * D + d];
@@ -156,7 +156,7 @@ spline_basis_bw_kernel(const scalar_t *grad_basis, const scalar_t *pseudo,
       tmp = v;
 
       for (int64_t d_it = 1; d_it < D; d_it++) {
-        int64_t d_new = d_it - (d >= d_it);
+        const int64_t d_new = d_it - (d >= d_it);
         k_mod = (s / (int64_t)(powf(degree + 1, d_new) + 0.5)) % (degree + 1);
         v = pseudo[e * D + d_new];
         v *= kernel_size[d_new] - degree * is_open_spline[d_new];
