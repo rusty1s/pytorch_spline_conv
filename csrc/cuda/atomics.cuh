@@ -19,3 +19,4 @@ static inline __device__ void atomAdd(double *address, double val) {
 static inline __device__ void atomAdd(double *address, double val) {
   atomicAdd(address, val);
 }
+#endif
