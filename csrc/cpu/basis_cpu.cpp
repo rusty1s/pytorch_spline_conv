@@ -55,7 +55,6 @@ template <typename scalar_t, int64_t degree> struct Basis {
 std::tuple<torch::Tensor, torch::Tensor>
 spline_basis_fw_cpu(torch::Tensor pseudo, torch::Tensor kernel_size,
                     torch::Tensor is_open_spline, int64_t degree) {
-
   CHECK_CPU(pseudo);
   CHECK_CPU(kernel_size);
   CHECK_CPU(is_open_spline);
@@ -116,7 +115,6 @@ torch::Tensor spline_basis_bw_cpu(torch::Tensor grad_basis,
                                   torch::Tensor kernel_size,
                                   torch::Tensor is_open_spline,
                                   int64_t degree) {
-
   CHECK_CPU(grad_basis);
   CHECK_CPU(pseudo);
   CHECK_CPU(kernel_size);

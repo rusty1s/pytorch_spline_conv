@@ -113,6 +113,8 @@ public:
 torch::Tensor spline_weighting(torch::Tensor x, torch::Tensor weight,
                                torch::Tensor basis,
                                torch::Tensor weight_index) {
+  x = x.contiguous();
+  weight = weight.contiguous();
   return SplineWeighting::apply(x, weight, basis, weight_index)[0];
 }
 

@@ -72,6 +72,7 @@ public:
 std::tuple<torch::Tensor, torch::Tensor>
 spline_basis(torch::Tensor pseudo, torch::Tensor kernel_size,
              torch::Tensor is_open_spline, int64_t degree) {
+  pseudo = pseudo.contiguous();
   auto result = SplineBasis::apply(pseudo, kernel_size, is_open_spline, degree);
   return std::make_tuple(result[0], result[1]);
 }
