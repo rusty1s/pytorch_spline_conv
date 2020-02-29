@@ -9,15 +9,15 @@
   [&] {                                                                        \
     switch (degree) {                                                          \
     case 1: {                                                                  \
-      const int64_t DEGREE = 1;                                                \
+      static constexpr int64_t DEGREE = 1;                                     \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case 2: {                                                                  \
-      const int64_t DEGREE = 2;                                                \
+      static constexpr int64_t DEGREE = 2;                                     \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     case 3: {                                                                  \
-      const int64_t DEGREE = 3;                                                \
+      static constexpr int64_t DEGREE = 3;                                     \
       return __VA_ARGS__();                                                    \
     }                                                                          \
     default:                                                                   \
