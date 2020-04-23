@@ -173,3 +173,16 @@ Please cite our paper if you use this code in your own work:
 ```
 python setup.py test
 ```
+
+## C++ API
+
+`torch-spline-conv` also offers a C++ API that contains C++ equivalent of python models.
+
+```
+mkdir build
+cd build
+# Add -DWITH_CUDA=on support for the CUDA if needed
+cmake ..
+make
+make install
+```
