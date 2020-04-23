@@ -4,7 +4,6 @@ import os.path as osp
 import torch
 
 __version__ = '1.2.0'
-expected_torch_version = (1, 4)
 
 for library in ['_version', '_basis', '_weighting']:
     torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
