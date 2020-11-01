@@ -2,8 +2,8 @@ language: shell
 
 os:
   - linux
-  # - osx
-  # - windows
+  - osx
+  - windows
 
 env:
   global:
