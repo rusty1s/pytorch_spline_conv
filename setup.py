@@ -13,6 +13,10 @@ if os.getenv('FORCE_CUDA', '0') == '1':
 if os.getenv('FORCE_CPU', '0') == '1':
     WITH_CUDA = False
 
+suffix = '+cpu'
+if WITH_CUDA:
+    suffix = f'+cu{torch.version.cuda.replace(".", "")}'
+
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
 
 
@@ -63,7 +67,7 @@ tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_spline_conv',
-    version='1.2.0',
+    version='1.2.0' + suffix,
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url='https://github.com/rusty1s/pytorch_spline_conv',
