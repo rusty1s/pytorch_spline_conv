@@ -117,7 +117,7 @@ script:
   - python setup.py test
 after_success:
   - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
-  - python script/rename_wheel.py ${IDX}
+  # - python script/rename_wheel.py ${IDX}
   - codecov
 deploy:
   provider: s3
