@@ -116,8 +116,7 @@ script:
   - flake8 .
   - python setup.py test
 after_success:
-  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}
-  # - python script/rename_wheel.py ${IDX}
+  - python setup.py bdist_wheel --dist-dir=dist/torch-${TORCH_VERSION}/${IDX}
   - codecov
 deploy:
   provider: s3
@@ -126,8 +125,8 @@ deploy:
   access_key_id: ${S3_ACCESS_KEY}
   secret_access_key: ${S3_SECRET_ACCESS_KEY}
   bucket: pytorch-geometric.com
-  local_dir: dist/torch-${TORCH_VERSION}
-  upload_dir: whl/torch-${TORCH_VERSION}
+  local_dir: dist/torch-${TORCH_VERSION}/${IDX}
+  upload_dir: whl/torch-${TORCH_VERSION}/${IDX}
   acl: public_read
   on:
     all_branches: true
