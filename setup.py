@@ -63,7 +63,7 @@ tests_require = ['pytest', 'pytest-cov']
 
 setup(
     name='torch_spline_conv',
-    version='1.0.2',
+    version='1.2.0',
     author='Matthias Fey',
     author_email='matthias.fey@tu-dortmund.de',
     url='https://github.com/rusty1s/pytorch_spline_conv',
