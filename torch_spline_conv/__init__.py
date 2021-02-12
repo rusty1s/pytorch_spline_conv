@@ -20,7 +20,7 @@ if torch.version.cuda is not None:  # pragma: no cover
         major, minor = int(str(cuda_version)[0:2]), int(str(cuda_version)[3])
     t_major, t_minor = [int(x) for x in torch.version.cuda.split('.')]
 
-    if t_major != major or t_minor != minor:
+    if t_major != major:
         raise RuntimeError(
             f'Detected that PyTorch and torch_spline_conv were compiled with '
             f'different CUDA versions. PyTorch has CUDA version '
