@@ -112,6 +112,7 @@ install:
   - source script/torch.sh
   - pip install flake8 pytest pytest-runner pytest-cov codecov
   - python setup.py bdist_wheel --dist-dir=dist
+  - ls -lah dist/
   - pip install dist/*.whl
 script:
   - flake8 .
