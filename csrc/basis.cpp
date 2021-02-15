@@ -8,7 +8,11 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__basis(void) { return NULL; }
+#ifdef WITH_CUDA
+PyMODINIT_FUNC PyInit__basis_cuda(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__basis_cpu(void) { return NULL; }
+#endif
 #endif
 
 std::tuple<torch::Tensor, torch::Tensor>

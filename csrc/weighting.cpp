@@ -8,7 +8,11 @@
 #endif
 
 #ifdef _WIN32
-PyMODINIT_FUNC PyInit__weighting(void) { return NULL; }
+#ifdef WITH_CUDA
+PyMODINIT_FUNC PyInit__weighting_cuda(void) { return NULL; }
+#else
+PyMODINIT_FUNC PyInit__weighting_cpu(void) { return NULL; }
+#endif
 #endif
 
 torch::Tensor spline_weighting_fw(torch::Tensor x, torch::Tensor weight,
