@@ -11,8 +11,10 @@ from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
 if os.getenv('FORCE_CUDA', '0') == '1':
+    suffices = ['cuda', 'cpu']
+if os.getenv('FORCE_ONLY_CUDA', '0') == '1':
     suffices = ['cuda']
-if os.getenv('FORCE_CPU', '0') == '1':
+if os.getenv('FORCE_ONLY_CPU', '0') == '1':
     suffices = ['cpu']
 
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
