@@ -11,7 +11,7 @@ for library in ['_version', '_basis', '_weighting']:
     torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
         f'{library}_{suffix}', [osp.dirname(__file__)]).origin)
 
-if torch.version.cuda is not None:  # pragma: no cover
+if torch.cuda.is_available() and torch.version.cuda is not None:
     cuda_version = torch.ops.torch_spline_conv.cuda_version()
 
     if cuda_version == -1:
