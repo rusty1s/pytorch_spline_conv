@@ -5,9 +5,11 @@ import torch
 
 __version__ = '1.2.0'
 
+suffix = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 for library in ['_version', '_basis', '_weighting']:
     torch.ops.load_library(importlib.machinery.PathFinder().find_spec(
-        library, [osp.dirname(__file__)]).origin)
+        f'{library}_{suffix}', [osp.dirname(__file__)]).origin)
 
 if torch.version.cuda is not None:  # pragma: no cover
     cuda_version = torch.ops.torch_spline_conv.cuda_version()
