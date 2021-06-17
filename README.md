@@ -1,14 +1,17 @@
 [pypi-image]: https://badge.fury.io/py/torch-spline-conv.svg
 [pypi-url]: https://pypi.python.org/pypi/torch-spline-conv
-[build-image]: https://travis-ci.org/rusty1s/pytorch_spline_conv.svg?branch=master
-[build-url]: https://travis-ci.org/rusty1s/pytorch_spline_conv
+[testing-image]: https://github.com/rusty1s/pytorch_spline_conv/actions/workflows/testing.yml/badge.svg
+[testing-url]: https://github.com/rusty1s/pytorch_spline_conv/actions/workflows/testing.yml
+[linting-image]: https://github.com/rusty1s/pytorch_spline_conv/actions/workflows/linting.yml/badge.svg
+[linting-url]: https://github.com/rusty1s/pytorch_spline_conv/actions/workflows/linting.yml
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_spline_conv/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_spline_conv?branch=master
 
 # Spline-Based Convolution Operator of SplineCNN
 
 [![PyPI Version][pypi-image]][pypi-url]
-[![Build Status][build-image]][build-url]
+[![Testing Status][testing-image]][testing-url]
+[![Linting Status][linting-image]][linting-url]
 [![Code Coverage][coverage-image]][coverage-url]
 
 --------------------------------------------------------------------------------
@@ -25,9 +28,25 @@ The operator works on all floating point data types and is implemented both for 
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
 
-#### PyTorch 1.8.0
+#### PyTorch 1.9.0
 
-To install the binaries for PyTorch 1.8.0, simply run
+To install the binaries for PyTorch 1.9.0, simply run
+
+```
+pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.9.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` depending on your PyTorch installation.
+
+|             | `cpu` | `cu102` | `cu111` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
+
+#### PyTorch 1.8.0/1.8.1
+
+To install the binaries for PyTorch 1.8.0 and 1.8.1, simply run
 
 ```
 pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.8.0+${CUDA}.html
@@ -38,26 +57,10 @@ where `${CUDA}` should be replaced by either `cpu`, `cu101`, `cu102`, or `cu111`
 |             | `cpu` | `cu101` | `cu102` | `cu111` |
 |-------------|-------|---------|---------|---------|
 | **Linux**   | ✅    | ✅      | ✅      | ✅      |
-| **Windows** | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    | ❌      | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |         |
 
-#### PyTorch 1.7.0/1.7.1
-
-To install the binaries for PyTorch 1.7.0 and 1.7.1, simply run
-
-```
-pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.7.0+${CUDA}.html
-```
-
-where `${CUDA}` should be replaced by either `cpu`, `cu92`, `cu101`, `cu102`, or `cu110` depending on your PyTorch installation.
-
-|             | `cpu` | `cu92` | `cu101` | `cu102` | `cu110` |
-|-------------|-------|--------|---------|---------|---------|
-| **Linux**   | ✅    | ✅     | ✅      | ✅      | ✅      |
-| **Windows** | ✅    | ❌     | ✅      | ✅      | ✅      |
-| **macOS**   | ✅    |        |         |         |         |
-
-**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0 and PyTorch 1.6.0 (following the same procedure).
+**Note:** Binaries of older versions are also provided for PyTorch 1.4.0, PyTorch 1.5.0, PyTorch 1.6.0 and PyTorch 1.7.0/1.7.1 (following the same procedure).
 
 ### From source
 
