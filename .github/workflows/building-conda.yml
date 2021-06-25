@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-16.04, macos-10.15, windows-latest]
+        os: [ubuntu-16.04] #, macos-10.15, windows-latest]
         python-version: [3.8]
         torch-version: [1.8.0, 1.9.0]
         cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
@@ -56,3 +56,10 @@ jobs:
           FORCE_CUDA=1 source ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
+
+      - name: Publish Conda package
+        uses: fcakyon/conda-publish-action@v1.3
+        with:
+          subdir: 'conda'
+          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
+          platforms: 'win osx linux'
