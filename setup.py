@@ -17,6 +17,9 @@ if os.getenv('FORCE_ONLY_CUDA', '0') == '1':
 if os.getenv('FORCE_ONLY_CPU', '0') == '1':
     suffices = ['cpu']
 
+print('FORCE_CUDA', os.getenv('FORCE_CUDA'))
+print('SUFFICS', suffices)
+
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
 
 
