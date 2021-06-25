@@ -16,7 +16,7 @@ jobs:
         # torch-version: [1.8.0, 1.9.0]
         torch-version: [1.9.0]
         # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
-        cuda-version: ['cpu']
+        cuda-version: ['cpu', 'cu102']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
@@ -52,7 +52,7 @@ jobs:
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_ONLY_CPU=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_CUDA=0 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
 

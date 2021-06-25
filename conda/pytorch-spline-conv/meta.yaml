@@ -22,7 +22,6 @@ build:
   script_env:
     - CUDA_HOME
     - FORCE_CUDA
-    - FORCE_ONLY_CPU
 
 test:
   imports:
