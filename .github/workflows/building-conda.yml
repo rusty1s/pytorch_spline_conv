@@ -46,4 +46,4 @@ jobs:
 
       - name: Build Conda package
         run: |
-          bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          bash ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
