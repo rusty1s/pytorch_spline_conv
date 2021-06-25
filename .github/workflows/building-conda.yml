@@ -44,6 +44,6 @@ jobs:
 #         run: |
 #           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
-#       - name: Build Conda package
-#         run: |
-#           bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+      - name: Build Conda package
+        run: |
+          bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
