@@ -37,6 +37,10 @@ jobs:
         shell:
           bash
 
+      - name: DISK?
+        run: |
+          .\conda\disk.ps1
+
       - name: Size
         run: |
           Get-PSDrive
