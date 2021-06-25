@@ -1,6 +1,6 @@
 package:
-  name: torch-spline-conv
-  version: 1.1.1
+  name: pytorch-spline-conv
+  version: 1.2.1
 
 source:
   path: ../..
@@ -21,7 +21,7 @@ requirements:
 
 build:
   string: py{{py}}_torch_{{ environ['TORCH_VERSION'] }}_{{ environ['CUDA_VERSION'] }}
-  script: pip install .
+  script: python setup.py install
   script_env:
     - CUDA_HOME
     - FORCE_CUDA
