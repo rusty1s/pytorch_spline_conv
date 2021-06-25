@@ -29,4 +29,4 @@ echo "PyTorch $TORCH_VERSION+$CUDA_VERSION"
 echo "- $CONDA_PYTORCH_CONSTRAINT"
 echo "- $CONDA_CUDATOOLKIT_CONSTRAINT"
 
-conda build . -c defaults -c nvidia -c pytorch --output-folder "$HOME/conda-bld/"
+"$CONDA/bin/conda" build . -c defaults -c nvidia -c pytorch --output-folder "$HOME/conda-bld/"
