@@ -19,8 +19,6 @@ if os.getenv('FORCE_ONLY_CPU', '0') == '1':
 
 BUILD_DOCS = os.getenv('BUILD_DOCS', '0') == '1'
 
-print('FORCE CUDA', suffices)
-
 
 def get_extensions():
     extensions = []

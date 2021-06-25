@@ -6,6 +6,9 @@ source:
   path: ../..
 
 requirements:
+  build:
+    - {{ compiler('c') }}  # [win]
+
   host:
     - python {{ environ.get('PYTHON_VERSION') }}
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
