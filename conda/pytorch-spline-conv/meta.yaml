@@ -7,12 +7,12 @@ source:
 
 requirements:
   host:
-    - {{ environ.get('CONDA_PYTHON_CONSTRAINT') }}
+    - python
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
     - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
 
   run:
-    - {{ environ.get('CONDA_PYTHON_CONSTRAINT') }}
+    - python
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
     - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
 
