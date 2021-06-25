@@ -21,7 +21,8 @@ requirements:
 
 build:
   string: py{{py}}_torch_{{ environ['TORCH_VERSION'] }}_{{ environ['CUDA_VERSION'] }}
-  script: pip install .
+  script: python setup.py install
+  # script: pip install .
 
 test:
   imports:

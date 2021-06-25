@@ -11,26 +11,14 @@ if [ "${CUDA_VERSION}" = "cpu" ]; then
 else
   export FORCE_CUDA=1
   case $CUDA_VERSION in
-    cu112)
-      export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==11.2.*"
-      ;;
     cu111)
       export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==11.1.*"
-      ;;
-    cu110)
-      export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==11.0.*"
       ;;
     cu102)
       export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==10.2.*"
       ;;
     cu101)
       export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==10.1.*"
-      ;;
-    cu100)
-      export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==10.0.*"
-      ;;
-    cu92)
-      export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==9.2.*"
       ;;
     *)
       echo "Unrecognized CUDA_VERSION=$CUDA_VERSION"
