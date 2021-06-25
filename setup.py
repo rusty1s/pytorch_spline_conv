@@ -64,8 +64,8 @@ def get_extensions():
 
 
 install_requires = []
-setup_requires = ['pytest-runner']
-tests_require = ['pytest', 'pytest-cov']
+setup_requires = []
+tests_require = ['pytest', 'pytest-runner', 'pytest-cov']
 
 setup(
     name='torch_spline_conv',
@@ -88,8 +88,7 @@ setup(
     tests_require=tests_require,
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
-        'build_ext':
-        BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
+        'build_ext': BuildExtension.with_options(no_python_abi_suffix=True)
     },
     packages=find_packages(),
 )
