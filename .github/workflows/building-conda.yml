@@ -40,7 +40,7 @@ jobs:
         run: |
           conda install conda-build conda-verify --yes
         shell:
-          bash - l {0}
+          bash -l {0}
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
