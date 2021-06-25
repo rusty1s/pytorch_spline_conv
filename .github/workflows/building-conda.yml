@@ -57,6 +57,6 @@ jobs:
         shell:
           bash
 
-      - name: Publish Conda package
-        run: |
-          anaconda upload /usr/share/miniconda/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
+      # - name: Publish Conda package
+      #   run: |
+      #     anaconda upload /usr/share/miniconda/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
