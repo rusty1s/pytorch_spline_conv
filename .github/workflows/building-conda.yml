@@ -38,10 +38,10 @@ jobs:
           conda install conda-build
           conda install conda-verify
 
-#       - name: Install CUDA ${{ matrix.cuda-version }}
-#         if: ${{ matrix.cuda-version != 'cpu' }}
-#         run: |
-#           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+      - name: Install CUDA ${{ matrix.cuda-version }}
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
 
       - name: Build Conda package
         run: |
