@@ -33,7 +33,7 @@ jobs:
 
       - name: HEHE
         run: |
-          ls -lah
+          ls /c/Program\ Files -lah
         shell:
           bash
 
