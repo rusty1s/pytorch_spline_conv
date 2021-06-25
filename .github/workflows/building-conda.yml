@@ -28,16 +28,22 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up conda with Python ${{ matrix.python-version }}
+      - name: Set up Miniconda with Python ${{ matrix.python-version }}
       - uses: conda-incubator/setup-miniconda@v2
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install CUDA ${{ matrix.cuda-version }}
-        if: ${{ matrix.cuda-version != 'cpu' }}
+      - name: Conda info
         run: |
-          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+          conda info
+          conda list
+          which python
 
-      - name: Build conda package
-        run: |
-          bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+#       - name: Install CUDA ${{ matrix.cuda-version }}
+#         if: ${{ matrix.cuda-version != 'cpu' }}
+#         run: |
+#           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+
+#       - name: Build Conda package
+#         run: |
+#           bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
