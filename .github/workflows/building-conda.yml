@@ -33,11 +33,15 @@ jobs:
       - name: Install Conda packages
         run: |
           $CONDA/bin/conda install conda-build conda-verify anaconda-client --yes
+        shell:
+          bash
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+        shell:
+          bash
 
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
