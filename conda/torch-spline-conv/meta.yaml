@@ -1,0 +1,33 @@
+package:
+  name: torch-spline-conv
+  version: 1.1.1
+
+source:
+  git_url: https://github.com/rusty1s/pytorch_spline_conv.git
+
+requirements:
+  host:
+    - pip
+    - python
+    - numpy>=1.11
+    - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
+    - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
+
+  run:
+    - python
+    - numpy>=1.11
+    - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
+    - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
+
+build:
+  string: py{{py}}_torch_{{ environ['TORCH_VERSION'] }}_{{ environ['CUDA_VERSION'] }}
+  script: pip install .
+
+test:
+  imports:
+    - torch_spline_conv
+
+about:
+  home: https://github.com/rusty1s/pytorch_spline_conv
+  license: MIT
+  summary: Implementation of the Spline-Based Convolution Operator of SplineCNN in PyTorch
