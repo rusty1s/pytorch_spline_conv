@@ -7,15 +7,12 @@ source:
 
 requirements:
   host:
-    - pip
-    - python
-    - numpy>=1.11
+    - {{ environ.get('CONDA_PYTHON_CONSTRAINT') }}
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
     - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
 
   run:
-    - python
-    - numpy>=1.11
+    - {{ environ.get('CONDA_PYTHON_CONSTRAINT') }}
     - {{ environ.get('CONDA_PYTORCH_CONSTRAINT') }}
     - {{ environ.get('CONDA_CUDATOOLKIT_CONSTRAINT') }}
 

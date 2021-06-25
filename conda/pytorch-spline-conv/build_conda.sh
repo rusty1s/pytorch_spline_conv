@@ -1,7 +1,10 @@
 #!/bin/bash
 
-export TORCH_VERSION=$1
-export CUDA_VERSION=$2
+export PYTHON_VERSION=$2
+export TORCH_VERSION=$2
+export CUDA_VERSION=$3
+
+export CONDA_PYTHON_CONSTRAINT="python==$PYTHON_VERSION"
 
 export CONDA_PYTORCH_CONSTRAINT="pytorch==${TORCH_VERSION%.*}.*"
 
