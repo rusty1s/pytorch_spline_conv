@@ -6,10 +6,8 @@ export CUDA_VERSION=$2
 export CONDA_PYTORCH_CONSTRAINT="pytorch==${TORCH_VERSION%.*}.*"
 
 if [ "${CUDA_VERSION}" = "cpu" ]; then
-  export FORCE_ONLY_CPU=1
   export CONDA_CUDATOOLKIT_CONSTRAINT="cpuonly"
 else
-  export FORCE_CUDA=1
   case $CUDA_VERSION in
     cu111)
       export CONDA_CUDATOOLKIT_CONSTRAINT="cudatoolkit==11.1.*"
