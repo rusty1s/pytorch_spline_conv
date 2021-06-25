@@ -1,0 +1,43 @@
+name: Building Conda
+
+on: [workflow_dispatch]
+
+jobs:
+
+  conda-build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-16.04]
+        python-version: [3.8]
+        torch-version: [1.8.0, 1.9.0]
+        cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
+        exclude:
+          - torch-version: 1.9.0
+            cuda-version: 'cu101'
+          - os: macos-10.15
+            cuda-version: 'cu101'
+          - os: macos-10.15
+            cuda-version: 'cu102'
+          - os: macos-10.15
+            cuda-version: 'cu111'
+          - os: windows-latest
+            cuda-version: 'cu101'
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up conda with Python ${{ matrix.python-version }}
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install CUDA ${{ matrix.cuda-version }}
+        if: ${{ matrix.cuda-version != 'cpu' }}
+        run: |
+          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+
+      - name: Build conda package
+        run: |
+          bash .conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
