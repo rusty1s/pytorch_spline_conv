@@ -1,7 +1,8 @@
 #!/bin/bash
 
-export TORCH_VERSION=$1
-export CUDA_VERSION=$2
+export PYTHON_VERSION=$1
+export TORCH_VERSION=$2
+export CUDA_VERSION=$3
 
 export CONDA_PYTORCH_CONSTRAINT="pytorch==${TORCH_VERSION%.*}.*"
 
@@ -29,4 +30,4 @@ echo "PyTorch $TORCH_VERSION+$CUDA_VERSION"
 echo "- $CONDA_PYTORCH_CONSTRAINT"
 echo "- $CONDA_CUDATOOLKIT_CONSTRAINT"
 
-"$CONDA/bin/conda" build . -c defaults -c nvidia -c pytorch --output-folder "$HOME/conda-bld/"
+conda build . -c defaults -c nvidia -c pytorch --output-folder "$HOME/conda-bld/"

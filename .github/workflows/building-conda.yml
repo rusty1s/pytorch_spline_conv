@@ -10,7 +10,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] #[ubuntu-16.04] #, macos-10.15] #, windows-latest]
+        os: [ubuntu-16.04, , macos-10.15] #, windows-latest]
+        python-version: [3.6, 3.7, 3.8, 3.9]
         torch-version: [1.8.0, 1.9.0]
         cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
         exclude:
@@ -27,12 +28,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Conda
+      - name: Set up Conda for Python ${{ matrix.version }}
         uses: conda-incubator/setup-miniconda@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Install Conda packages
         run: |
-          $CONDA/bin/conda install conda-build conda-verify anaconda-client --yes
+          conda install conda-build conda-verify anaconda-client --yes
         shell:
           bash
 
@@ -46,7 +49,7 @@ jobs:
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_ONLY_CPU=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_ONLY_CPU=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
 
@@ -54,7 +57,7 @@ jobs:
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
 
