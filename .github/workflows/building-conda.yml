@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Conda packages
         run: |
-          conda install conda-build conda-verify anaconda-client
+          conda install conda-build conda-verify anaconda-client --yes
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
@@ -45,7 +45,7 @@ jobs:
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_ONLY_CPU=1 source ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_ONLY_CPU=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
 
@@ -53,10 +53,10 @@ jobs:
         if: ${{ matrix.cuda-version != 'cpu' }}
         run: |
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          FORCE_CUDA=1 source ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash
 
       # - name: Publish Conda package
       #   run: |
-      #     anaconda upload /usr/share/miniconda/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
+      #     anaconda upload -t ${{ secrets.ANACONDA_TOKEN }} $HOME/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
