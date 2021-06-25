@@ -30,10 +30,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Conda for Python ${{ matrix.python-version }}
-        uses: conda-incubator/setup-miniconda@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+
+      - name: HEHE
+        run: |
+          ls -lah
+        shell:
+          bash
 
       - name: Free up disk space
         if: ${{ runner.os == 'Windows' && matrix.cuda-version == 'cu111' }}
@@ -43,39 +45,44 @@ jobs:
           Remove-Item "$Env:Programfiles\Boost" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
           Write-Host $err
 
-      - name: Install Conda packages
-        run: |
-          conda install conda-build conda-verify --yes
-        shell:
-          bash -l {0}
+      # - name: Set up Conda for Python ${{ matrix.python-version }}
+      #   uses: conda-incubator/setup-miniconda@v2
+      #   with:
+      #     python-version: ${{ matrix.python-version }}
 
-      - name: Install CUDA ${{ matrix.cuda-version }}
-        if: ${{ matrix.cuda-version != 'cpu' }}
-        run: |
-          bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
-        shell:
-          bash
+      # - name: Install Conda packages
+      #   run: |
+      #     conda install conda-build conda-verify --yes
+      #   shell:
+      #     bash -l {0}
 
-      - name: Build Conda package for CPU
-        if: ${{ matrix.cuda-version == 'cpu' }}
-        run: |
-          FORCE_CUDA=0 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
-        shell:
-          bash -l {0}
+      # - name: Install CUDA ${{ matrix.cuda-version }}
+      #   if: ${{ matrix.cuda-version != 'cpu' }}
+      #   run: |
+      #     bash .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}.sh
+      #   shell:
+      #     bash
 
-      - name: Build Conda package for GPU
-        if: ${{ matrix.cuda-version != 'cpu' }}
-        run: |
-          source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
-          FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
-        shell:
-          bash -l {0}
+      # - name: Build Conda package for CPU
+      #   if: ${{ matrix.cuda-version == 'cpu' }}
+      #   run: |
+      #     FORCE_CUDA=0 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+      #   shell:
+      #     bash -l {0}
 
-      - name: Publish Conda package
-        run: |
-          conda install anaconda-client --yes
-          anaconda upload --force --label main $HOME/conda-bld/*/*.tar.bz2
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
-        shell:
-          bash -l {0}
+      # - name: Build Conda package for GPU
+      #   if: ${{ matrix.cuda-version != 'cpu' }}
+      #   run: |
+      #     source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
+      #     FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+      #   shell:
+      #     bash -l {0}
+
+      # - name: Publish Conda package
+      #   run: |
+      #     conda install anaconda-client --yes
+      #     anaconda upload --force --label main $HOME/conda-bld/*/*.tar.bz2
+      #   env:
+      #     ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+      #   shell:
+      #     bash -l {0}
