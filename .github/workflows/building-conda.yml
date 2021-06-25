@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-10.15, windows-latest]
+        os: [windows-latest] #[ubuntu-16.04] #, macos-10.15] #, windows-latest]
         torch-version: [1.8.0, 1.9.0]
         cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
         exclude:
@@ -54,8 +54,8 @@ jobs:
         shell:
           bash
 
-      - name: Publish Conda package
-        run: |
-          $CONDA/bin/anaconda upload --label main $HOME/conda-bld/*/*.tar.bz2
-        env:
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+      # - name: Publish Conda package
+      #   run: |
+      #     $CONDA/bin/anaconda upload --label main $HOME/conda-bld/*/*.tar.bz2
+      #   env:
+      #     ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
