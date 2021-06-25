@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Conda packages
         run: |
-          conda install conda-build conda-verify
+          conda install conda-build conda-verify anaconda-client
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
@@ -58,8 +58,5 @@ jobs:
           bash
 
       - name: Publish Conda package
-        uses: fcakyon/conda-publish-action@v1.3
-        with:
-          subdir: 'conda'
-          anacondatoken: ${{ secrets.ANACONDA_TOKEN }}
-          platforms: 'win osx linux'
+        run: |
+          anaconda upload /usr/share/miniconda/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
