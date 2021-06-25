@@ -27,6 +27,7 @@ jobs:
             cuda-version: 'cu101'
 
     steps:
+      - uses: actions/checkout@v2
       - name: Set up Miniconda with Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
