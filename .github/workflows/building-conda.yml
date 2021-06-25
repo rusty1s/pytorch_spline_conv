@@ -40,7 +40,7 @@ jobs:
         run: |
           conda install conda-build conda-verify anaconda-client --yes
         shell:
-          bash
+          bash - l {0}
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
@@ -54,7 +54,7 @@ jobs:
         run: |
           FORCE_CUDA=0 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
-          bash
+          bash -l {0}
 
       - name: Build Conda package for GPU
         if: ${{ matrix.cuda-version != 'cpu' }}
@@ -62,7 +62,7 @@ jobs:
           source .github/workflows/cuda/${{ matrix.cuda-version }}-${{ runner.os }}-env.sh
           FORCE_CUDA=1 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
-          bash
+          bash -l {0}
 
       # - name: Publish Conda package
       #   run: |
