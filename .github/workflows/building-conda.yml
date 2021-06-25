@@ -36,7 +36,6 @@ jobs:
       - name: Install Conda packages
         run: |
           conda install conda-build conda-verify anaconda-client --yes
-          $CONDA/anaconda --help
 
       - name: Install CUDA ${{ matrix.cuda-version }}
         if: ${{ matrix.cuda-version != 'cpu' }}
@@ -60,5 +59,4 @@ jobs:
 
       - name: Publish Conda package
         run: |
-          anaconda --help
-          anaconda upload -t ${{ secrets.ANACONDA_TOKEN }} $HOME/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
+          $CONDA/bin/anaconda upload -t ${{ secrets.ANACONDA_TOKEN }} $HOME/conda-bld/*/*.tar.bz2 --token ${{ secrets.ANACONDA_TOKEN }}
