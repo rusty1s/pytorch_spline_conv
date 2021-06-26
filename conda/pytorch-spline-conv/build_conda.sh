@@ -6,10 +6,8 @@ export CUDA_VERSION=$3
 
 export CONDA_PYTORCH_CONSTRAINT="pytorch==${TORCH_VERSION%.*}.*"
 
-if [[ "$(uname)" == Darwin ]]; then
-    export CONDA_CUDATOOLKIT_CONSTRAINT=""
-elif [ "${CUDA_VERSION}" = "cpu" ]; then
-  export CONDA_CUDATOOLKIT_CONSTRAINT="cpuonly"
+if [ "${CUDA_VERSION}" = "cpu" ]; then
+  export CONDA_CUDATOOLKIT_CONSTRAINT="cpuonly  # [not osx]"
 else
   case $CUDA_VERSION in
     cu111)
