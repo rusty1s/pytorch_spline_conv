@@ -10,12 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-16.04, macos-10.15, windows-latest]
-        os: [windows-latest]
+        os: [ubuntu-16.04, macos-10.15, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
         torch-version: [1.8.0, 1.9.0]
-        # cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
-        cuda-version: ['cu111']
+        cuda-version: ['cpu', 'cu101', 'cu102', 'cu111']
         exclude:
           - torch-version: 1.9.0
             cuda-version: 'cu101'
@@ -30,19 +28,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Free up disk space
-        if: ${{ runner.os == 'Windows' && matrix.cuda-version == 'cu111' }}
-        run: |
-          Remove-Item "$Env:Programfiles\Azure Cosmos DB Emulator" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
-          Write-Host $err
-          Remove-Item "$Env:Programfiles\Google" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
-          Write-Host $err
-          Remove-Item "$Env:Programfiles\MongoDB" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
-          Write-Host $err
-          Remove-Item "$Env:Programfiles\PostgreSQL" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
-          Write-Host $err
-
       - name: Set up Conda for Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
