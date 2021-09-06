@@ -49,7 +49,7 @@ jobs:
       - name: Build Conda package for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
-          FORCE_CUDA=0 ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
+          ./conda/pytorch-spline-conv/build_conda.sh ${{ matrix.python-version }} ${{ matrix.torch-version }} ${{ matrix.cuda-version }}
         shell:
           bash -l {0}
 
