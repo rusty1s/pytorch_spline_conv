@@ -26,23 +26,23 @@ The operator works on all floating point data types and is implemented both for 
 
 ### Anaconda
 
-**Update:** You can now install `pytorch-spline-conv` via [Anaconda](https://anaconda.org/rusty1s/pytorch-spline-conv) for all major OS/PyTorch/CUDA combinations 🤗
+**Update:** You can now install `pytorch-spline-conv` via [Anaconda](https://anaconda.org/pyg/pytorch-spline-conv) for all major OS/PyTorch/CUDA combinations 🤗
 Given that you have [`pytorch >= 1.8.0` installed](https://pytorch.org/get-started/locally/), simply run
 
 ```
-conda install pytorch-spline-conv -c rusty1s
+conda install pytorch-spline-conv -c pyg
 ```
 
 ### Binaries
 
-We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://pytorch-geometric.com/whl).
+We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
 #### PyTorch 1.9.0
 
 To install the binaries for PyTorch 1.9.0, simply run
 
 ```
-pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.9.0+${CUDA}.html
+pip install torch-spline-conv -f https://data.pyg.org/whl/torch-1.9.0+${CUDA}.html
 ```
 
 where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` depending on your PyTorch installation.
@@ -58,7 +58,7 @@ where `${CUDA}` should be replaced by either `cpu`, `cu102`, or `cu111` dependin
 To install the binaries for PyTorch 1.8.0 and 1.8.1, simply run
 
 ```
-pip install torch-spline-conv -f https://pytorch-geometric.com/whl/torch-1.8.0+${CUDA}.html
+pip install torch-spline-conv -f https://data.pyg.org/whl/torch-1.8.0+${CUDA}.html
 ```
 
 where `${CUDA}` should be replaced by either `cpu`, `cu101`, `cu102`, or `cu111` depending on your PyTorch installation.
