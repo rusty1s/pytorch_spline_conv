@@ -58,7 +58,7 @@ def test_spline_conv_forward(test, dtype, device):
 
 
 @pytest.mark.parametrize('degree,device', product(degrees, devices))
-def test_spline_basis_backward(degree, device):
+def test_spline_conv_backward(degree, device):
     x = torch.rand((3, 2), dtype=torch.double, device=device)
     x.requires_grad_()
     edge_index = tensor([[0, 1, 1, 2], [1, 0, 2, 1]], torch.long, device)

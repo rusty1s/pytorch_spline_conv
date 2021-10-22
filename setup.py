@@ -29,7 +29,7 @@ def get_extensions():
     for main, suffix in product(main_files, suffices):
         define_macros = []
         extra_compile_args = {'cxx': ['-O2']}
-        extra_link_args = ['-s']
+        extra_link_args = []
 
         if suffix == 'cuda':
             define_macros += [('WITH_CUDA', None)]

@@ -69,10 +69,10 @@ def spline_conv(x: torch.Tensor, edge_index: torch.Tensor,
 
     # Weight root node separately (if wished).
     if root_weight is not None:
-        out = out + torch.matmul(x, root_weight)
+        out += x @ root_weight
 
     # Add bias (if wished).
     if bias is not None:
-        out = out + bias
+        out += bias
 
     return out
