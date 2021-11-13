@@ -29,6 +29,8 @@ def get_extensions():
     for main, suffix in product(main_files, suffices):
         define_macros = []
         extra_compile_args = {'cxx': ['-O2']}
+        if not os.name == 'nt':  # Not on Windows:
+            extra_compile_args['cxx'] += ['-Wno-sign-compare']
         extra_link_args = ['-s']
 
         if suffix == 'cuda':
