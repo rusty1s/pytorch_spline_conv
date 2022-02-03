@@ -3,6 +3,8 @@ import glob
 import os.path as osp
 from itertools import product
 from setuptools import setup, find_packages
+import platform
+import sys
 
 import torch
 from torch.utils.cpp_extension import BuildExtension
@@ -50,6 +52,11 @@ def get_extensions():
         path = osp.join(extensions_dir, 'cuda', f'{name}_cuda.cu')
         if suffix == 'cuda' and osp.exists(path):
             sources += [path]
+
+        # Compile for mac arm64
+        if (sys.platform == 'darwin' and platform.machine() == 'arm64'):
+            extra_compile_args['cxx'] += ['-arch', 'arm64']
+            extra_link_args += ['-arch', 'arm64']
 
         Extension = CppExtension if suffix == 'cpu' else CUDAExtension
         extension = Extension(
