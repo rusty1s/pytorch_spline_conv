@@ -1,14 +1,18 @@
-import os
 import glob
+import os
 import os.path as osp
-from itertools import product
-from setuptools import setup, find_packages
 import platform
 import sys
+from itertools import product
 
 import torch
-from torch.utils.cpp_extension import BuildExtension
-from torch.utils.cpp_extension import CppExtension, CUDAExtension, CUDA_HOME
+from setuptools import find_packages, setup
+from torch.__config__ import parallel_info
+from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
+                                       CUDAExtension)
+
+__version__ = '1.2.1',
+URL = 'https://github.com/rusty1s/pytorch_spline_conv'
 
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
@@ -35,6 +39,22 @@ def get_extensions():
             extra_compile_args['cxx'] += ['-Wno-sign-compare']
         extra_link_args = ['-s']
 
+        info = parallel_info()
+        if ('backend: OpenMP' in info and 'OpenMP not found' not in info
+                and sys.platform != 'darwin'):
+            extra_compile_args['cxx'] += ['-DAT_PARALLEL_OPENMP']
+            if sys.platform == 'win32':
+                extra_compile_args['cxx'] += ['/openmp']
+            else:
+                extra_compile_args['cxx'] += ['-fopenmp']
+        else:
+            print('Compiling without OpenMP...')
+
+        # Compile for mac arm64
+        if (sys.platform == 'darwin' and platform.machine() == 'arm64'):
+            extra_compile_args['cxx'] += ['-arch', 'arm64']
+            extra_link_args += ['-arch', 'arm64']
+
         if suffix == 'cuda':
             define_macros += [('WITH_CUDA', None)]
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
@@ -53,11 +73,6 @@ def get_extensions():
         if suffix == 'cuda' and osp.exists(path):
             sources += [path]
 
-        # Compile for mac arm64
-        if (sys.platform == 'darwin' and platform.machine() == 'arm64'):
-            extra_compile_args['cxx'] += ['-arch', 'arm64']
-            extra_link_args += ['-arch', 'arm64']
-
         Extension = CppExtension if suffix == 'cpu' else CUDAExtension
         extension = Extension(
             f'torch_spline_conv._{name}_{suffix}',
@@ -73,33 +88,37 @@ def get_extensions():
 
 
 install_requires = []
-setup_requires = []
-tests_require = ['pytest', 'pytest-runner', 'pytest-cov']
+
+test_requires = [
+    'pytest',
+    'pytest-cov',
+]
 
 setup(
     name='torch_spline_conv',
-    version='1.2.1',
-    author='Matthias Fey',
-    author_email='matthias.fey@tu-dortmund.de',
-    url='https://github.com/rusty1s/pytorch_spline_conv',
+    version=__version__,
     description=('Implementation of the Spline-Based Convolution Operator of '
                  'SplineCNN in PyTorch'),
+    author='Matthias Fey',
+    author_email='matthias.fey@tu-dortmund.de',
+    url=URL,
+    download_url=f'{URL}/archive/{__version__}.tar.gz',
     keywords=[
         'pytorch',
         'geometric-deep-learning',
         'graph-neural-networks',
         'spline-cnn',
     ],
-    license='MIT',
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=install_requires,
-    setup_requires=setup_requires,
-    tests_require=tests_require,
-    extras_require={'test': tests_require},
+    extras_require={
+        'test': test_requires,
+    },
     ext_modules=get_extensions() if not BUILD_DOCS else [],
     cmdclass={
         'build_ext':
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
+    include_package_data=True,
 )
