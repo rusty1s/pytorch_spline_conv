@@ -11,7 +11,7 @@ from torch.__config__ import parallel_info
 from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
                                        CUDAExtension)
 
-__version__ = '1.2.1',
+__version__ = '1.2.1'
 URL = 'https://github.com/rusty1s/pytorch_spline_conv'
 
 WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
