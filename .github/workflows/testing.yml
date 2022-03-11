@@ -12,8 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
         os: [ubuntu-latest, windows-latest]
         python-version: [3.7]
         torch-version: [1.10.0, 1.11.0]
