@@ -18,7 +18,7 @@ for library in ['_version', '_basis', '_weighting']:
                           f"{osp.dirname(__file__)}")
 
 cuda_version = torch.ops.torch_spline_conv.cuda_version()
-if torch.cuda.is_available() and cuda_version != -1:  # pragma: no cover
+if torch.version.cuda is not None and cuda_version != -1:  # pragma: no cover
     if cuda_version < 10000:
         major, minor = int(str(cuda_version)[0]), int(str(cuda_version)[2])
     else:
@@ -34,8 +34,8 @@ if torch.cuda.is_available() and cuda_version != -1:  # pragma: no cover
             f'matches your PyTorch install.')
 
 from .basis import spline_basis  # noqa
-from .weighting import spline_weighting  # noqa
 from .conv import spline_conv  # noqa
+from .weighting import spline_weighting  # noqa
 
 __all__ = [
     'spline_basis',
