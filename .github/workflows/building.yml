@@ -31,10 +31,6 @@ jobs:
             cuda-version: 'cu102'
           - os: windows-2019  # Complains about CUDA mismatch.
             python-version: '3.7'
-            cuda-version: 'cu115'
-          - os: windows-2019  # Complains about CUDA mismatch.
-            python-version: '3.7'
-            cuda-version: 'cu116'
 
     steps:
       - uses: actions/checkout@v2
