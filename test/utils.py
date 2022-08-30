@@ -1,6 +1,6 @@
 import torch
 
-dtypes = [torch.float, torch.double]
+dtypes = [torch.float, torch.double, torch.bfloat16]
 
 devices = [torch.device('cpu')]
 if torch.cuda.is_available():

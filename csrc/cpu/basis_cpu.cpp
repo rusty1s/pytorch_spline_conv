@@ -75,7 +75,7 @@ spline_basis_fw_cpu(torch::Tensor pseudo, torch::Tensor kernel_size,
   auto is_open_spline_data = is_open_spline.data_ptr<uint8_t>();
   auto weight_index_data = weight_index.data_ptr<int64_t>();
 
-  AT_DISPATCH_FLOATING_TYPES(pseudo.scalar_type(), "basis_fw", [&] {
+  AT_DISPATCH_FLOATING_TYPES_AND(at::ScalarType::BFloat16, pseudo.scalar_type(), "basis_fw", [&] {
     auto pseudo_data = pseudo.data_ptr<scalar_t>();
     auto basis_data = basis.data_ptr<scalar_t>();
 
@@ -135,7 +135,7 @@ torch::Tensor spline_basis_bw_cpu(torch::Tensor grad_basis,
   auto kernel_size_data = kernel_size.data_ptr<int64_t>();
   auto is_open_spline_data = is_open_spline.data_ptr<uint8_t>();
 
-  AT_DISPATCH_FLOATING_TYPES(pseudo.scalar_type(), "basis_bw", [&] {
+  AT_DISPATCH_FLOATING_TYPES_AND(at::ScalarType::BFloat16, pseudo.scalar_type(), "basis_bw", [&] {
     auto grad_basis_data = grad_basis.data_ptr<scalar_t>();
     auto pseudo_data = pseudo.data_ptr<scalar_t>();
     auto grad_pseudo_data = grad_pseudo.data_ptr<scalar_t>();

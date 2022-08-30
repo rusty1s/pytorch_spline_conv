@@ -54,7 +54,12 @@ def test_spline_conv_forward(test, dtype, device):
 
     out = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                       is_open_spline, 1, True, root_weight, bias)
-    assert out.tolist() == test['expected']
+    if dtype == torch.bfloat16:
+        target = torch.tensor(test['expected'])
+        assert torch.allclose(out.to(torch.float), target,
+                              rtol=1e-2, atol=1e-2)
+    else:
+        assert out.tolist() == test['expected']
 
 
 @pytest.mark.parametrize('degree,device', product(degrees, devices))
