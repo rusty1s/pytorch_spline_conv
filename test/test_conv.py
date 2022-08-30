@@ -56,7 +56,8 @@ def test_spline_conv_forward(test, dtype, device):
                       is_open_spline, 1, True, root_weight, bias)
     if dtype == torch.bfloat16:
         target = torch.tensor(test['expected'])
-        assert torch.allclose(out.to(torch.float), target, rtol=1e-2, atol=1e-2)
+        assert torch.allclose(out.to(torch.float), target,
+                              rtol=1e-2, atol=1e-2)
     else:
         assert out.tolist() == test['expected']
 
