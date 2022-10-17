@@ -14,7 +14,10 @@ from torch.utils.cpp_extension import (CUDA_HOME, BuildExtension, CppExtension,
 __version__ = '1.2.1'
 URL = 'https://github.com/rusty1s/pytorch_spline_conv'
 
-WITH_CUDA = torch.cuda.is_available() and CUDA_HOME is not None
+WITH_CUDA = False
+if torch.cuda.is_available():
+    WITH_CUDA = CUDA_HOME is not None or torch.version.hip
+
 suffices = ['cpu', 'cuda'] if WITH_CUDA else ['cpu']
 if os.getenv('FORCE_CUDA', '0') == '1':
     suffices = ['cuda', 'cpu']
@@ -31,9 +34,12 @@ def get_extensions():
 
     extensions_dir = osp.join('csrc')
     main_files = glob.glob(osp.join(extensions_dir, '*.cpp'))
+    # remove generated 'hip' files, in case of rebuilds
+    main_files = [path for path in main_files if 'hip' not in path]
 
     for main, suffix in product(main_files, suffices):
         define_macros = []
+        undef_macros = []
         extra_compile_args = {'cxx': ['-O2']}
         if not os.name == 'nt':  # Not on Windows:
             extra_compile_args['cxx'] += ['-Wno-sign-compare']
@@ -59,8 +65,15 @@ def get_extensions():
             define_macros += [('WITH_CUDA', None)]
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
-            nvcc_flags += ['--expt-relaxed-constexpr', '-O2']
+            nvcc_flags += ['-O2']
             extra_compile_args['nvcc'] = nvcc_flags
+            if torch.version.hip:
+                # USE_ROCM was added to later versions of PyTorch
+                # Define here to support older PyTorch versions as well:
+                define_macros += [('USE_ROCM', None)]
+                undef_macros += ['__HIP_NO_HALF_CONVERSIONS__']
+            else:
+                nvcc_flags += ['--expt-relaxed-constexpr']
 
         name = main.split(os.sep)[-1][:-4]
         sources = [main]
@@ -79,6 +92,7 @@ def get_extensions():
             sources,
             include_dirs=[extensions_dir],
             define_macros=define_macros,
+            undef_macros=undef_macros,
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
         )
@@ -93,6 +107,11 @@ test_requires = [
     'pytest',
     'pytest-cov',
 ]
+
+# work-around hipify abs paths
+include_package_data = True
+if torch.cuda.is_available() and torch.version.hip:
+    include_package_data = False
 
 setup(
     name='torch_spline_conv',
@@ -120,5 +139,5 @@ setup(
         BuildExtension.with_options(no_python_abi_suffix=True, use_ninja=False)
     },
     packages=find_packages(),
-    include_package_data=True,
+    include_package_data=include_package_data,
 )
