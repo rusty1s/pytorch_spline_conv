@@ -44,7 +44,7 @@ jobs:
 
       - name: Install PyTorch ${{ matrix.torch-version }}
         run: |
-          pip install --extra-index-url torch==${{ matrix.torch-version }}+cpu -f https://download.pytorch.org/whl/cpu
+          pip install torch==${{ matrix.torch-version }} --extra-index-url https://download.pytorch.org/whl/cpu
 
       - name: Install dependencies
         run: |
