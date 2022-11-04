@@ -45,13 +45,13 @@ To install the binaries for PyTorch 1.13.0, simply run
 pip install torch-spline-conv -f https://data.pyg.org/whl/torch-1.12.0+${CUDA}.html
 ```
 
-where `${CUDA}` should be replaced by either `cpu`, `cu102`, `cu113`, `cu116`, or `cu117` depending on your PyTorch installation.
+where `${CUDA}` should be replaced by either `cpu`, `cu116`, or `cu117` depending on your PyTorch installation.
 
-|             | `cpu` | `cu102` | `cu113` | `cu116` | `cu117` |
-|-------------|-------|---------|---------|---------|---------|
-| **Linux**   | ✅    | ✅      | ✅      | ✅      | ✅      |
-| **Windows** | ✅    |         | ✅      | ✅      | ✅      |
-| **macOS**   | ✅    |         |         |         |         |
+|             | `cpu` | `cu116` | `cu117` |
+|-------------|-------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |
 
 #### PyTorch 1.12
 
