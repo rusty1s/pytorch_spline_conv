@@ -49,15 +49,13 @@ jobs:
 
       - name: Install PyTorch ${{ matrix.torch-version }}+${{ matrix.cuda-version }}
         run: |
-          pip install numpy typing-extensions dataclasses
-          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version}} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}/torch_stable.html
+          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version }} -f https://download.pytorch.org/whl/${{ matrix.cuda-version }}
           python -c "import torch; print('PyTorch:', torch.__version__)"
           python -c "import torch; print('CUDA:', torch.version.cuda)"
 
       - name: Set version
         run: |
           VERSION=`sed -n "s/^__version__ = '\(.*\)'/\1/p" torch_spline_conv/__init__.py`
-          sed -i "s/$VERSION/$VERSION+{{ matrix.cuda-version }}/" setup.py
           sed -i "s/$VERSION/$VERSION+{{ matrix.cuda-version }}/" torch_spline_conv/__init__.py
 
       - name: Install main package for CPU

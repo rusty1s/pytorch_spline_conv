@@ -27,7 +27,7 @@ jobs:
 
       - name: Install PyTorch ${{ matrix.torch-version }}
         run: |
-          pip install torch==${{ matrix.torch-version}}+cpu -f https://download.pytorch.org/whl/torch_stable.html
+          pip install --no-index --no-cache-dir torch==${{ matrix.torch-version }} -f https://download.pytorch.org/whl/cpu
 
       - name: Install main package
         run: |
