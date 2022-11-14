@@ -22,10 +22,10 @@ requirements:
 
 build:
   string: py{{ environ.get('PYTHON_VERSION').replace('.', '') }}_torch_{{ environ['TORCH_VERSION'] }}_{{ environ['CUDA_VERSION'] }}
+  script: pip install .
   script_env:
     - FORCE_CUDA
     - TORCH_CUDA_ARCH_LIST
-  preserve_egg_dir: True
 
 test:
   imports:
