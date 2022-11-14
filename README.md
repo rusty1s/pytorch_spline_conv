@@ -42,7 +42,7 @@ We alternatively provide pip wheels for all major OS/PyTorch/CUDA combinations, 
 To install the binaries for PyTorch 1.13.0, simply run
 
 ```
-pip install torch-spline-conv -f https://data.pyg.org/whl/torch-1.12.0+${CUDA}.html
+pip install torch-spline-conv -f https://data.pyg.org/whl/torch-1.13.0+${CUDA}.html
 ```
 
 where `${CUDA}` should be replaced by either `cpu`, `cu116`, or `cu117` depending on your PyTorch installation.
