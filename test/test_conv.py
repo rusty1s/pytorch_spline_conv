@@ -4,8 +4,7 @@ import pytest
 import torch
 from torch.autograd import gradcheck
 from torch_spline_conv import spline_conv
-
-from .utils import dtypes, devices, tensor
+from torch_spline_conv.testing import devices, dtypes, tensor
 
 degrees = [1, 2, 3]
 
@@ -43,6 +42,9 @@ tests = [{
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_spline_conv_forward(test, dtype, device):
+    if dtype == torch.bfloat16 and device == torch.device('cuda:0'):
+        return
+
     x = tensor(test['x'], dtype, device)
     edge_index = tensor(test['edge_index'], torch.long, device)
     pseudo = tensor(test['pseudo'], dtype, device)
@@ -51,15 +53,13 @@ def test_spline_conv_forward(test, dtype, device):
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
     root_weight = tensor(test['root_weight'], dtype, device)
     bias = tensor(test['bias'], dtype, device)
+    expected = tensor(test['expected'], dtype, device)
 
     out = spline_conv(x, edge_index, pseudo, weight, kernel_size,
                       is_open_spline, 1, True, root_weight, bias)
-    if dtype == torch.bfloat16:
-        target = torch.tensor(test['expected'])
-        assert torch.allclose(out.to(torch.float), target,
-                              rtol=1e-2, atol=1e-2)
-    else:
-        assert out.tolist() == test['expected']
+
+    error = 1e-2 if dtype == torch.bfloat16 else 1e-7
+    assert torch.allclose(out, expected, rtol=error, atol=error)
 
 
 @pytest.mark.parametrize('degree,device', product(degrees, devices))
