@@ -4,8 +4,7 @@ import pytest
 import torch
 from torch.autograd import gradcheck
 from torch_spline_conv import spline_basis, spline_weighting
-
-from .utils import dtypes, devices, tensor
+from torch_spline_conv.testing import devices, dtypes, tensor
 
 tests = [{
     'x': [[1, 2], [3, 4]],
@@ -21,13 +20,17 @@ tests = [{
 
 @pytest.mark.parametrize('test,dtype,device', product(tests, dtypes, devices))
 def test_spline_weighting_forward(test, dtype, device):
+    if dtype == torch.bfloat16 and device == torch.device('cuda:0'):
+        return
+
     x = tensor(test['x'], dtype, device)
     weight = tensor(test['weight'], dtype, device)
     basis = tensor(test['basis'], dtype, device)
     weight_index = tensor(test['weight_index'], torch.long, device)
+    expected = tensor(test['expected'], dtype, device)
 
     out = spline_weighting(x, weight, basis, weight_index)
-    assert out.tolist() == test['expected']
+    assert torch.allclose(out, expected)
 
 
 @pytest.mark.parametrize('device', devices)
