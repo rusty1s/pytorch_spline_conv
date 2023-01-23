@@ -30,4 +30,4 @@ int64_t cuda_version() {
 }
 
 static auto registry = torch::RegisterOperators().op(
-    "torch_spline_conv::cuda_version", &cuda_version);
+    "torch_spline_conv::cuda_version", [] { return cuda_version(); });
