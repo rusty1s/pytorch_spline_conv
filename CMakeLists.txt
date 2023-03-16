@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(torchsplineconv)
 set(CMAKE_CXX_STANDARD 14)
-set(TORCHSPLINECONV_VERSION 1.2.1)
+set(TORCHSPLINECONV_VERSION 1.2.2)
 
 option(WITH_CUDA "Enable CUDA support" OFF)
 
