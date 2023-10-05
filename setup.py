@@ -128,7 +128,7 @@ setup(
         'graph-neural-networks',
         'spline-cnn',
     ],
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=install_requires,
     extras_require={
         'test': test_requires,
