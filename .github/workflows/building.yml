@@ -38,6 +38,7 @@ jobs:
           pip install --upgrade setuptools
 
       - name: Free Disk Space (Ubuntu)
+        if: ${{ runner.os == 'Linux' }}
         uses: jlumbroso/free-disk-space@main
 
       - name: Install CUDA ${{ matrix.cuda-version }}
