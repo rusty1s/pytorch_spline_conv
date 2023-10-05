@@ -12,19 +12,20 @@ jobs:
       matrix:
         # We have trouble building for Windows - drop for now.
         os: [ubuntu-18.04, macos-10.15]  # windows-2019
-        python-version: ['3.7', '3.8', '3.9', '3.10']
-        torch-version: [1.13.0, 2.0.0]
-        # We have trouble building for `cu116` due to PyTorch 1.13.0 bugs
-        cuda-version: ['cpu', 'cu117', 'cu118']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+        torch-version: [2.0.0, 2.1.0]
+        cuda-version: ['cpu', 'cu117', 'cu118', 'cu121']
         exclude:
           - torch-version: 2.0.0
-            python-version: '3.7'
-          - torch-version: 1.13.0
-            cuda-version: 'cu118'
+            cuda-version: 'cu121'
+          - torch-version: 2.1.0
+            cuda-version: 'cu117'
           - os: macos-10.15
             cuda-version: 'cu117'
           - os: macos-10.15
             cuda-version: 'cu118'
+          - os: macos-10.15
+            cuda-version: 'cu121'
 
     steps:
       - uses: actions/checkout@v2
