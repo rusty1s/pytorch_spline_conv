@@ -39,7 +39,11 @@ def test_spline_basis_forward(test, dtype, device):
 
     degree = 1
 
-    basis, weight_index = spline_basis(pseudo, kernel_size, is_open_spline,
-                                       degree)
-    assert torch.allclose(basis, basis)
-    assert torch.allclose(weight_index, weight_index)
+    out = spline_basis(pseudo, kernel_size, is_open_spline, degree)
+    assert torch.allclose(out[0], basis)
+    assert torch.allclose(out[1], weight_index)
+
+    jit = torch.jit.script(spline_basis)
+    jit_out = jit(pseudo, kernel_size, is_open_spline, degree)
+    assert torch.allclose(jit_out[0], basis)
+    assert torch.allclose(jit_out[1], weight_index)

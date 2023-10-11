@@ -61,6 +61,11 @@ def test_spline_conv_forward(test, dtype, device):
     error = 1e-2 if dtype == torch.bfloat16 else 1e-7
     assert torch.allclose(out, expected, rtol=error, atol=error)
 
+    jit = torch.jit.script(spline_conv)
+    jit_out = jit(x, edge_index, pseudo, weight, kernel_size, is_open_spline,
+                  1, True, root_weight, bias)
+    assert torch.allclose(jit_out, expected, rtol=error, atol=error)
+
 
 @pytest.mark.parametrize('degree,device', product(degrees, devices))
 def test_spline_conv_backward(degree, device):
@@ -81,3 +86,7 @@ def test_spline_conv_backward(degree, device):
     data = (x, edge_index, pseudo, weight, kernel_size, is_open_spline, degree,
             True, root_weight, bias)
     assert gradcheck(spline_conv, data, eps=1e-6, atol=1e-4) is True
+
+
+def test_spline_conv_jit():
+    pass
