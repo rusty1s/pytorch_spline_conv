@@ -86,7 +86,3 @@ def test_spline_conv_backward(degree, device):
     data = (x, edge_index, pseudo, weight, kernel_size, is_open_spline, degree,
             True, root_weight, bias)
     assert gradcheck(spline_conv, data, eps=1e-6, atol=1e-4) is True
-
-
-def test_spline_conv_jit():
-    pass

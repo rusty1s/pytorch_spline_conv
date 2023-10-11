@@ -35,7 +35,7 @@ def test_spline_basis_forward(test, dtype, device):
     kernel_size = tensor(test['kernel_size'], torch.long, device)
     is_open_spline = tensor(test['is_open_spline'], torch.uint8, device)
     basis = tensor(test['basis'], dtype, device)
-    weight_index = tensor(test['weight_index'], dtype, device)
+    weight_index = tensor(test['weight_index'], torch.long, device)
 
     degree = 1
 
