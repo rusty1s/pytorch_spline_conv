@@ -32,6 +32,9 @@ def test_spline_weighting_forward(test, dtype, device):
     out = spline_weighting(x, weight, basis, weight_index)
     assert torch.allclose(out, expected)
 
+    jit = torch.jit.script(spline_weighting)
+    assert torch.allclose(jit(x, weight, basis, weight_index), expected)
+
 
 @pytest.mark.parametrize('device', devices)
 def test_spline_weighting_backward(device):

@@ -6,13 +6,18 @@ from .basis import spline_basis
 from .weighting import spline_weighting
 
 
-@torch.jit.script
-def spline_conv(x: torch.Tensor, edge_index: torch.Tensor,
-                pseudo: torch.Tensor, weight: torch.Tensor,
-                kernel_size: torch.Tensor, is_open_spline: torch.Tensor,
-                degree: int = 1, norm: bool = True,
-                root_weight: Optional[torch.Tensor] = None,
-                bias: Optional[torch.Tensor] = None) -> torch.Tensor:
+def spline_conv(
+    x: torch.Tensor,
+    edge_index: torch.Tensor,
+    pseudo: torch.Tensor,
+    weight: torch.Tensor,
+    kernel_size: torch.Tensor,
+    is_open_spline: torch.Tensor,
+    degree: int = 1,
+    norm: bool = True,
+    root_weight: Optional[torch.Tensor] = None,
+    bias: Optional[torch.Tensor] = None,
+) -> torch.Tensor:
     r"""Applies the spline-based convolution operator :math:`(f \star g)(i) =
     \frac{1}{|\mathcal{N}(i)|} \sum_{l=1}^{M_{in}} \sum_{j \in \mathcal{N}(i)}
     f_l(j) \cdot g_l(u(i, j))` over several node features of an input graph.

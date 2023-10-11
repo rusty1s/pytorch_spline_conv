@@ -2,10 +2,8 @@
 
 #include <torch/extension.h>
 
-#if defined(__x86_64__)
+#if defined(__linux__) && defined(__x86_64__)
 __asm__(".symver pow,pow@GLIBC_2.2.5");
-#elif defined(__aarch64__)
-__asm__(".symver pow,pow@GLIBC_2.17");
 #endif
 
 std::tuple<torch::Tensor, torch::Tensor>
