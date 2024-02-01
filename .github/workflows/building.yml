@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-12]
+        os: [macos-13]
         # os: [ubuntu-20.04, macos-12, windows-2019]
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         torch-version: [2.2.0]  # [2.1.0, 2.2.0]
@@ -18,9 +18,9 @@ jobs:
         exclude:
           - torch-version: 2.1.0
             python-version: '3.12'
-          - os: macos-11
+          - os: macos-13
             cuda-version: 'cu118'
-          - os: macos-11
+          - os: macos-13
             cuda-version: 'cu121'
 
     steps:
