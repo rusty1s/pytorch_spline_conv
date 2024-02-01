@@ -16,6 +16,7 @@ jobs:
         torch-version: [2.2.0]  # [2.1.0, 2.2.0]
         cuda-version: ['cpu', 'cu118', 'cu121']
         exclude:
+          - python-version: '3.12'  # Python 3.12 not yet supported in `conda-build`.
           - torch-version: 2.1.0
             python-version: '3.12'
           - os: macos-11
