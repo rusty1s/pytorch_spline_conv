@@ -42,7 +42,7 @@ torch::Tensor spline_weighting_fw_cuda(torch::Tensor x, torch::Tensor weight,
   CHECK_CUDA(weight);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(x.get_device());
+  c10::cuda::MaybeSetDevice(x.get_device());
 
   CHECK_INPUT(x.size(1) == weight.size(1));
 
@@ -107,7 +107,7 @@ torch::Tensor spline_weighting_bw_x_cuda(torch::Tensor grad_out,
   CHECK_CUDA(weight);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  c10::cuda::MaybeSetDevice(grad_out.get_device());
 
   CHECK_INPUT(grad_out.size(1) == weight.size(2));
 
@@ -170,7 +170,7 @@ torch::Tensor spline_weighting_bw_weight_cuda(torch::Tensor grad_out,
   CHECK_CUDA(x);
   CHECK_CUDA(basis);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  c10::cuda::MaybeSetDevice(grad_out.get_device());
 
   auto E = grad_out.size(0);
   auto M_in = x.size(1);
@@ -231,7 +231,7 @@ torch::Tensor spline_weighting_bw_basis_cuda(torch::Tensor grad_out,
   CHECK_CUDA(x);
   CHECK_CUDA(weight);
   CHECK_CUDA(weight_index);
-  cudaSetDevice(grad_out.get_device());
+  c10::cuda::MaybeSetDevice(grad_out.get_device());
 
   CHECK_INPUT(x.size(1) == weight.size(1));
   CHECK_INPUT(grad_out.size(1) == weight.size(2));

@@ -98,7 +98,7 @@ spline_basis_fw_cuda(torch::Tensor pseudo, torch::Tensor kernel_size,
   CHECK_CUDA(pseudo);
   CHECK_CUDA(kernel_size);
   CHECK_CUDA(is_open_spline);
-  cudaSetDevice(pseudo.get_device());
+  c10::cuda::MaybeSetDevice(pseudo.get_device());
 
   CHECK_INPUT(kernel_size.dim() == 1);
   CHECK_INPUT(pseudo.size(1) == kernel_size.numel());
@@ -180,7 +180,7 @@ torch::Tensor spline_basis_bw_cuda(torch::Tensor grad_basis,
   CHECK_CUDA(pseudo);
   CHECK_CUDA(kernel_size);
   CHECK_CUDA(is_open_spline);
-  cudaSetDevice(grad_basis.get_device());
+  c10::cuda::MaybeSetDevice(grad_basis.get_device());
 
   CHECK_INPUT(grad_basis.size(0) == pseudo.size(0));
   CHECK_INPUT(kernel_size.dim() == 1);
