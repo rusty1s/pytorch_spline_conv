@@ -58,7 +58,7 @@ def get_extensions():
 
         # Compile for mac arm64
         if sys.platform == 'darwin':
-            extra_compile_args['cxx'] = '-D_LIBCPP_DISABLE_AVAILABILITY'
+            extra_compile_args['cxx'] += ['-D_LIBCPP_DISABLE_AVAILABILITY']
             if platform.machine == 'arm64':
                 extra_compile_args['cxx'] += ['-arch', 'arm64']
                 extra_link_args += ['-arch', 'arm64']
