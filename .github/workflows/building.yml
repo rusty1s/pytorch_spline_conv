@@ -23,6 +23,8 @@ jobs:
             cuda-version: 'cu121'
           - os: macos-14
             cuda-version: 'cu124'
+          - os: macos-14
+            python-version: '3.8'
 
     steps:
       - uses: actions/checkout@v2
