@@ -48,7 +48,7 @@ pip install torch-spline-conv -f https://data.pyg.org/whl/torch-2.4.0+${CUDA}.ht
 where `${CUDA}` should be replaced by either `cpu`, `cu118`, `cu121`, or `cu124` depending on your PyTorch installation.
 
 |             | `cpu` | `cu118` | `cu121` | `cu124` |
-|-------------|-------|---------|---------|---------~
+|-------------|-------|---------|---------|---------|
 | **Linux**   | ✅    | ✅      | ✅      | ✅      |
 | **Windows** | ✅    | ✅      | ✅      | ✅      |
 | **macOS**   | ✅    |         |         |         |
