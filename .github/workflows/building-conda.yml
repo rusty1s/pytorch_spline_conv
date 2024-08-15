@@ -11,7 +11,8 @@ jobs:
       fail-fast: false
       matrix:
         # We have trouble building for Windows - drop for now.
-        os: [ubuntu-20.04, macos-14]  # windows-2019
+        # os: [ubuntu-20.04, macos-14]  # windows-2019
+        os: [macos-14]  # windows-2019
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
         torch-version: [2.4.0]  # [2.3.0, 2.4.0]
         cuda-version: ['cpu', 'cu118', 'cu121', 'cu124']
@@ -26,7 +27,7 @@ jobs:
             cuda-version: 'cu124'
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Conda for Python ${{ matrix.python-version }}
         uses: conda-incubator/setup-miniconda@v2
         with:
