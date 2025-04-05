@@ -24,6 +24,8 @@ The operator works on all floating point data types and is implemented both for 
 
 ## Installation
 
+### Binaries
+
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
 #### PyTorch 2.6
