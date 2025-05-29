@@ -31,7 +31,7 @@ jobs:
 
       - name: Install main package
         run: |
-          python setup.py develop
+          pip install -e . --no-build-isolation
 
       - name: Run test-suite
         run: |
