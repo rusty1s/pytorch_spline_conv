@@ -28,6 +28,22 @@ The operator works on all floating point data types and is implemented both for 
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
 
+#### PyTorch 2.8
+
+To install the binaries for PyTorch 2.8.0, simply run
+
+```
+pip install torch-spline-conv -f https://data.pyg.org/whl/torch-2.8.0+${CUDA}.html
+```
+
+where `${CUDA}` should be replaced by either `cpu`, `cu126`, `cu128`, or `cu129` depending on your PyTorch installation.
+
+|             | `cpu` | `cu126` | `cu128` | `cu129` |
+|-------------|-------|---------|---------|---------|
+| **Linux**   | ✅    | ✅      | ✅      | ✅      |
+| **Windows** | ✅    | ✅      | ✅      | ✅      |
+| **macOS**   | ✅    |         |         |         |
+
 #### PyTorch 2.7
 
 To install the binaries for PyTorch 2.7.0, simply run
