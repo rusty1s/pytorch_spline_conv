@@ -68,6 +68,7 @@ def get_extensions():
             nvcc_flags = os.getenv('NVCC_FLAGS', '')
             nvcc_flags = [] if nvcc_flags == '' else nvcc_flags.split(' ')
             nvcc_flags += ['-O2']
+            nvcc_flags += ['-DTORCH_INDUCTOR_CPP_WRAPPER']
             extra_compile_args['nvcc'] = nvcc_flags
             if torch.version.hip:
                 # USE_ROCM was added to later versions of PyTorch
