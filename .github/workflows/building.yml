@@ -15,6 +15,7 @@ jobs:
         torch-version: [2.9.0, 2.10.0]
         cuda-version: ['cpu', 'cu126', 'cu128', 'cu130']
         exclude:
+          - os: macos-14
             cuda-version: 'cu126'
           - os: macos-14
             cuda-version: 'cu128'
