@@ -69,6 +69,10 @@ jobs:
         shell:
           bash
 
+      - name: Set up MSVC
+        if: ${{ runner.os == 'Windows' }}
+        uses: ilammy/msvc-dev-cmd@v1
+
       - name: Build wheel for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |
