@@ -73,6 +73,11 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         uses: ilammy/msvc-dev-cmd@v1
 
+      - name: Hide Git link.exe to avoid conflict with MSVC linker
+        if: ${{ runner.os == 'Windows' }}
+        run: mv "/c/Program Files/Git/usr/bin/link.exe" "/c/Program Files/Git/usr/bin/link.exe.bak"
+        shell: bash
+
       - name: Build wheel for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
         run: |

@@ -7,4 +7,3 @@ PATH=${CUDA_HOME}/bin:$PATH
 export FORCE_CUDA=1
 export DISTUTILS_USE_SDK=1
 export TORCH_CUDA_ARCH_LIST="7.5+PTX"
-export NVCC_FLAGS="-v"
