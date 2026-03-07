@@ -10,13 +10,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
-        os: [windows-2022]
+        os: [ubuntu-22.04, macos-14, windows-2022, ubuntu-22.04-arm]
         python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
         torch-version: [2.9.0, 2.10.0]
-        cuda-version: ['cu130']
-        # cuda-version: ['cpu', 'cu126', 'cu128', 'cu130']
+        cuda-version: ['cpu', 'cu126', 'cu128', 'cu130']
         exclude:
+          - os: windows-2022
+            cuda-version: 'cu130'
           - os: macos-14
             cuda-version: 'cu126'
           - os: macos-14
@@ -68,15 +68,6 @@ jobs:
           sed -i "s/$VERSION/$VERSION+$TORCH_VERSION$CUDA_VERSION/" torch_spline_conv/__init__.py
         shell:
           bash
-
-      - name: Set up MSVC
-        if: ${{ runner.os == 'Windows' }}
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Hide Git link.exe to avoid conflict with MSVC linker
-        if: ${{ runner.os == 'Windows' }}
-        run: mv "/c/Program Files/Git/usr/bin/link.exe" "/c/Program Files/Git/usr/bin/link.exe.bak"
-        shell: bash
 
       - name: Build wheel for CPU
         if: ${{ matrix.cuda-version == 'cpu' }}
