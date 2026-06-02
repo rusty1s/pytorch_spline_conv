@@ -7,7 +7,7 @@
 [coverage-image]: https://codecov.io/gh/rusty1s/pytorch_spline_conv/branch/master/graph/badge.svg
 [coverage-url]: https://codecov.io/github/rusty1s/pytorch_spline_conv?branch=master
 
-# Spline-Based Convolution Operator of SplineCNN
+# [DEPRECATED] Spline-Based Convolution Operator of SplineCNN
 
 [![PyPI Version][pypi-image]][pypi-url]
 [![Testing Status][testing-image]][testing-url]
@@ -16,15 +16,22 @@
 
 --------------------------------------------------------------------------------
 
-> [!WARNING]
-> **This repository is deprecated and no longer actively maintained.**
-> No new wheels will be published. The spline-based convolution operator has
-> moved to [`pyg-lib`](https://github.com/pyg-team/pyg-lib), which is the
-> maintained home going forward — please migrate.
+> [!CAUTION]
+> ## ⚠️ This repository is deprecated in favor of [`pyg-lib`](https://github.com/pyg-team/pyg-lib)
 >
-> Previously published wheels remain available at https://data.pyg.org/whl for
-> existing PyTorch versions, but no wheels will be built for future PyTorch or
-> CUDA releases.
+> **`torch-spline-conv` is no longer maintained.** The spline-based convolution
+> operator now lives in [**`pyg-lib`**](https://github.com/pyg-team/pyg-lib) —
+> please install and use that package instead:
+>
+> ```
+> pip install pyg-lib
+> ```
+>
+> - ❌ No new wheels will be published for future PyTorch or CUDA releases.
+> - 📦 Previously published wheels remain available at https://data.pyg.org/whl
+>   for existing PyTorch versions.
+> - 🐛 Issues and pull requests in this repository will no longer be addressed —
+>   please open them in [`pyg-lib`](https://github.com/pyg-team/pyg-lib) instead.
 
 --------------------------------------------------------------------------------
 
