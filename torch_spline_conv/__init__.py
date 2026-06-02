@@ -1,9 +1,19 @@
 import importlib
 import os.path as osp
+import warnings
 
 import torch
 
 __version__ = '1.2.2'
+
+warnings.warn(
+    "'torch-spline-conv' is deprecated and no longer maintained. The "
+    "spline-based convolution operator has moved to 'pyg-lib' "
+    "(https://github.com/pyg-team/pyg-lib); please migrate. No new wheels "
+    "will be published for future PyTorch or CUDA releases.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 for library in ['_version', '_basis', '_weighting']:
     cuda_spec = importlib.machinery.PathFinder().find_spec(

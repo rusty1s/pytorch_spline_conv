@@ -16,6 +16,18 @@
 
 --------------------------------------------------------------------------------
 
+> [!WARNING]
+> **This repository is deprecated and no longer actively maintained.**
+> No new wheels will be published. The spline-based convolution operator has
+> moved to [`pyg-lib`](https://github.com/pyg-team/pyg-lib), which is the
+> maintained home going forward — please migrate.
+>
+> Previously published wheels remain available at https://data.pyg.org/whl for
+> existing PyTorch versions, but no wheels will be built for future PyTorch or
+> CUDA releases.
+
+--------------------------------------------------------------------------------
+
 This is a PyTorch implementation of the spline-based convolution operator of SplineCNN, as described in our paper:
 
 Matthias Fey, Jan Eric Lenssen, Frank Weichert, Heinrich Müller: [SplineCNN: Fast Geometric Deep Learning with Continuous B-Spline Kernels](https://arxiv.org/abs/1711.08920) (CVPR 2018)
