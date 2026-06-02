@@ -21,11 +21,9 @@
 >
 > **`torch-spline-conv` is no longer maintained.** The spline-based convolution
 > operator now lives in [**`pyg-lib`**](https://github.com/pyg-team/pyg-lib) —
-> please install and use that package instead:
->
-> ```
-> pip install pyg-lib
-> ```
+> please migrate to that package. See the
+> [`pyg-lib` README](https://github.com/pyg-team/pyg-lib#readme) for
+> installation and usage instructions.
 >
 > - ❌ No new wheels will be published for future PyTorch or CUDA releases.
 > - 📦 Previously published wheels remain available at https://data.pyg.org/whl
