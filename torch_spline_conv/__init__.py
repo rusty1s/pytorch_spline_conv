@@ -7,10 +7,9 @@ import torch
 __version__ = '1.2.2'
 
 warnings.warn(
-    "'torch-spline-conv' is deprecated and no longer maintained. The "
-    "spline-based convolution operator has moved to 'pyg-lib' "
-    "(https://github.com/pyg-team/pyg-lib); please migrate. No new wheels "
-    "will be published for future PyTorch or CUDA releases.",
+    "'torch-spline-conv' is deprecated and no longer maintained. All "
+    "functionality has been migrated to 'pyg-lib' "
+    "(https://github.com/pyg-team/pyg-lib).",
     DeprecationWarning,
     stacklevel=2,
 )
