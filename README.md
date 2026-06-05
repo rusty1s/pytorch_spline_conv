@@ -16,6 +16,11 @@
 
 --------------------------------------------------------------------------------
 
+> [!CAUTION]
+> #### ⚠️ This repository is deprecated in favor of [`pyg-lib>=0.7.0`](https://github.com/pyg-team/pyg-lib)
+
+--------------------------------------------------------------------------------
+
 This is a PyTorch implementation of the spline-based convolution operator of SplineCNN, as described in our paper:
 
 Matthias Fey, Jan Eric Lenssen, Frank Weichert, Heinrich Müller: [SplineCNN: Fast Geometric Deep Learning with Continuous B-Spline Kernels](https://arxiv.org/abs/1711.08920) (CVPR 2018)
