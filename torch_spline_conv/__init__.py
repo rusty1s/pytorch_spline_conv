@@ -8,7 +8,7 @@ __version__ = '1.2.2'
 
 warnings.warn(
     "'torch-spline-conv' is deprecated and no longer maintained. All "
-    "functionality has been migrated to 'pyg-lib' "
+    "functionality has been migrated to 'pyg-lib>=0.7.0' "
     "(https://github.com/pyg-team/pyg-lib).",
     DeprecationWarning,
     stacklevel=2,
